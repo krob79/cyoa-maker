@@ -1,0 +1,16 @@
+<div data-uuid="<%=item.uuid %>" class="feedback-item item-list media-list">
+    <button type="button" data-uuid="<%=item.uuid %>" id="delete" class="btn element-item-delete-btn">X</button>
+    <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-elementType="<%=item.type %>"
+        data-elementuuid="<%=item.uuid %>" data-elementvalue="<%=item.value %>"
+        data-target="#<%=item.type %>UpdateModal">E</button>
+    <div class="feedback-item <%=item.type %>">
+        <div class="feedback-info media-body">
+            <div class="feedback-head">
+                <div class="feedback-title"></div>
+            </div>
+            <div class="feedback-message">
+                <%- item.html %>
+            </div>
+        </div>
+    </div>
+</div>

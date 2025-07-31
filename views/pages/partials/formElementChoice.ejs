@@ -1,0 +1,21 @@
+<div id="element-choice" class="form-group">
+    <form id="choiceForm" class="feedback-form">
+        <label for="feedback-form-name">Choice</label>
+        <input type="text" class="form-control" id="choiceLabel" name="choiceLabel"
+            placeholder="Add the label for the choice">
+        <input type="hidden" name="uuid" value="<%=uuid %>">
+        <input type="hidden" id="destination" name="destination" value="">
+        <input type="hidden" name="section" value="elements">
+        <label for="choiceDestination">Choose the page destination:</label>
+        <select id="choiceDestination" name="element" onchange="changeChoiceDestination()">
+            <option value="Choose Page"></option>
+            <% for (let i=0; i < pages.length; i++){ %>
+                <option value="<%= pages[i].uuid %>">
+                    <%=pages[i].title%>
+                </option>
+                <%}%>
+        </select>
+        <button type="submit" id="choiceElementSubmit">Add Choice</button>
+    </form>
+    <hr />
+</div>

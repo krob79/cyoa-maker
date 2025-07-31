@@ -1,0 +1,14 @@
+<div id="element-image" class="form-group">
+    <form id="uploadForm">
+        <label for="file">Image</label>
+        <input type="hidden" name="uuid" value="<%=uuid %>">
+        <input type="hidden" name="section" value="elements">
+        <input type="file" name="file" id="fileInput" accept="image/*" required />
+        <br />
+        <button type="submit">Upload Image</button>
+        <br />
+        <img id="preview" name="preview" src="" alt="Image preview"
+            style="max-width: 100px; display: none; margin-top: 10px;" />
+    </form>
+    <hr />
+</div>

@@ -41,6 +41,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Image Uploads
+static/uploads/
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 

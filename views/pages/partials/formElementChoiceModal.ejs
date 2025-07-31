@@ -1,0 +1,65 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Form Title</h5>
+    </div>
+    <div class="modal-body">
+        <form id="choiceFormModal" class="row g-3 was-validated" novalidate>
+            <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
+            <div class="col-md-6">
+                <label for="value" class="form-label">Choice:</label>
+                <input type="text" class="form-control" id="modalchoiceInput" name="modalchoiceInput"
+                    placeholder="Add the label for the choice">
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="choiceDestinationModal" name="choiceDestinationModal"
+                    onchange="changeChoiceDestinationModal()">
+                    <option value="Choose Page"></option>
+                    <% for (let i=0; i < pages.length; i++){ %>
+                        <option value="<%= pages[i].uuid %>">
+                            <%=pages[i].title%>
+                        </option>
+                        <%}%>
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> -->
+        <!-- <button type="submit" class="btn btn-primary">Update</button> -->
+    </div>
+</div>
+<script>
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+
+
+
+
+    })();
+
+</script>

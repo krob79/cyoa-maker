@@ -1,0 +1,52 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Form Title</h5>
+    </div>
+    <div class="modal-body">
+        <form id="textFormModal" class="row g-3 was-validated" novalidate>
+            <input type="hidden" id="hiddentextuuid" name="uuid" value="">
+            <input type="hidden" name="section" value="elements">
+            <div class="col-md-12">
+                <label for="value" class="form-label">Text:</label>
+                <textarea type="text" class="form-control" id="modaltextInput" name="modaltextInput"
+                    placeholder="Enter your text" required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> -->
+        <!-- <button type="submit" class="btn btn-primary">Update</button> -->
+    </div>
+</div>
+<script>
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+
+
+
+
+    })();
+
+</script>

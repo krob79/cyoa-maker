@@ -1,0 +1,228 @@
+[
+    {
+        "title": "Story Title",
+        "uuid": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "pages": [
+            {
+                "title": "First Page",
+                "type": "page",
+                "uuid": "2ae2b720-9501-4cc8-92b7-eacd5165bdf1",
+                "elements": [
+                    {
+                        "uuid": "81ed4dd9-b8f6-468d-84ec-079aaa43f91e",
+                        "type": "text",
+                        "value": "Once upon a time, two people went scuba diving....",
+                        "html": "<p class=\"pageText\">Once upon a time, two people went scuba diving....</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "948a2615-24e3-46e9-90bd-72a9c6cf517a",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_18.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "60f3d868-5ec5-4d5c-b4f9-9828281cf5da",
+                        "type": "text",
+                        "value": "While they were there, they decided to do some snorkeling...",
+                        "html": "<p class=\"pageText\">While they were there, they decided to do some snorkeling...</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "eec7a070-ed8e-45fe-a7e3-83fd7dd67861",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_3.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_3.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "30509781-1d03-4e61-b8d9-e9d645fc3ccd",
+                        "type": "text",
+                        "value": "But then they decided to get on a boat instead",
+                        "html": "<p class=\"pageText\">But then they decided to get on a boat instead</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "931f9627-a49a-49ce-8f73-13252cb0281c",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_16.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_16.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "9fc55fde-3a04-4b8c-b76c-dc18b93fc32d",
+                        "type": "text",
+                        "value": "And then they took a trip to Ruby Falls",
+                        "html": "<p class=\"pageText\">And then they took a trip to Ruby Falls</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "7c35bfd6-10b5-4d3f-a66a-6660b19f6cae",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_11.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_11.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "d5770a90-2ec9-4172-98aa-e75cdd174ab8",
+                        "type": "choice",
+                        "value": "Go to the Next Page||11552105-993e-4ab5-a28f-219ce482281c",
+                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">Go to the Next Page</a>",
+                        "conditions": []
+                    }
+                ],
+                "undefined": [
+                    {
+                        "uuid": "50c5e97a-c7c0-473d-b628-014dabe81643",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_35.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_35.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "dd30df8b-4c43-47bf-bfd3-a9f7d8659cb5",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_12.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_12.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "1a0f8082-ea4c-4757-8df4-0372f6997eba",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_17.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_17.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "625d8471-bca0-4e9e-a2de-a1276a3fed73",
+                        "type": "choice",
+                        "value": "Go here||11552105-993e-4ab5-a28f-219ce482281c",
+                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">Go here</a>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "5e8423e1-da0b-42d3-bb89-7cfc8ba584a3",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_15.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_15.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "cff904fa-00c6-4fe7-865d-62f0573b69f1",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_10.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_10.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "9f2685c3-3121-410e-a586-a7c1b9eba385",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_12.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_12.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "6818e99d-4860-4caf-be6a-19862d967621",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_19.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_19.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "cf638e5e-f2d8-4e32-a06f-f573681a94dd",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_13.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_13.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "6130e9c7-6434-4f43-9e30-b06cd5bee883",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_18.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "6c71c139-7434-478f-b9bd-66086b2567d9",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_20.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_20.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "d4b7153e-88cb-4149-8fed-ebcbbca4c60a",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_21.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_21.jpg\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "7422131f-d910-4418-a6fe-c1184c404bee",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_12.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_12.jpg\">",
+                        "conditions": []
+                    }
+                ]
+            },
+            {
+                "title": "Second Page",
+                "type": "page",
+                "uuid": "11552105-993e-4ab5-a28f-219ce482281c",
+                "elements": [
+                    {
+                        "uuid": "ed39a9e8-ab1d-4ce3-a9ab-13ae70805e03",
+                        "type": "text",
+                        "value": "This is another page....",
+                        "html": "<p class=\"pageText\">This is another page....</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "058d93ff-e716-44d7-b2be-53146addd1da",
+                        "type": "text",
+                        "value": "...and it had different stuff on it",
+                        "html": "<p class=\"pageText\">...and it had different stuff on it</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "722fed85-eaeb-41b3-977b-69f45c7f65d1",
+                        "type": "text",
+                        "value": "It&#x27;s fun when things start to work!",
+                        "html": "<p class=\"pageText\">It's fun when things start to work!</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "61df4899-9455-416c-a1e4-07ec56dba4e9",
+                        "type": "text",
+                        "value": "Hell yeah!",
+                        "html": "<p class=\"pageText\">Hell yeah!</p>",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "4cef659a-47c5-4aff-9d9a-ca5fb6aeac7b",
+                        "type": "image",
+                        "value": "IMG_2505.JPG",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/IMG_2505.JPG\">",
+                        "conditions": []
+                    },
+                    {
+                        "uuid": "8d0b09d6-906b-4d60-8956-4c666b8f3255",
+                        "type": "choice",
+                        "value": "Next||535439f5-7d3c-439f-ba47-5f513a7d005a",
+                        "html": "<a class=\"pageLink\" href=\"/page/535439f5-7d3c-439f-ba47-5f513a7d005a/edit\">Next</a>",
+                        "conditions": []
+                    }
+                ]
+            },
+            {
+                "title": "New Page",
+                "uuid": "89568840-5f5e-4bf5-8195-782b90e5d2e6",
+                "type": "page",
+                "value": "New Page",
+                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "elements": []
+            }
+        ]
+    }
+]

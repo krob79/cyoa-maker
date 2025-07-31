@@ -1,0 +1,78 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="maincontent">
+                <h1>Create New Story Element</h1>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="text"
+                    data-elementuuid="0" data-elementvalue="" data-target="#textUpdateModal">Open
+                    Text</button>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="choice"
+                    data-elementuuid="200377dc-984f-4f7b-825e-dbbd50a60bae"
+                    data-elementvalue="And Here's One More Link||11552105-993e-4ab5-a28f-219ce482281c"
+                    data-target="#choiceUpdateModal">Open Choice</button>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="image"
+                    data-elementuuid="4cef659a-47c5-4aff-9d9a-ca5fb6aeac7b" data-elementvalue="IMG_2505.JPG"
+                    data-target="#imageUpdateModal">Open Image</button>
+                <label for="storyElementPicker">Choose a story element to add:</label>
+                <select id="storyElementPicker" name="element" onchange="changeElement()">
+                    <option value="element-text">Text</option>
+                    <option value="element-image">Image</option>
+                    <option value="element-choice">Choice</option>
+                </select>
+                <div class="feedback-status">
+                    <% if(locals.errors){%>
+                        <div class="alert alert-danger">
+                            <ul>
+                                <% errors.forEach(function (error){%>
+                                    <li>
+                                        <%= error.msg %>
+                                    </li>
+                                    <%})%>
+                            </ul>
+                        </div>
+                        <%}else if(locals.successMessage) {%>
+                            <div class="alert alert-success">
+                                <%= successMessage %>
+                            </div>
+                            <%}%>
+                </div>
+                <%- include('partials/formElementText', {uuid:pageData.uuid}); %>
+                    <%- include('partials/formElementImage', {uuid:pageData.uuid}); %>
+                        <%- include('partials/formElementChoice', {data:pages, uuid:pageData.uuid}); %>
+
+            </div>
+        </div>
+        <aside class="col-md-8">
+            <div class="maincontent feedback">
+                <h1>
+                    <%= pageData.title %>
+                </h1>
+
+                <div class="feedback-items">
+                    <% pageData.elements.forEach(function (item) {%>
+                        <%- include('partials/elementPartial', {item: item}); %>
+                            <%})%>
+
+                </div>
+            </div>
+        </aside>
+    </div>
+    <div class="modal fade elementModal" id="textUpdateModal" tabindex="-1" aria-labelledby="textUpdateLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <%- include('partials/formElementTextModal', {uuid:pageData.uuid}); %>
+        </div>
+    </div>
+    <div class="modal fade elementModal" id="imageUpdateModal" tabindex="-1" aria-labelledby="elementUpdateLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <%- include('partials/formElementImageModal', {uuid:pageData.uuid}); %>
+        </div>
+    </div>
+    <div class="modal fade elementModal" id="choiceUpdateModal" tabindex="-1" aria-labelledby="textUpdateLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <%- include('partials/formElementChoiceModal', {uuid:pageData.uuid}); %>
+        </div>
+    </div>
+</div>

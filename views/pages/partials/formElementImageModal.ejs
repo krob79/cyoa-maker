@@ -1,0 +1,49 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Form Title</h5>
+    </div>
+    <div class="modal-body" class="row g-3 was-validated" novalidate>
+        <form id="uploadFormModal">
+            <input type="hidden" id="hiddenimageuuid" name="uuid" value="">
+            <input type="hidden" name="section" value="elements">
+            <img id="previewModal" name="previewModal" src="" alt="Image preview"
+                style="max-width: 100%; margin-top: 10px;" />
+            <div class="input-group">
+                <input type="file" class="form-control" name="file" id="modalimageInput" accept="image/*" required
+                    aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
+                <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04">Update</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> -->
+        <!-- <button type="submit" class="btn btn-primary">Update</button> -->
+    </div>
+</div>
+<script>
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        })
+
+
+
+
+    })();
+
+</script>
