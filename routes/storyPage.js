@@ -90,7 +90,6 @@ module.exports = (params) => {
         console.log("--- post /api");
         try {
             const errors = validationResult(request);
-            console.log("errors:", errors.array());
             //console.log(request.session);
             if (!errors.isEmpty()) {
                 request.session.feedback = {
@@ -98,8 +97,6 @@ module.exports = (params) => {
                 }
                 return response.redirect('/page'); //Shouldn't this redirect to the page where you currently are?
             }
-
-            // console.log(request.body.uuid);
 
             const { uuid, title, section, type, value, html } = request.body;
 

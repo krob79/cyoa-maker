@@ -42,7 +42,7 @@ $(function feedback() {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
                 <button type="button" data-uuid="${item.uuid}" class="btn element-item-delete-btn">X</button>
-                <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-elementtype="${item.type}"
+                <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-request="PUT" data-elementtype="${item.type}"
                     data-elementuuid="${item.uuid}"
                     data-elementvalue="${item.value}"
                     data-target="#${item.type}UpdateModal">E</button>
@@ -64,7 +64,7 @@ $(function feedback() {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
             <button type="button" data-uuid="${item.uuid}" id="delete" class="btn element-item-delete-btn">X</button>
-            <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-elementtype="${item.type}"
+            <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-request="PUT" data-elementtype="${item.type}"
                 data-elementuuid="${item.uuid}" data-elementvalue="${item.value}"
                 data-target="${item.type}UpdateModal">E</button>
             <div class="feedback-item ${item.type}">
@@ -158,7 +158,6 @@ $(function feedback() {
                 },
                 complete: function (story) {
                     console.log("---COMPLETE");
-                    // updateFeedback(story);
                 }
             });
         });
@@ -280,6 +279,7 @@ $(function feedback() {
         deletePageButton.setAttribute('data-uuid', uuid);
     });
 
+    //this is not really being used at the moment, but created it to try and store a file reference in a file input field...?
     async function createImageFileFromUrl(imageUrl, fileName = 'image.png', fileType = 'image/png') {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
@@ -287,18 +287,23 @@ $(function feedback() {
         return imageFile;
     }
 
+    //this code fires every time the element modals appear
     $('.elementModal').on('show.bs.modal', function (event) {
         let button = $(event.relatedTarget) // Button that triggered the modal
         //get the UUID from the data on the button
+        let buttonRequest = button.data('request');
+
         let uuid = button.data('elementuuid');
         let elementtype = button.data('elementtype'); // Extract info from data-* attributes
         let value = button.data('elementvalue');
-        console.log(`----MODAL OPENING - values found: UUID: ${uuid}, TYPE: ${elementtype}, VALUE: ${value}`);
+        console.log(`----MODAL OPENING - values found: UUID: ${uuid}, REQUEST: ${buttonRequest}, TYPE: ${elementtype}, VALUE: ${value}`);
 
         let modal = $(this)
         let uuidinput = document.getElementById(`hidden${elementtype}uuid`);
         uuidinput.value = uuid;
         modal.find('uuid').val(uuid);
+        let request = document.getElementById(`${elementtype}request`);
+        request.value = buttonRequest;
 
         if (elementtype == "image") {
             let imgPreview = document.getElementById('previewModal');
@@ -325,18 +330,21 @@ $(function feedback() {
 
         if (elementtype == "text") {
             let txtInput = document.getElementById(`modal${elementtype}Input`);
-
-            console.log("----TRYING TO ADD THE DAMN MODAL VALUE - ", value);
             txtInput.value = `${value}`;
 
             $(this).find('#modaltextInput').text(value);
         } else {
             modal.find(`modal${elementtype}Input`).text(value);
         }
+        if (buttonRequest == "POST") {
+            modal.find('.modal-title').text('Create new  ' + elementtype);
+        } else {
+            modal.find('.modal-title').text('Edit  ' + elementtype);
+        }
 
-        modal.find('.modal-title').text('Edit  ' + elementtype);
     });
 
+    //this code fires every time the element modals disappear
     $('.elementModal').on('hidden.bs.modal', function (event) {
         $(this).removeData('bs.modal');
     });
@@ -374,6 +382,7 @@ $(function feedback() {
         );
     });
 
+    //This is the method for updating existing elements, but will eventually be the only way to both create and update page elements
     $('#textFormModal').submit(function (e) {
         // Prevent the default submit form event
         e.preventDefault();
@@ -386,23 +395,33 @@ $(function feedback() {
             console.log(pair[0], ":", pair[1]);
         }
 
-        //if the UUID is "0", then this is new content, and we should do a POST request
+        //if "textrequest" is "POST", then this is new content, and we should do a POST request
         //otherwise, this is existing content, so do a PUT request 
-        if (formData.get("uuid") == "0") {
-            console.log("----UUID is 0 - creating new content");
-            $.post(
-                '/page/api',
+        if (formData.get("textrequest") == "POST") {
+            console.log("----creating new content");
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
                 // Gather all data from the form and create a JSON object from it
-                {
+                data: {
                     uuid: formData.get("uuid"),
                     section: formData.get("section"),
                     type: "text",
                     value: formData.get("modaltextInput"),
                     html: `<p class="pageText">${formData.get("modaltextInput")}</p>`
                 },
-                // Callback to be called with the data
-                updateFeedback
-            );
+                success: function (data) {
+                    console.log("----WE CREATED BULLSHIT FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                    const toastLiveExample = document.getElementById('liveToast');
+                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+                    toastBootstrap.show();
+                }
+            });
         } else {
 
             // XHR POST request
@@ -472,29 +491,58 @@ $(function feedback() {
             uuid: formData.get("hiddenchoiceuuid"),
             newDataObj: { value: `${formData.get("modalchoiceInput")}||${formData.get("choiceDestinationModal")}`, html: `<a class="pageLink" href="/page/${formData.get("choiceDestinationModal")}/edit">${formData.get("modalchoiceInput")}</a>` }
         }
-        console.log("----SENDING ASSEMBLED DATA in PUT request to /page/api");
+        console.log("----SENDING ASSEMBLED DATA...");
         console.log(assembledData);
         // for (const pair of assembledData.entries()) {
         //     console.log("--", pair[0], ":", pair[1]);
         // }
 
-        // XHR POST request
-        $.ajax({
-            url: '/page/api',
-            type: 'PUT',
-            // Gather all data from the form and create a JSON object from it
-            data: {
-                ...assembledData
-            },
-            success: function (data) {
-                console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
-                console.log(data);
-                updateFeedback(data);
-            },
-            complete: function () {
-                $(`.elementModal`).modal('hide');
-            }
-        });
+        if (formData.get("choicerequest") == "POST") {
+            console.log("----creating new content");
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("hiddenchoiceuuid"),
+                    section: formData.get("section"),
+                    type: "choice",
+                    value: `${formData.get("modalchoiceInput")}||${formData.get("destinationModal")}`,
+                    html: `<a class="pageLink" href="/page/${formData.get("destinationModal")}/edit">${formData.get("modalchoiceInput")}</a>`
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+        } else {
+
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    ...assembledData
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+
+        }
 
 
 
@@ -557,8 +605,6 @@ $(function feedback() {
             console.error('Upload Failed', err);
         }
 
-
-
         const imgPath = await res.json();
         console.log("----image found from modal: ", imgPath);
 
@@ -571,23 +617,50 @@ $(function feedback() {
             console.log("--", pair[0], ":", pair[1]);
         }
 
-        // XHR POST request
-        $.ajax({
-            url: '/page/api',
-            type: 'PUT',
-            // Gather all data from the form and create a JSON object from it
-            data: {
-                ...assembledData
-            },
-            success: function (data) {
-                console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
-                console.log(data);
-                updateFeedback(data);
-            },
-            complete: function () {
-                $('.elementModal').modal('hide');
-            }
-        });
+        if (formData.get("imagerequest") == "POST") {
+            console.log("----creating new content");
+
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("uuid"),
+                    section: formData.get("section"),
+                    type: "image",
+                    value: imgPath,
+                    html: `<img class="pageImage" src="/uploads/${imgPath}">`
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $('.elementModal').modal('hide');
+                }
+            });
+
+        } else {
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    ...assembledData
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $('.elementModal').modal('hide');
+                }
+            });
+
+        }
 
 
     });

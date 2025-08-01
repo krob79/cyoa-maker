@@ -6,8 +6,9 @@
         <form id="uploadFormModal">
             <input type="hidden" id="hiddenimageuuid" name="uuid" value="">
             <input type="hidden" name="section" value="elements">
+            <input type="hidden" id="imagerequest" name="imagerequest" value="">
             <img id="previewModal" name="previewModal" src="" alt="Image preview"
-                style="max-width: 100%; margin-top: 10px;" />
+                style="max-width: 100%; display: none; margin-top: 10px;" />
             <div class="input-group">
                 <input type="file" class="form-control" name="file" id="modalimageInput" accept="image/*" required
                     aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
@@ -45,5 +46,24 @@
 
 
     })();
+
+    modalimageInput.addEventListener('change', (e) => {
+        console.log("--filereader modal change");
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            const preview = document.getElementById('previewModal');
+            reader.onload = () => {
+                preview.src = reader.result;
+                //console.log(`---Preview in modal: `, file);
+                // hiddenElementValue.value = file.name;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+            preview.src = '';
+        }
+    });
 
 </script>

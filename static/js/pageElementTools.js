@@ -34,29 +34,8 @@ function changeChoiceDestination(display = null) {
     document.getElementById("choiceElementSubmit").disabled = false;
   }
 }
-changeChoiceDestination("Choose Page");
-
-function changeChoiceDestinationModal(display = null) {
-
-  let dropdown = document.getElementById('choiceDestinationModal');
-  let hiddenchoiceuuid = document.getElementById("hiddenchoiceuuid");
-  let choiceDestination = document.getElementById("choiceDestinationModal");
 
 
-  if (display) {
-    choiceDestination.value = display;
-  } else {
-    choiceDestination.value = dropdown.value
-  }
-
-  console.log("calling changeChoiceDestinationModal() ", dropdown.value);
-  // console.log(choiceDropdown);
-  // if (destination.value == "Choose Page") {
-  //   document.getElementById("choiceElementSubmit").disabled = true;
-  // } else {
-  //   document.getElementById("choiceElementSubmit").disabled = false;
-  // }
-}
 
 function changeElement(display = null) {
   // const feedbackStatus = document.getElementsByClassName("feedback-status")[0];
@@ -78,44 +57,9 @@ function changeElement(display = null) {
 // changeElement("element-text");
 
 
-fileInput.addEventListener('change', (e) => {
-  console.log("--filereader change");
-  const file = e.target.files[0];
-  if (file && file.type.startsWith('image/')) {
-    const reader = new FileReader();
-    const preview = document.getElementById('preview');
-    reader.onload = () => {
-      preview.src = reader.result;
-      //console.log(`---Preview: `, file);
 
-      // hiddenElementValue.value = file.name;
-      preview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.style.display = 'none';
-    preview.src = '';
-  }
-});
 
-modalimageInput.addEventListener('change', (e) => {
-  console.log("--filereader modal change");
-  const file = e.target.files[0];
-  if (file && file.type.startsWith('image/')) {
-    const reader = new FileReader();
-    const preview = document.getElementById('previewModal');
-    reader.onload = () => {
-      preview.src = reader.result;
-      //console.log(`---Preview in modal: `, file);
-      // hiddenElementValue.value = file.name;
-      preview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.style.display = 'none';
-    preview.src = '';
-  }
-});
+
 
 
 

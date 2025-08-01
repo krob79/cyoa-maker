@@ -3,22 +3,18 @@
         <div class="col-md-4">
             <div class="maincontent">
                 <h1>Create New Story Element</h1>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="text"
-                    data-elementuuid="0" data-elementvalue="" data-target="#textUpdateModal">Open
+                <p>Choose a story element to add:</p>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
+                    data-elementtype="text" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
+                    data-target="#textUpdateModal">New
                     Text</button>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="choice"
-                    data-elementuuid="200377dc-984f-4f7b-825e-dbbd50a60bae"
-                    data-elementvalue="And Here's One More Link||11552105-993e-4ab5-a28f-219ce482281c"
-                    data-target="#choiceUpdateModal">Open Choice</button>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-elementtype="image"
-                    data-elementuuid="4cef659a-47c5-4aff-9d9a-ca5fb6aeac7b" data-elementvalue="IMG_2505.JPG"
-                    data-target="#imageUpdateModal">Open Image</button>
-                <label for="storyElementPicker">Choose a story element to add:</label>
-                <select id="storyElementPicker" name="element" onchange="changeElement()">
-                    <option value="element-text">Text</option>
-                    <option value="element-image">Image</option>
-                    <option value="element-choice">Choice</option>
-                </select>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
+                    data-elementtype="image" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
+                    data-target="#imageUpdateModal">New Image</button>
+                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
+                    data-elementtype="choice" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
+                    data-target="#choiceUpdateModal">New Choice</button>
+
                 <div class="feedback-status">
                     <% if(locals.errors){%>
                         <div class="alert alert-danger">
@@ -36,10 +32,6 @@
                             </div>
                             <%}%>
                 </div>
-                <%- include('partials/formElementText', {uuid:pageData.uuid}); %>
-                    <%- include('partials/formElementImage', {uuid:pageData.uuid}); %>
-                        <%- include('partials/formElementChoice', {data:pages, uuid:pageData.uuid}); %>
-
             </div>
         </div>
         <aside class="col-md-8">
@@ -75,4 +67,6 @@
             <%- include('partials/formElementChoiceModal', {uuid:pageData.uuid}); %>
         </div>
     </div>
+
+
 </div>

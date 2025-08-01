@@ -63,7 +63,7 @@ class StoryService {
       value: value,
       html: html
     }
-    console.log("---addDataByUUID()");
+    console.log(`---addDataByUUID() - section: ${section} - uuid: ${uuid}`);
     console.log(newData);
 
     if (type = "page") {
