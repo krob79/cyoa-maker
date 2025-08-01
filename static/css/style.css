@@ -95,11 +95,22 @@ div div.item-list :hover {
   height: 35px;
 }
 
+.successToast {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
 .editElement {
   left: 95%;
   position: absolute;
   width: 35px;
   height: 35px;
+}
+
+#previewModal {
+  max-width: 100%;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {

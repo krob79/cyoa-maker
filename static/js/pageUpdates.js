@@ -83,6 +83,7 @@ $(function feedback() {
 
 
     function updateFeedback(data) {
+        $('.toast').toast();
         const render = [];
         let assembledHTML = "";
         // Reset all error or success status messages
@@ -121,7 +122,7 @@ $(function feedback() {
             // Update feedback-items with what the REST API returned
             $('.feedback-items').html(render.join('\n'));
             // Output the success message
-            $('.feedback-status').html(`<div class="alert alert-success">${data.successMessage}</div>`);
+            // $('.feedback-status').html(`<div class="alert alert-success">${data.successMessage}</div>`);
         } else {
             // There was an error
             // Create a list of errors
@@ -306,8 +307,15 @@ $(function feedback() {
         request.value = buttonRequest;
 
         if (elementtype == "image") {
+            console.log("----IMAGE ", buttonRequest);
             let imgPreview = document.getElementById('previewModal');
             imgPreview.src = `/uploads/${value}`;
+            if (buttonRequest == "PUT") {
+                console.log("----IMAGE PUT!!");
+                imgPreview.style = "display: block;";
+            } else {
+                imgPreview.style = "display: none;";
+            }
             let imgNameSplit = value.split(".");
             // console.log(`---imgNameSplit: `, imgNameSplit);
             //the code below isn't doing anything yet - do we need it?
@@ -324,7 +332,7 @@ $(function feedback() {
             let labelInput = document.getElementById("modalchoiceInput");
 
             labelInput.value = splitValue[0];
-            dropdown.value = splitValue[1];
+            // dropdown.value = splitValue[1];
 
         }
 
@@ -413,13 +421,11 @@ $(function feedback() {
                 success: function (data) {
                     console.log("----WE CREATED BULLSHIT FROM THE MODAL");
                     console.log(data);
+                    $('#myTextToast').toast('show');
                     updateFeedback(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
-                    const toastLiveExample = document.getElementById('liveToast');
-                    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
-                    toastBootstrap.show();
                 }
             });
         } else {
@@ -515,6 +521,7 @@ $(function feedback() {
                 success: function (data) {
                     console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
                     console.log(data);
+                    $('#myChoiceToast').toast('show');
                     updateFeedback(data);
                 },
                 complete: function () {
@@ -634,6 +641,7 @@ $(function feedback() {
                 success: function (data) {
                     console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
                     console.log(data);
+                    $('#myImageToast').toast('show');
                     updateFeedback(data);
                 },
                 complete: function () {
@@ -664,6 +672,11 @@ $(function feedback() {
 
 
     });
+
+    $('#menuItems').on('click', '.dropdown-item', function () {
+        $('#dropdown_coins').text($(this)[0].value)
+        $("#dropdown_coins").dropdown('toggle');
+    })
 
     $('#pageForm').submit(function submitFeedback(e) {
         // Prevent the default submit form event

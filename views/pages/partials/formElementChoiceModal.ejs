@@ -9,28 +9,28 @@
             <input type="hidden" id="destinationModal" name="destinationModal" value="">
             <input type="hidden" id="choicerequest" name="choicerequest" value="">
             <div class="col-md-6">
-                <label for="value" class="form-label">Choice:</label>
                 <input type="text" class="form-control" id="modalchoiceInput" name="modalchoiceInput"
                     placeholder="Add the label for the choice">
                 <div class="valid-feedback">
                     Looks good!
                 </div>
             </div>
+            <div class="col-md-6">
+                <select class="form-select" id="choiceDestinationModal" name="choiceDestinationModal"
+                    onchange="changeChoiceDestinationModal()">
+                    <option value="Choose Page"></option>
+                    <% for (let i=0; i < pages.length; i++){ %>
+                        <option value="<%= pages[i].uuid %>">
+                            <%=pages[i].title%>
+                        </option>
+                        <%}%>
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
     </div>
-    <div class="col-md-6">
-        <select class="form-select" id="choiceDestinationModal" name="choiceDestinationModal"
-            onchange="changeChoiceDestinationModal()">
-            <option value="Choose Page"></option>
-            <% for (let i=0; i < pages.length; i++){ %>
-                <option value="<%= pages[i].uuid %>">
-                    <%=pages[i].title%>
-                </option>
-                <%}%>
-        </select>
-        <div class="valid-feedback">
-            Looks good!
-        </div>
-    </div>
+
     <div class="col-12">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <button class="btn btn-primary" type="submit">Update</button>
@@ -82,5 +82,7 @@
         })
 
     })();
+
+
 
 </script>

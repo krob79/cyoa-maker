@@ -20,9 +20,6 @@
                                 </div>
                                 <%}%>
                     </div>
-                    <%- include('partials/formElementText', {uuid:story.uuid}); %>
-                        <%- include('partials/formElementImage', {uuid:story.uuid}); %>
-                            <%- include('partials/formElementChoice', {data:pages, uuid:story.uuid}); %>
             </div>
         </div>
         <aside class="col-md-8">
@@ -30,13 +27,11 @@
                 <h1>
                     Pages Created
                 </h1>
-
                 <div class="feedback-items">
                     <% pages.forEach(function (item) {%>
                         <%- include('partials/pagePartial', {item}); %>
 
                             <%})%>
-
                 </div>
             </div>
         </aside>
