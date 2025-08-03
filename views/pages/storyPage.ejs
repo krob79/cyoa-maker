@@ -4,16 +4,16 @@
             <div class="maincontent">
                 <h1>Create New Story Element</h1>
                 <p>Choose a story element to add:</p>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
-                    data-elementtype="text" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
-                    data-target="#textUpdateModal">New
+                <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"
+                    data-bs-elementtype="text" data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
+                    data-bs-target="#textUpdateModal">New
                     Text</button>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
-                    data-elementtype="image" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
-                    data-target="#imageUpdateModal">New Image</button>
-                <button type="button" class="btn btn-secondary newElement" data-toggle="modal" data-request="POST"
-                    data-elementtype="choice" data-elementuuid="<%=pageData.uuid %>" data-elementvalue=""
-                    data-target="#choiceUpdateModal">New Choice</button>
+                <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"
+                    data-bs-elementtype="image" data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
+                    data-bs-target="#imageUpdateModal">New Image</button>
+                <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"
+                    data-bs-elementtype="choice" data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
+                    data-bs-target="#choiceUpdateModal">New Choice</button>
 
                 <div class="feedback-status">
                     <% if(locals.errors){%>

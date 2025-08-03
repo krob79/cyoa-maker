@@ -10,19 +10,10 @@ $(function feedback() {
     function findUuidInURL() {
         const currentUrl = window.location.href;
         const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gm;
-
-        // Alternative syntax using RegExp constructor
-        // const regex = new RegExp('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'gm')
-
         const str = window.location.href;;
 
-        // Reset `lastIndex` if this regex is defined globally
-        // regex.lastIndex = 0;
-
         let m;
-
         let result;
-
         while ((m = regex.exec(str)) !== null) {
             // This is necessary to avoid infinite loops with zero-width matches
             if (m.index === regex.lastIndex) {
@@ -41,11 +32,11 @@ $(function feedback() {
     function assembleElementEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-                <button type="button" data-uuid="${item.uuid}" class="btn element-item-delete-btn">X</button>
-                <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-request="PUT" data-elementtype="${item.type}"
-                    data-elementuuid="${item.uuid}"
-                    data-elementvalue="${item.value}"
-                    data-target="#${item.type}UpdateModal">E</button>
+                <button type="button" data-bs-uuid="${item.uuid}" class="btn element-item-delete-btn">X</button>
+                <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
+                    data-bs-elementuuid="${item.uuid}"
+                    data-bs-elementvalue="${item.value}"
+                    data-bs-target="#${item.type}UpdateModal">E</button>
                 <div class="feedback-item ${item.type}">
                     <div class="feedback-info media-body">
                         <div class="feedback-head">
@@ -63,10 +54,10 @@ $(function feedback() {
     function assemblePageEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-            <button type="button" data-uuid="${item.uuid}" id="delete" class="btn element-item-delete-btn">X</button>
-            <button type="button" class="btn btn-secondary editElement" data-toggle="modal" data-request="PUT" data-elementtype="${item.type}"
-                data-elementuuid="${item.uuid}" data-elementvalue="${item.value}"
-                data-target="${item.type}UpdateModal">E</button>
+            <button type="button" data-bs-uuid="${item.uuid}" id="delete" class="btn element-item-delete-btn">X</button>
+            <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
+                data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
+                data-bs-target="${item.type}UpdateModal">E</button>
             <div class="feedback-item ${item.type}">
                 <div class="feedback-info media-body">
                     <div class="feedback-head">
@@ -97,7 +88,7 @@ $(function feedback() {
 
             //this is ridiculous to have to filter this out, but we'll do it for now.
             //basically, we're re-filtering the whole data object here back down to the elements
-            //so that the changes happen instaly on the page
+            //so that the changes happen instantly on the page
             let uuidInURL = findUuidInURL();
             // console.log("---what's my page?");
             let page;
@@ -138,32 +129,47 @@ $(function feedback() {
             );
         }
 
-        $('.element-item-delete-btn').on('click', function (evt) {
-            console.log(`---calling removeElement after AJAX`, this);
+        initializeDeleteButtons(); //put all of this code in a function because for some reason it has to run again after everything gets updated
+        initializeDeleteButtonFromModal();
 
-            $.ajax({
-                url: '/page/api', // Replace with your actual API endpoint
-                type: 'DELETE', // Specify the HTTP method as DELETE
-                data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
-                    uuid: $(this).data('uuid'),
-                },
-                success: function (story) {
-                    // Handle successful deletion, e.g., update UI, show success message
-                    console.log('Deletion successful:', story);
-                    updateFeedback(story);
-                },
-                error: function (xhr, status, error) {
-                    // Handle errors, e.g., display error message
-                    console.error('Deletion failed:', error);
-                    //console.log('Server response:', xhr.responseText);
-                },
-                complete: function (story) {
-                    console.log("---COMPLETE");
-                }
+    }
+
+    function initializeDeleteButtons() {
+
+        const deleteBtns = document.querySelectorAll('.element-item-delete-btn');
+        deleteBtns.forEach(dBtn => {
+            //delete button
+            dBtn.addEventListener('click', function (evt) {
+                console.log(`---calling removeElement page refresh`, dBtn.dataset.bsUuid);
+
+                let btn_uuid = dBtn.dataset.bsUuid;
+
+                $.ajax({
+                    url: '/page/api', // Replace with your actual API endpoint
+                    type: 'DELETE', // Specify the HTTP method as DELETE
+                    data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
+                        uuid: btn_uuid,
+                    },
+                    success: function (story) {
+                        // Handle successful deletion, e.g., update UI, show success message
+                        console.log('Deletion successful:', story);
+                        updateFeedback(story);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors, e.g., display error message
+                        console.error('Deletion failed:', error);
+                        //console.log('Server response:', xhr.responseText);
+                    },
+                    complete: function (story) {
+                        console.log("---COMPLETE");
+                        // updateFeedback(story);
+                    }
+                });
             });
         });
+    }
 
-
+    function initializeDeleteButtonFromModal() {
         //DUPLICATE CODE!! I DON'T LIKE THIS AT ALL, BUT WE'RE LEAVING IT FOR NOW
         //code for button inside the Delete Modal that actually starts the delete process
         $('#deletePageFromModalBtn').on('click', function (evt) {
@@ -194,10 +200,7 @@ $(function feedback() {
 
         });
 
-
-
         $('#deletePageModalCenter').on('show.bs.modal', function (event) {
-
             var button = $(event.relatedTarget) // Button that triggered the modal
             var uuid = button.data('uuid') // Extract info from data-* attributes
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
@@ -205,80 +208,13 @@ $(function feedback() {
             var modal = $(this)
             modal.find('.modal-body').text(`Any links to this page from other pages will now break. A great feature would be to search the other pages for any references to this page's UUID, and automatically remove them.`)
             const deletePageButton = document.getElementById('deletePageFromModalBtn');
-            //why are we setting attibutes to a delete button after the modal it triggers is already open?
             deletePageButton.setAttribute('data-uuid', uuid);
-        })
-
-
-
+        });
     }
 
-    $('.element-item-delete-btn').on('click', function (evt) {
-        console.log(`---calling removeElement page refresh`, this);
+    initializeDeleteButtons();
+    initializeDeleteButtonFromModal();
 
-        $.ajax({
-            url: '/page/api', // Replace with your actual API endpoint
-            type: 'DELETE', // Specify the HTTP method as DELETE
-            data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
-                uuid: $(this).data('uuid'),
-            },
-            success: function (story) {
-                // Handle successful deletion, e.g., update UI, show success message
-                console.log('Deletion successful:', story);
-                updateFeedback(story);
-            },
-            error: function (xhr, status, error) {
-                // Handle errors, e.g., display error message
-                console.error('Deletion failed:', error);
-                //console.log('Server response:', xhr.responseText);
-            },
-            complete: function (story) {
-                console.log("---COMPLETE");
-                // updateFeedback(story);
-            }
-        });
-    });
-
-    //DUPLICATE CODE!! I DON'T LIKE THIS AT ALL, BUT WE'RE LEAVING IT FOR NOW
-    //code for button inside the Delete Modal that actually starts the delete process
-    $('#deletePageFromModalBtn').on('click', function (evt) {
-        console.log("---close button ", $(this).data('uuid'));
-
-        $.ajax({
-            url: '/page/api', // Replace with your actual API endpoint
-            type: 'DELETE', // Specify the HTTP method as DELETE
-            data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
-                uuid: $(this).data('uuid'),
-            },
-            success: function (story) {
-                // Handle successful deletion, e.g., update UI, show success message
-                console.log('Deletion successful:', story);
-                updateFeedback(story);
-            },
-            error: function (xhr, status, error) {
-                // Handle errors, e.g., display error message
-                console.error('Deletion failed:', error);
-                console.log('Server response:', xhr.responseText);
-            },
-            complete: function (story) {
-                console.log("---COMPLETE");
-                //updateFeedback(response.responseJSON);
-                $('#deletePageModalCenter').modal('hide');
-            }
-        });
-
-    });
-
-    $('#deletePageModalCenter').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var uuid = button.data('uuid') // Extract info from data-* attributes
-        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-        var modal = $(this)
-        modal.find('.modal-body').text(`Any links to this page from other pages will now break. A great feature would be to search the other pages for any references to this page's UUID, and automatically remove them.`)
-        const deletePageButton = document.getElementById('deletePageFromModalBtn');
-        deletePageButton.setAttribute('data-uuid', uuid);
-    });
 
     //this is not really being used at the moment, but created it to try and store a file reference in a file input field...?
     async function createImageFileFromUrl(imageUrl, fileName = 'image.png', fileType = 'image/png') {
@@ -288,68 +224,76 @@ $(function feedback() {
         return imageFile;
     }
 
-    //this code fires every time the element modals appear
-    $('.elementModal').on('show.bs.modal', function (event) {
-        let button = $(event.relatedTarget) // Button that triggered the modal
-        //get the UUID from the data on the button
-        let buttonRequest = button.data('request');
+    const elementModals = document.querySelectorAll('.elementModal');
+    elementModals.forEach(modal => {
+        modal.addEventListener('show.bs.modal', event => {
 
-        let uuid = button.data('elementuuid');
-        let elementtype = button.data('elementtype'); // Extract info from data-* attributes
-        let value = button.data('elementvalue');
-        console.log(`----MODAL OPENING - values found: UUID: ${uuid}, REQUEST: ${buttonRequest}, TYPE: ${elementtype}, VALUE: ${value}`);
+            // Pull data from the button that triggered the modal
+            let button = event.relatedTarget // Button that triggered the modal
+            let el_type = button.dataset.bsElementtype;
+            let el_value = button.dataset.bsElementvalue;
+            const modalInput = document.getElementById(`modal${el_type}Input`);
+            const modalTitle = document.getElementById(`modal${el_type}Label`);
 
-        let modal = $(this)
-        let uuidinput = document.getElementById(`hidden${elementtype}uuid`);
-        uuidinput.value = uuid;
-        modal.find('uuid').val(uuid);
-        let request = document.getElementById(`${elementtype}request`);
-        request.value = buttonRequest;
+            console.log(button.dataset);
+            document.getElementById(`${el_type}request`).value = button.dataset.bsRequest;
+            let btn_request = button.dataset.bsRequest;
 
-        if (elementtype == "image") {
-            console.log("----IMAGE ", buttonRequest);
-            let imgPreview = document.getElementById('previewModal');
-            imgPreview.src = `/uploads/${value}`;
-            if (buttonRequest == "PUT") {
-                console.log("----IMAGE PUT!!");
-                imgPreview.style = "display: block;";
-            } else {
-                imgPreview.style = "display: none;";
+            let uuidinput = document.getElementById(`hidden${el_type}uuid`);
+            uuidinput.value = button.dataset.bsElementuuid;
+
+            console.log(`----MODAL OPENING - values found: UUID: ${uuidinput.value}, REQUEST: ${btn_request}, TYPE: ${el_type}, VALUE: ${el_value}`);
+
+            if (el_type == "image") {
+                let imgPreview = document.getElementById('previewModal');
+
+                if (btn_request == "PUT") {
+                    imgPreview.src = `/uploads/${el_value}`;
+                    imgPreview.style = "display: block;";
+                } else {
+                    imgPreview.style = "display: none;";
+                }
+                let imgNameSplit = el_value.split(".");
+                // console.log(`---imgNameSplit: `, imgNameSplit);
+
+                //the code below isn't doing anything yet - do we need it?
+                let fileExtension = imgNameSplit[imgNameSplit.length - 1];
+                createImageFileFromUrl(`/uploads/${el_value}`, el_value, `image/${fileExtension}`).then(file => {
+                    console.log(file); // This is your new File object
+                    el_value = file;
+                });
             }
-            let imgNameSplit = value.split(".");
-            // console.log(`---imgNameSplit: `, imgNameSplit);
-            //the code below isn't doing anything yet - do we need it?
-            let fileExtension = imgNameSplit[imgNameSplit.length - 1];
-            createImageFileFromUrl(`/uploads/${value}`, value, `image/${fileExtension}`).then(file => {
-                console.log(file); // This is your new File object
-                value = file;
-            });
-        }
 
-        if (elementtype == "choice") {
-            let splitValue = value.split("||");
-            let dropdown = document.getElementById("choiceDestinationModal");
-            let labelInput = document.getElementById("modalchoiceInput");
 
-            labelInput.value = splitValue[0];
-            // dropdown.value = splitValue[1];
 
-        }
+            if (el_type == "choice") {
+                let splitValue = el_value.split("||");
+                let dropdown = document.getElementById("choiceDestinationModal");
 
-        if (elementtype == "text") {
-            let txtInput = document.getElementById(`modal${elementtype}Input`);
-            txtInput.value = `${value}`;
+                modalInput.value = splitValue[0];
+                dropdown.value = splitValue[1];
 
-            $(this).find('#modaltextInput').text(value);
-        } else {
-            modal.find(`modal${elementtype}Input`).text(value);
-        }
-        if (buttonRequest == "POST") {
-            modal.find('.modal-title').text('Create new  ' + elementtype);
-        } else {
-            modal.find('.modal-title').text('Edit  ' + elementtype);
-        }
+            }
 
+            if (el_type == "text") {
+                //which one of these works?
+                // txtInput.value = `${el_value}`;
+                modalInput.value = el_value;
+            }
+
+            if (btn_request == "POST") {
+                console.log("---create new title");
+                modalTitle.textContent = 'Create new  ' + el_type;
+            } else {
+                console.log("---edit old title");
+                modalTitle.textContent = 'Edit ' + el_type;
+            }
+        });
+
+        modal.addEventListener('hidden.bs.modal', event => {
+
+
+        });
     });
 
     //this code fires every time the element modals disappear
@@ -357,46 +301,14 @@ $(function feedback() {
         $(this).removeData('bs.modal');
     });
 
-    /**
-     * Attaches to a form and sends the data to our REST endpoint
-     * This is for communicating with the server via a REST API to fetch data and show it to
-     * the user without needing to refresh the page
-     */
-    $('.textUploadForm').submit(function submitFeedback(e) {
-        // Prevent the default submit form event
-        e.preventDefault();
-
-        //for text input
-        const textForm = document.getElementById("textForm");
-        const formData = new FormData(textForm);
-        console.log("----SUBMITTING TEXT FORM ");
-        for (const pair of formData.entries()) {
-            console.log(pair[0], ":", pair[1]);
-        }
-
-        // XHR POST request
-        $.post(
-            '/page/api',
-            // Gather all data from the form and create a JSON object from it
-            {
-                uuid: formData.get("uuid"),
-                section: formData.get("section"),
-                type: "text",
-                value: formData.get("textInput"),
-                html: `<p class="pageText">${formData.get("textInput")}</p>`
-            },
-            // Callback to be called with the data
-            updateFeedback
-        );
-    });
 
     //This is the method for updating existing elements, but will eventually be the only way to both create and update page elements
-    $('#textFormModal').submit(function (e) {
+    const textForm = document.getElementById("textFormModal");
+    textForm.addEventListener("submit", function (e) {
         // Prevent the default submit form event
         e.preventDefault();
         console.log("-----TEXT FORM SUBMIT FROM MODAL");
 
-        const textForm = document.getElementById("textFormModal");
         const formData = new FormData(textForm);
 
         for (const pair of formData.entries()) {
@@ -455,38 +367,12 @@ $(function feedback() {
 
     });
 
-    $('#choiceForm').submit(function submitFeedback(e) {
-        // Prevent the default submit form event
-        e.preventDefault();
-
-        const formData = new FormData(choiceForm);
-        console.log("----SUBMITTING CHOICE FORM ", formData);
-        for (const pair of formData.entries()) {
-            console.log("--", pair[0], ":", pair[1]);
-        }
-
-        // XHR POST request
-        $.post(
-            '/page/api',
-            // Gather all data from the form and create a JSON object from it
-            {
-                uuid: formData.get("uuid"),
-                section: formData.get("section"),
-                type: "choice",
-                value: `${formData.get("choiceLabel")}||${formData.get("destination")}`,
-                html: `<a class="pageLink" href="/page/${formData.get("destination")}/edit">${formData.get("choiceLabel")}</a>`
-            },
-            // Callback to be called with the data
-            updateFeedback
-        );
-    });
-
-    $('#choiceFormModal').submit(function (e) {
+    const choiceForm = document.getElementById("choiceFormModal");
+    choiceForm.addEventListener("submit", function (e) {
         // Prevent the default submit form event
         e.preventDefault();
         console.log("-----CHOICE FORM SUBMIT FROM MODAL");
 
-        const choiceForm = document.getElementById("choiceFormModal");
         const formData = new FormData(choiceForm);
 
         for (const pair of formData.entries()) {
@@ -495,13 +381,10 @@ $(function feedback() {
 
         let assembledData = {
             uuid: formData.get("hiddenchoiceuuid"),
-            newDataObj: { value: `${formData.get("modalchoiceInput")}||${formData.get("choiceDestinationModal")}`, html: `<a class="pageLink" href="/page/${formData.get("choiceDestinationModal")}/edit">${formData.get("modalchoiceInput")}</a>` }
+            newDataObj: { value: `${formData.get("modalchoiceInput")}||${formData.get("destinationModal")}`, html: `<a class="pageLink" href="/page/${formData.get("destinationModal")}/edit">${formData.get("modalchoiceInput")}</a>` }
         }
         console.log("----SENDING ASSEMBLED DATA...");
         console.log(assembledData);
-        // for (const pair of assembledData.entries()) {
-        //     console.log("--", pair[0], ":", pair[1]);
-        // }
 
         if (formData.get("choicerequest") == "POST") {
             console.log("----creating new content");
@@ -539,7 +422,6 @@ $(function feedback() {
                     ...assembledData
                 },
                 success: function (data) {
-                    console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
                     console.log(data);
                     updateFeedback(data);
                 },
@@ -551,53 +433,13 @@ $(function feedback() {
 
         }
 
-
-
     });
 
-    $('#uploadForm').submit(async function submitFeedback(e) {
-        // Prevent the default submit form event
-        e.preventDefault();
-        //get reference to form
-        const uploadForm = document.getElementById("uploadForm");
-        //create formData object from form
-        const formData = new FormData(uploadForm);
-        console.log("----SUBMITTING IMAGE FORM DATA");
-        for (const pair of formData.entries()) {
-            console.log("--", pair[0], ":", pair[1]);
-        }
-        //call fetch to "/upload" app route, using the formData as the request body
-        const res = await fetch('/upload', { method: 'POST', body: formData });
-        if (!res.ok) {
-            const err = await res.text();
-            console.error('Upload Failed', err);
-        }
-
-        const imgPath = await res.json();
-        console.log("----image found: ", imgPath);
-
-        // XHR POST request
-        $.post(
-            '/page/api',
-            // Gather all data from the form and create a JSON object from it
-            {
-                uuid: formData.get("uuid"),
-                section: formData.get("section"),
-                type: "image",
-                value: imgPath,
-                html: `<img class="pageImage" src="/uploads/${imgPath}">`
-            },
-            // Callback to be called with the data
-            updateFeedback
-        );
-    });
-
-    $('#uploadFormModal').submit(async function submitFeedback(e) {
+    const uploadForm = document.getElementById("uploadFormModal");
+    uploadForm.addEventListener("submit", async function (e) {
         // Prevent the default submit form event
         e.preventDefault();
 
-        //get reference to form
-        const uploadForm = document.getElementById("uploadFormModal");
         //create formData object from form
         const formData = new FormData(uploadForm);
         console.log("----SUBMITTING IMAGE FORM DATA FROM MODAL");
@@ -613,7 +455,7 @@ $(function feedback() {
         }
 
         const imgPath = await res.json();
-        console.log("----image found from modal: ", imgPath);
+        // console.log("----image found from modal: ", imgPath);
 
         let assembledData = {
             uuid: formData.get("uuid"),
@@ -625,7 +467,6 @@ $(function feedback() {
         }
 
         if (formData.get("imagerequest") == "POST") {
-            console.log("----creating new content");
 
             $.ajax({
                 url: '/page/api',
@@ -659,7 +500,6 @@ $(function feedback() {
                     ...assembledData
                 },
                 success: function (data) {
-                    console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
                     console.log(data);
                     updateFeedback(data);
                 },
@@ -672,11 +512,6 @@ $(function feedback() {
 
 
     });
-
-    $('#menuItems').on('click', '.dropdown-item', function () {
-        $('#dropdown_coins').text($(this)[0].value)
-        $("#dropdown_coins").dropdown('toggle');
-    })
 
     $('#pageForm').submit(function submitFeedback(e) {
         // Prevent the default submit form event
