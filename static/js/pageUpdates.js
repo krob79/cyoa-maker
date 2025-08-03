@@ -129,13 +129,13 @@ $(function feedback() {
             );
         }
 
-        initializeDeleteButtons(); //put all of this code in a function because for some reason it has to run again after everything gets updated
+        //put all of this code in a function because after everything gets updated, these buttons get rewritten and have to reinitialize 
+        initializeDeleteButtons();
         initializeDeleteButtonFromModal();
 
     }
 
     function initializeDeleteButtons() {
-
         const deleteBtns = document.querySelectorAll('.element-item-delete-btn');
         deleteBtns.forEach(dBtn => {
             //delete button
@@ -170,7 +170,6 @@ $(function feedback() {
     }
 
     function initializeDeleteButtonFromModal() {
-        //DUPLICATE CODE!! I DON'T LIKE THIS AT ALL, BUT WE'RE LEAVING IT FOR NOW
         //code for button inside the Delete Modal that actually starts the delete process
         $('#deletePageFromModalBtn').on('click', function (evt) {
             console.log("---close button ", $(this).data('uuid'));
@@ -211,7 +210,7 @@ $(function feedback() {
             deletePageButton.setAttribute('data-uuid', uuid);
         });
     }
-
+    //run the initialization as soon as the page loads
     initializeDeleteButtons();
     initializeDeleteButtonFromModal();
 
@@ -224,6 +223,7 @@ $(function feedback() {
         return imageFile;
     }
 
+    //code applied to all modals that have forms for creating / updating page elements
     const elementModals = document.querySelectorAll('.elementModal');
     elementModals.forEach(modal => {
         modal.addEventListener('show.bs.modal', event => {
@@ -269,9 +269,11 @@ $(function feedback() {
             if (el_type == "choice") {
                 let splitValue = el_value.split("||");
                 let dropdown = document.getElementById("choiceDestinationModal");
+                let hiddendestination = document.getElementById("destinationModal");
 
                 modalInput.value = splitValue[0];
                 dropdown.value = splitValue[1];
+                hiddendestination.value = splitValue[1];
 
             }
 
