@@ -1,6 +1,6 @@
 <div data-uuid="<%=item.uuid %>" class="feedback-item item-list media-list">
-    <div data-uuid="<%=item.uuid %>" data-toggle="modal" data-target="#deletePageModalCenter"
-        class="btn page-item-delete-btn">X</div>
+    <div data-bs-uuid="<%=item.uuid %>" data-bs-toggle="modal" data-bs-elementType="<%=item.type %>"
+        data-bs-target="#deletePageModalCenter" class="btn item-delete-btn">X</div>
     <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT"
         data-bs-elementType="<%=item.type %>" data-bs-elementuuid="<%=item.uuid %>"
         data-bs-elementvalue="<%=item.title %>" data-bs-target="#<%=item.type %>UpdateModal">E</button>

@@ -32,7 +32,7 @@ $(function feedback() {
     function assembleElementEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-                <button type="button" data-bs-uuid="${item.uuid}" class="btn element-item-delete-btn">X</button>
+                <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
                 <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
                     data-bs-elementuuid="${item.uuid}"
                     data-bs-elementvalue="${item.value}"
@@ -54,7 +54,7 @@ $(function feedback() {
     function assemblePageEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-            <button type="button" data-bs-uuid="${item.uuid}" id="delete" class="btn element-item-delete-btn">X</button>
+            <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
             <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
                 data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
                 data-bs-target="${item.type}UpdateModal">E</button>
@@ -138,49 +138,53 @@ $(function feedback() {
     }
 
     function initializeDeleteButtons() {
-        const deleteBtns = document.querySelectorAll('.element-item-delete-btn');
+        const deleteBtns = document.querySelectorAll('.item-delete-btn');
         deleteBtns.forEach(dBtn => {
-            //delete button
-            dBtn.addEventListener('click', function (evt) {
-                console.log(`---calling removeElement page refresh`, dBtn.dataset.bsUuid);
+            //delete buttons for pages should trigger a confirmation modal before deleting anything
+            //delete buttons for everything else should instantly delete the item
+            if (dBtn.dataset.bsElementtype != 'page') {
+                dBtn.addEventListener('click', function (evt) {
+                    console.log(`---calling removeElement page refresh`, dBtn.dataset.bsUuid);
 
-                let btn_uuid = dBtn.dataset.bsUuid;
+                    let btn_uuid = dBtn.dataset.bsUuid;
 
-                $.ajax({
-                    url: '/page/api', // Replace with your actual API endpoint
-                    type: 'DELETE', // Specify the HTTP method as DELETE
-                    data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
-                        uuid: btn_uuid,
-                    },
-                    success: function (story) {
-                        // Handle successful deletion, e.g., update UI, show success message
-                        console.log('Deletion successful:', story);
-                        updateFeedback(story);
-                    },
-                    error: function (xhr, status, error) {
-                        // Handle errors, e.g., display error message
-                        console.error('Deletion failed:', error);
-                        //console.log('Server response:', xhr.responseText);
-                    },
-                    complete: function (story) {
-                        console.log("---COMPLETE");
-                        // updateFeedback(story);
-                    }
+                    $.ajax({
+                        url: '/page/api', // Replace with your actual API endpoint
+                        type: 'DELETE', // Specify the HTTP method as DELETE
+                        data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
+                            uuid: btn_uuid,
+                        },
+                        success: function (story) {
+                            // Handle successful deletion, e.g., update UI, show success message
+                            console.log('Deletion successful:', story);
+                            updateFeedback(story);
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle errors, e.g., display error message
+                            console.error('Deletion failed:', error);
+                            //console.log('Server response:', xhr.responseText);
+                        },
+                        complete: function (story) {
+                            // console.log("---COMPLETE");
+                            // updateFeedback(story);
+                        }
+                    });
                 });
-            });
+            }
         });
     }
 
     function initializeDeleteButtonFromModal() {
         //code for button inside the Delete Modal that actually starts the delete process
-        $('#deletePageFromModalBtn').on('click', function (evt) {
-            console.log("---close button ", $(this).data('uuid'));
+        const deletePageFromModalBtn = document.getElementById('deletePageFromModalBtn');
+        deletePageFromModalBtn.addEventListener('click', function (evt) {
+            console.log("---close button ", deletePageFromModalBtn.dataset.bsUuid);
 
             $.ajax({
                 url: '/page/api', // Replace with your actual API endpoint
                 type: 'DELETE', // Specify the HTTP method as DELETE
                 data: { // Optional: You can send data in the request body, though DELETE requests typically don't have a body
-                    uuid: $(this).data('uuid'),
+                    uuid: deletePageFromModalBtn.dataset.bsUuid,
                 },
                 success: function (story) {
                     // Handle successful deletion, e.g., update UI, show success message
@@ -193,23 +197,22 @@ $(function feedback() {
                     console.log('Server response:', xhr.responseText);
                 },
                 complete: function (story) {
-                    console.log("---COMPLETE");
+                    // console.log("---COMPLETE");
                     //updateFeedback(response.responseJSON);
                     $('#deletePageModalCenter').modal('hide');
                 }
             });
-
         });
 
         $('#deletePageModalCenter').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
-            var uuid = button.data('uuid') // Extract info from data-* attributes
+            var uuid = button.data('bsUuid') // Extract info from data-* attributes
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-            var modal = $(this)
+            var modal = $(this);
             modal.find('.modal-body').text(`Any links to this page from other pages will now break. A great feature would be to search the other pages for any references to this page's UUID, and automatically remove them.`)
-            const deletePageButton = document.getElementById('deletePageFromModalBtn');
-            deletePageButton.setAttribute('data-uuid', uuid);
+            const deletePageFromModalBtn = document.getElementById('deletePageFromModalBtn');
+            deletePageFromModalBtn.setAttribute('data-bs-uuid', uuid);
         });
     }
     //run the initialization as soon as the page loads

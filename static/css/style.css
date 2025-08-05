@@ -81,8 +81,7 @@ div div.item-list :hover {
   cursor: pointer;
 }
 
-.page-item-delete-btn,
-.element-item-delete-btn {
+.item-delete-btn {
   left: 100%;
   cursor: pointer;
   position: absolute;
