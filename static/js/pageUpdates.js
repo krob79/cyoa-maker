@@ -29,6 +29,55 @@ $(function feedback() {
         return result;
     }
 
+    function findRegExGroups(str) {
+        const regex = /([A-Za-z0-9]+)([<>=])([A-Za-z0-9]+)/gm;
+
+        let m;
+        let result = [];
+        while ((m = regex.exec(str)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+
+            // The result can be accessed through the `m`-variable.
+            m.forEach((match, groupIndex) => {
+                // console.log(`Found match, group ${groupIndex}: ${match}`);
+            });
+            result = [m[1], m[2], m[3]];
+        }
+
+        return result;
+    }
+
+    function outputHtmlForElement(item) {
+        let html = "";
+        switch (item.type) {
+            case "page":
+                html = `<a class="pageLink" href="/page/${item.uuid}/edit">Edit This Page</a>`;
+                break;
+            case "image":
+                html = `<img class="pageImage" src="/uploads/${item.value}">`;
+                break;
+            case "choice":
+                //TO DO - Make better form validation for entering choices
+                let splitText = item.value.split("||");
+                if (splitText[0] != undefined || splitText[0] != "" || splitText[1] != undefined || splitText[1] != "") {
+                    html = `<a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a>`;
+                } else {
+                    html = `<a class="pageLink" href="#">(BROKEN LINK PLEASE FIX)</a>`;
+                }
+                break;
+            case "text":
+                html = `<p>${item.value}</p>`;
+                break;
+            case "condition":
+                html = `<p>${item.value}</p>`;
+                break;
+        }
+        return html;
+    }
+
     //TO DO: these two functions are nearly identical - let's get this down to one
     function assembleElementEntry(item) {
         let html =
@@ -44,7 +93,7 @@ $(function feedback() {
                             <div class="feedback-title"></div>
                         </div>
                         <div class="feedback-message">
-                            ${item.html}
+                            ${outputHtmlForElement(item)}
                         </div>
                     </div>
                 </div>
@@ -58,14 +107,14 @@ $(function feedback() {
             <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
             <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
                 data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
-                data-bs-target="${item.type}UpdateModal">E</button>
+                data-bs-target="#${item.type}UpdateModal">E</button>
             <div class="feedback-item ${item.type}">
                 <div class="feedback-info media-body">
                     <div class="feedback-head">
-                        <div class="feedback-title">${item.title}</div><small>Page ID: ${item.uuid}</small>
+                        <div class="feedback-title">${item.value}</div><small>Page ID: ${item.uuid}</small>
                     </div>
                     <div class="feedback-message">
-                        <a href="/page/${item.uuid}/edit">Edit This Page</a>
+                        ${outputHtmlForElement(item)}
                     </div>
                 </div>
             </div>
@@ -104,7 +153,7 @@ $(function feedback() {
                     })
 
             } else {
-                page = data.pageData[0].elements;
+                console.log("-----ERROR: NO UUID FOUND IN URL!!!");
             }
             console.log(page);
 
@@ -295,6 +344,15 @@ $(function feedback() {
                 modalInput.value = splitValue[0];
                 dropdown.value = splitValue[1];
                 hiddendestination.value = splitValue[1];
+
+            }
+
+            if (el_type == "condition") {
+                let conditionString = el_value;
+                let values = findRegExGroups(el_value);
+                document.getElementById('modalconditionInput').value = values[0];
+                document.getElementById('conditionComparisonModal').value = values[1];
+                document.getElementById('modalconditionInput2').value = values[2];
 
             }
 
@@ -537,6 +595,73 @@ $(function feedback() {
 
     });
 
+    const conditionForm = document.getElementById("conditionFormModal");
+    conditionForm.addEventListener("submit", function (e) {
+        // Prevent the default submit form event
+        e.preventDefault();
+        console.log("-----CHOICE FORM SUBMIT FROM MODAL");
+
+        const formData = new FormData(conditionForm);
+
+        for (const pair of formData.entries()) {
+            console.log(pair[0], ":", pair[1]);
+        }
+
+        let assembledData = {
+            uuid: formData.get("hiddenconditionuuid"),
+            newDataObj: { value: `${formData.get("modalconditionInput")}${formData.get("conditionComparisonModal")}${formData.get("modalconditionInput2")}` }
+        }
+        console.log("----SENDING ASSEMBLED DATA...");
+        console.log(assembledData);
+
+        if (formData.get("conditionrequest") == "POST") {
+            console.log("----creating new content");
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("hiddenconditionuuid"),
+                    section: formData.get("section"),
+                    type: "condition",
+                    value: `${formData.get("modalconditionInput")}${formData.get("conditionComparisonModal")}${formData.get("modalconditionInput2")}`
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
+                    console.log(data);
+                    $('#myConditionToast').toast('show');
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+        } else {
+
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    ...assembledData
+                },
+                success: function (data) {
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+
+        }
+
+    });
+
     //This is the method for updating existing elements, but will eventually be the only way to both create and update page elements
     const pageForm = document.getElementById("pageFormModal");
     pageForm.addEventListener("submit", function (e) {
@@ -562,8 +687,7 @@ $(function feedback() {
                     uuid: formData.get("uuid"),
                     section: formData.get("section"),
                     type: "page",
-                    value: formData.get("modalpageInput"),
-                    html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>`
+                    value: formData.get("modalpageInput")
                 },
                 success: function (data) {
                     console.log("----WE CREATED PAGE FROM THE MODAL");
@@ -584,7 +708,7 @@ $(function feedback() {
                 // Gather all data from the form and create a JSON object from it
                 data: {
                     uuid: formData.get("uuid"),
-                    newDataObj: { value: formData.get("modalpageInput"), html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>` }
+                    newDataObj: { value: formData.get("modalpageInput") }
                 },
                 success: function (data) {
                     console.log("----WE UPDATED PAGE FROM THE MODAL");

@@ -3,12 +3,12 @@
         data-bs-target="#deletePageModalCenter" class="btn item-delete-btn">X</div>
     <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT"
         data-bs-elementType="<%=item.type %>" data-bs-elementuuid="<%=item.uuid %>"
-        data-bs-elementvalue="<%=item.title %>" data-bs-target="#<%=item.type %>UpdateModal">E</button>
+        data-bs-elementvalue="<%=item.value %>" data-bs-target="#<%=item.type %>UpdateModal">E</button>
     <div class="feedback-item <%=item.type %>">
         <div class="feedback-info media-body">
             <div class="feedback-head">
                 <div class="feedback-title">
-                    <%=item.title %>
+                    <%=item.value %>
                 </div>
                 <small>Page ID: <%=item.uuid %></small>
             </div>

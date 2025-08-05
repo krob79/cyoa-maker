@@ -38,6 +38,9 @@ module.exports = (params) => {
     });
 
     router.get('/:uuid/edit', async (request, response, next) => {
+        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        response.setHeader('Pragma', 'no-cache');
+        response.setHeader('Expires', '0');
         try {
             const allData = await storyService.getList();
             const story = allData[0];

@@ -13,5 +13,12 @@
                 <%- item.html %>
             </div>
         </div>
+        <% if (item.elements.length> 0){%>
+            <div class="feedback-message">
+                <p><a class="pageLink" href="/page/<%=item.uuid%>/edit">conditions applied: <%=item.elements.length%>
+                            </a></p>
+            </div>
+
+            <% } %>
     </div>
 </div>
