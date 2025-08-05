@@ -2,7 +2,7 @@ const express = require('express');
 
 const speakersRoute = require('./speakers');
 const feedbackRoute = require('./feedback');
-const storyPageRoute = require('./storyPage');
+const storyPageRoute = require('./storyRoute');
 
 const router = express.Router();
 

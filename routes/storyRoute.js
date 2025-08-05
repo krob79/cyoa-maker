@@ -33,35 +33,79 @@ module.exports = (params) => {
     const { storyService } = params;
 
     router.get('/', async (request, response, next) => {
-        try {
-            const story = await storyService.getList();
-            console.log(story[0]);
-            const uuid = story[0].uuid;
-            const pages = story[0].pages;
-            request.session.story = {};
-            // return response.send("all good!");
-            return response.render('layout', { pageTitle: 'PAGE LIST', template: 'pageList', story, uuid, pages });
-        } catch (err) {
-            return next(err);
-        }
+        return response.redirect('/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit');
 
     });
 
     router.get('/:uuid/edit', async (request, response, next) => {
         try {
             const allData = await storyService.getList();
+            const story = allData[0];
             const pages = allData[0].pages;
-            const pageData = await storyService.getDataUUID({ uuid: request.params.uuid });
+            const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
+            let pageListItems = [];
+            let listPartialToUse;
+            switch (pageData.type) {
+                case "story":
+                    pageListItems = pageData.pages;
+                    listPartialToUse = "pagePartial";
+                    break;
+                case "page":
+                    pageListItems = pageData.elements;
+                    listPartialToUse = "elementPartial";
+                    break;
+                case "text":
+                    pageListItems = pageData.conditions;
+                    listPartialToUse = "conditionPartial";
+                    break;
+                case "image":
+                    pageListItems = pageData.conditions;
+                    listPartialToUse = "conditionPartial";
+                    break;
+                case "choice":
+                    pageListItems = pageData.conditions;
+                    listPartialToUse = "conditionPartial";
+                    break;
+                default:
+                    pageListItems = pageData.conditions;
+                    listPartialToUse = "conditionPartial";
+                    break;
+            }
 
-            return response.render('layout', { pageTitle: pageData.title, template: 'storyPage', pages, pageData, errors, successMessage });
+
+            return response.render('layout', { pageTitle: "WHATEVER", template: 'newList', story, pages, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
             return next(err);
         }
     });
+
+    router.get('/:uuid', async (request, response, next) => {
+        const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
+        return response.json(pageData);
+
+    });
+
+    //OLD VERSION THAT WORKS
+    // router.get('/:uuid/edit', async (request, response, next) => {
+    //     try {
+    //         const allData = await storyService.getList();
+    //         const story = allData[0];
+    //         const pages = allData[0].pages;
+    //         const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
+
+    //         const errors = request.session.pageData ? request.session.pageData.errors : false;
+    //         const successMessage = request.session.pageData ? request.session.pageData.message : false;
+    //         request.session.pageData = {};
+
+    //         return response.render('layout', { pageTitle: pageData.title, template: 'storyPage', story, pages, pageData, errors, successMessage });
+    //     } catch (err) {
+    //         return next(err);
+    //     }
+    // });
 
 
     router.post('/', validations, async (request, response, next) => {
@@ -90,6 +134,8 @@ module.exports = (params) => {
         console.log("--- post /api");
         try {
             const errors = validationResult(request);
+
+
             //console.log(request.session);
             if (!errors.isEmpty()) {
                 request.session.feedback = {
@@ -99,6 +145,17 @@ module.exports = (params) => {
             }
 
             const { uuid, title, section, type, value, html } = request.body;
+
+            const thisData = await storyService.getDataByUUID({ uuid });
+            console.log(`----reading in thisData...`);
+            console.log(thisData);
+            const hasSection = Object.hasOwn(thisData, section);
+            console.log(`----Does this object have a property named '${section}'? ${hasSection}`);
+            if (!hasSection) {
+                console.log("ERROR - No section exists to add this new content - possibly wrong UUID referenced as input");
+                throw Error({ message: "No section exists to add this new content - possibly wrong UUID" })
+                return response.redirect('/page');
+            }
 
             console.log("---adding to section: ", section);
 
@@ -166,6 +223,22 @@ module.exports = (params) => {
         try {
 
             const { uuid } = request.body;
+
+            await storyService.removeDataByUUID(uuid);
+            const pageData = await storyService.getList();
+            return response.json({ pageData, successMessage: 'Entry has been deleted!' });
+
+        } catch (err) {
+            next(err);
+        }
+
+    });
+
+    router.delete('/:uuid', async (request, response, next) => {
+        console.log('---attempting to delete:', request.params.uuid);
+        try {
+
+            const uuid = request.params.uuid;
 
             await storyService.removeDataByUUID(uuid);
             const pageData = await storyService.getList();

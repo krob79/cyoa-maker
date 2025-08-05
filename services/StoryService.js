@@ -63,12 +63,14 @@ class StoryService {
       value: value,
       html: html
     }
-    console.log(`---addDataByUUID() - section: ${section} - uuid: ${uuid}`);
+    console.log(`---addDataByUUID() - section: ${section} - uuid: ${uuid} - type: ${newData.type}`);
     console.log(newData);
 
-    if (type = "page") {
+    if (newData.type == "page") {
+      console.log(`----THIS NEW DATA IS A PAGE! See? ${newData.type}`);
       newData.elements = [];
     } else {
+      console.log(`----THIS NEW DATA IS NOT A PAGE! See? ${newData.type}`);
       newData.conditions = [];
     }
 
@@ -91,8 +93,12 @@ class StoryService {
         if (Array.isArray(obj[section])) {
           obj[section].push(newData); // ✅ mutation
         } else {
-          console.log("---couldn't find this section, now creating it");
-          obj[section] = [newData]; // initialize if missing
+          console.log("---couldn't find this section");
+
+          //it probably isn't good to create a section where there is none, because it indicates that it wasn't expected
+          //maybe an future option to create, but not by default
+          // obj[section] = [newData]; // initialize if missing
+          return false;
         }
         return true; // Found and updated
       }
@@ -179,31 +185,8 @@ class StoryService {
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
         console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
-        // console.log(Object.getOwnPropertyNames(obj));
-        // for (let pair of Object.getOwnPropertyNames(obj)) {
-        //   console.log("----", pair, ": ", obj[pair]);
-        // }
-        // console.log("----------------");
-        // for (let pair2 of Object.getOwnPropertyNames(newDataObj)) {
-        //   console.log("----", pair2, ": ", newDataObj[pair2]);
-        // }
-        // console.log("----------------");
         let updated = Object.assign(obj, newDataObj);
 
-        // console.log("----------------");
-        // for (let pair3 of Object.getOwnPropertyNames(updated)) {
-        //   console.log("----", pair3, ": ", updated[pair3]);
-        // }
-
-        // // Customize this based on what you want to update:
-        // // For example, if you're adding to an "elements" array:
-        // if (Array.isArray(obj[section])) {
-        //   let updated = Object.assign(obj[section], newData);
-        //   obj[section] = updated; // ✅ mutation
-        // } else {
-        //   console.log("---couldn't find this section, now creating it");
-        //   obj[section] = [newData]; // initialize if missing
-        // }
         return true; // Found and updated
       }
 
@@ -225,8 +208,8 @@ class StoryService {
     }
   }
 
-  async getDataUUID({ uuid }) {
-    console.log(`---getDataUUID() - searching for ${uuid}`);
+  async getDataByUUID({ uuid }) {
+    console.log(`---getDataByUUID() - searching for ${uuid}`);
 
     const obj = (await this.getData()) || [];
     //console.log("---initial obj: ");

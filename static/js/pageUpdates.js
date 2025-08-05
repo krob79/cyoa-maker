@@ -64,7 +64,7 @@ $(function feedback() {
                         <div class="feedback-title">${item.title}</div><small>Page ID: ${item.uuid}</small>
                     </div>
                     <div class="feedback-message">
-                        ${item.html}
+                        <a href="/page/${item.uuid}/edit">Edit This Page</a>
                     </div>
                 </div>
             </div>
@@ -90,9 +90,11 @@ $(function feedback() {
             //basically, we're re-filtering the whole data object here back down to the elements
             //so that the changes happen instantly on the page
             let uuidInURL = findUuidInURL();
-            // console.log("---what's my page?");
+            console.log("---what's the data looking like?");
+            //console.log(data);
             let page;
             if (uuidInURL) {
+                //page = await fetch(`/page/${uuidInURL}`);
                 page = data.pageData[0].pages.filter((p) => p.uuid == uuidInURL)[0].elements;
             } else {
                 page = data.pageData[0].pages;
@@ -100,7 +102,7 @@ $(function feedback() {
             console.log(page);
 
             $.each(page, function createHtml(key, item) {
-                // console.log("-----type? ", item);
+                console.log("-----type? ", item);
                 assembledHTML = "";
                 if (item.type == "page") {
                     //assemble HTML with functions to match what is shown on storyPage.ejs - need a better way to do this
@@ -242,7 +244,18 @@ $(function feedback() {
             let uuidinput = document.getElementById(`hidden${el_type}uuid`);
             uuidinput.value = button.dataset.bsElementuuid;
 
+
             console.log(`----MODAL OPENING - values found: UUID: ${uuidinput.value}, REQUEST: ${btn_request}, TYPE: ${el_type}, VALUE: ${el_value}`);
+
+            if (el_type == "text" || el_type == "image" || el_type == "choice") {
+                let conditionsLink = document.getElementById(`modal${el_type}Conditions`);
+                conditionsLink.setAttribute('href', `/page/${uuidinput.value}/edit`);
+                conditionsLink.text = `Set Conditions for this ${el_type} >`;
+            }
+
+            if (el_type == "page") {
+                modalInput.value = el_value;
+            }
 
             if (el_type == "image") {
                 let imgPreview = document.getElementById('previewModal');
@@ -264,8 +277,6 @@ $(function feedback() {
                 });
             }
 
-
-
             if (el_type == "choice") {
                 let splitValue = el_value.split("||");
                 let dropdown = document.getElementById("choiceDestinationModal");
@@ -284,10 +295,10 @@ $(function feedback() {
             }
 
             if (btn_request == "POST") {
-                console.log("---create new title");
+                console.log("---create new title for ", el_type);
                 modalTitle.textContent = 'Create new  ' + el_type;
             } else {
-                console.log("---edit old title");
+                console.log("---edit old title for ", el_type);
                 modalTitle.textContent = 'Edit ' + el_type;
             }
         });
@@ -479,6 +490,7 @@ $(function feedback() {
                     section: formData.get("section"),
                     type: "image",
                     value: imgPath,
+                    conditions: [],
                     html: `<img class="pageImage" src="/uploads/${imgPath}">`
                 },
                 success: function (data) {
@@ -515,33 +527,96 @@ $(function feedback() {
 
     });
 
-    $('#pageForm').submit(function submitFeedback(e) {
+    //This is the method for updating existing elements, but will eventually be the only way to both create and update page elements
+    const pageForm = document.getElementById("pageFormModal");
+    pageForm.addEventListener("submit", function (e) {
         // Prevent the default submit form event
         e.preventDefault();
-
+        console.log("-----PAGE FORM SUBMIT FROM MODAL");
 
         const formData = new FormData(pageForm);
-        console.log("----SUBMITTING NEW PAGE FORM ");
+
         for (const pair of formData.entries()) {
             console.log(pair[0], ":", pair[1]);
         }
 
-        // XHR POST request
-        $.post(
-            '/page/api',
-            // Gather all data from the form and create a JSON object from it
-            {
-                uuid: formData.get("uuid"),
-                title: formData.get("pageName"),
-                section: formData.get("section"),
-                type: "page",
-                value: formData.get("pageName"),
-                html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>`
-            },
-            // Callback to be called with the data
-            updateFeedback
-        );
+        //if "textrequest" is "POST", then this is new content, and we should do a POST request
+        //otherwise, this is existing content, so do a PUT request 
+        if (formData.get("pagerequest") == "POST") {
+            console.log("----creating new content");
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("uuid"),
+                    section: formData.get("section"),
+                    type: "page",
+                    value: formData.get("modalpageInput"),
+                    html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>`
+                },
+                success: function (data) {
+                    console.log("----WE CREATED PAGE FROM THE MODAL");
+                    console.log(data);
+                    $('#myPageToast').toast('show');
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+        } else {
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("uuid"),
+                    newDataObj: { value: formData.get("modalpageInput"), html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>` }
+                },
+                success: function (data) {
+                    console.log("----WE UPDATED PAGE FROM THE MODAL");
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+        }
+
     });
+
+    // $('#pageForm').submit(function submitFeedback(e) {
+    //     // Prevent the default submit form event
+    //     e.preventDefault();
+
+
+    //     const formData = new FormData(pageForm);
+    //     console.log("----SUBMITTING NEW PAGE FORM ");
+    //     for (const pair of formData.entries()) {
+    //         console.log(pair[0], ":", pair[1]);
+    //     }
+
+    //     // XHR POST request
+    //     $.post(
+    //         '/page/api',
+    //         // Gather all data from the form and create a JSON object from it
+    //         {
+    //             uuid: formData.get("uuid"),
+    //             title: formData.get("pageName"),
+    //             section: formData.get("section"),
+    //             type: "page",
+    //             value: formData.get("pageName"),
+    //             html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>`
+    //         },
+    //         // Callback to be called with the data
+    //         updateFeedback
+    //     );
+    // });
 
 
 });

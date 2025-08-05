@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-4">
             <div class="maincontent">
-                <h1>Create New Story Element</h1>
+                <h1>Create New</h1>
                 <p>Choose a story element to add:</p>
                 <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"
                     data-bs-elementtype="page" data-bs-elementuuid="<%=story.uuid %>" data-bs-elementvalue=""
@@ -42,12 +42,16 @@
         <aside class="col-md-8">
             <div class="maincontent feedback">
                 <h1>
-                    <%= pageData.title %>
+                    <% if(pageData.type=="story" || pageData.type=="page" ){ %>
+                        <%= pageData.title %>
+                            <%}else{%>
+                                Editing <%= pageData.type %>
+                                    <%}%>
                 </h1>
 
                 <div class="feedback-items">
-                    <% pageData.elements.forEach(function (item) {%>
-                        <%- include('partials/elementPartial', {item: item}); %>
+                    <% pageListItems.forEach(function (item) {%>
+                        <%- include(`partials/${listPartialToUse}`, {item: item}); %>
                             <%})%>
 
                 </div>

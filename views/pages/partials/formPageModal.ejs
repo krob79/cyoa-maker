@@ -1,0 +1,33 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title element-modal-title" id="modalpageLabel">Form Title</h5>
+    </div>
+    <div class="modal-body">
+        <form id="pageFormModal" class="row g-3 was-validated" novalidate>
+            <input type="hidden" id="hiddenpageuuid" name="uuid" value="<%=uuid %>">
+            <input type="hidden" id="section" name="section" value="pages">
+            <input type="hidden" id="pagerequest" name="pagerequest" value="">
+            <div class="col-md-12">
+                <label for="value" class="form-label">Page Title:</label>
+                <textarea type="text" class="form-control" id="modalpageInput" name="modalpageInput"
+                    placeholder="Enter a title for the page." required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+        </form>
+        <!-- <form id="pageForm" class="feedback-form">
+            <label for="feedback-form-name">Page</label>
+            <input type="hidden" name="uuid" id="uuid" value="<%=uuid %>">
+            <input type="hidden" name="section" value="pages">
+            <input type="text" class="form-control" id="pageName" name="pageName" placeholder="Enter a title for the page.">
+            <button type="submit">Create Page</button>
+        </form> -->
+    </div>
+
+</div>
+<!-- <%- include('formElementValidation', {}); %> -->
