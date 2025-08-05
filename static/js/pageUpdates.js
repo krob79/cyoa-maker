@@ -29,6 +29,7 @@ $(function feedback() {
         return result;
     }
 
+    //TO DO: these two functions are nearly identical - let's get this down to one
     function assembleElementEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
@@ -73,7 +74,7 @@ $(function feedback() {
     }
 
 
-    function updateFeedback(data) {
+    async function updateFeedback(data) {
         $('.toast').toast();
         const render = [];
         let assembledHTML = "";
@@ -91,13 +92,19 @@ $(function feedback() {
             //so that the changes happen instantly on the page
             let uuidInURL = findUuidInURL();
             console.log("---what's the data looking like?");
-            //console.log(data);
+            console.log(data);
             let page;
             if (uuidInURL) {
-                //page = await fetch(`/page/${uuidInURL}`);
-                page = data.pageData[0].pages.filter((p) => p.uuid == uuidInURL)[0].elements;
+                await fetch(`/page/${uuidInURL}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("-----testfetch: ");
+                        console.log(data);
+                        page = data.elements;
+                    })
+
             } else {
-                page = data.pageData[0].pages;
+                page = data.pageData[0].elements;
             }
             console.log(page);
 
@@ -592,34 +599,6 @@ $(function feedback() {
         }
 
     });
-
-    // $('#pageForm').submit(function submitFeedback(e) {
-    //     // Prevent the default submit form event
-    //     e.preventDefault();
-
-
-    //     const formData = new FormData(pageForm);
-    //     console.log("----SUBMITTING NEW PAGE FORM ");
-    //     for (const pair of formData.entries()) {
-    //         console.log(pair[0], ":", pair[1]);
-    //     }
-
-    //     // XHR POST request
-    //     $.post(
-    //         '/page/api',
-    //         // Gather all data from the form and create a JSON object from it
-    //         {
-    //             uuid: formData.get("uuid"),
-    //             title: formData.get("pageName"),
-    //             section: formData.get("section"),
-    //             type: "page",
-    //             value: formData.get("pageName"),
-    //             html: `<a class="pageText" href="/page/${formData.get("uuid")}/edit">Edit Page</a>`
-    //         },
-    //         // Callback to be called with the data
-    //         updateFeedback
-    //     );
-    // });
 
 
 });

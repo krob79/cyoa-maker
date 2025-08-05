@@ -41,41 +41,37 @@ module.exports = (params) => {
         try {
             const allData = await storyService.getList();
             const story = allData[0];
-            const pages = allData[0].pages;
+            const pages = allData[0].elements;
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
-            let pageListItems = [];
+            let pageListItems = pageData.elements;
+            console.log("----what are the pageListItems?");
+            console.log(pageData);
             let listPartialToUse;
+            //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
             switch (pageData.type) {
                 case "story":
-                    pageListItems = pageData.pages;
                     listPartialToUse = "pagePartial";
                     break;
                 case "page":
-                    pageListItems = pageData.elements;
                     listPartialToUse = "elementPartial";
                     break;
                 case "text":
-                    pageListItems = pageData.conditions;
                     listPartialToUse = "conditionPartial";
                     break;
                 case "image":
-                    pageListItems = pageData.conditions;
                     listPartialToUse = "conditionPartial";
                     break;
                 case "choice":
-                    pageListItems = pageData.conditions;
                     listPartialToUse = "conditionPartial";
                     break;
                 default:
-                    pageListItems = pageData.conditions;
                     listPartialToUse = "conditionPartial";
                     break;
             }
-
 
             return response.render('layout', { pageTitle: "WHATEVER", template: 'newList', story, pages, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
@@ -88,25 +84,6 @@ module.exports = (params) => {
         return response.json(pageData);
 
     });
-
-    //OLD VERSION THAT WORKS
-    // router.get('/:uuid/edit', async (request, response, next) => {
-    //     try {
-    //         const allData = await storyService.getList();
-    //         const story = allData[0];
-    //         const pages = allData[0].pages;
-    //         const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-
-    //         const errors = request.session.pageData ? request.session.pageData.errors : false;
-    //         const successMessage = request.session.pageData ? request.session.pageData.message : false;
-    //         request.session.pageData = {};
-
-    //         return response.render('layout', { pageTitle: pageData.title, template: 'storyPage', story, pages, pageData, errors, successMessage });
-    //     } catch (err) {
-    //         return next(err);
-    //     }
-    // });
-
 
     router.post('/', validations, async (request, response, next) => {
         console.log("--- post /");

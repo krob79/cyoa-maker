@@ -49,9 +49,7 @@ class StoryService {
 
   //creates a new data entry in the file
   //looks for the "parentuuid" which is the UUID of the data object 1 level higher, and the "section" to where the new data will be added
-  //example: look for the story "parentuuid", and add new data to the "pages" section
-  //example: look for the page "parentuuid", and add new data to the "elements" section
-  //if the section doesn't exist, it will be created
+
   async addDataByUUID({ title = "Unnamed", uuid, section, type, value, html = "" }) {
 
     const data = (await this.getData()) || [];
@@ -66,13 +64,7 @@ class StoryService {
     console.log(`---addDataByUUID() - section: ${section} - uuid: ${uuid} - type: ${newData.type}`);
     console.log(newData);
 
-    if (newData.type == "page") {
-      console.log(`----THIS NEW DATA IS A PAGE! See? ${newData.type}`);
-      newData.elements = [];
-    } else {
-      console.log(`----THIS NEW DATA IS NOT A PAGE! See? ${newData.type}`);
-      newData.conditions = [];
-    }
+    newData.elements = [];
 
     const updated = insertData(data, uuid, newData);
 
@@ -87,7 +79,7 @@ class StoryService {
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
         console.log(`----found the uuid of ${obj.uuid}, looking for section "${section}"`);
-        console.log(obj.pages);
+        console.log(obj.elements);
         // Customize this based on what you want to update:
         // For example, if you're adding to an "elements" array:
         if (Array.isArray(obj[section])) {
