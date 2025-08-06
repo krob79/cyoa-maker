@@ -113,6 +113,76 @@ class StoryService {
     }
   }
 
+  async addNewPage({ uuid, value }) {
+
+    const data = (await this.getData()) || [];
+
+    let newData = {
+      title: value,
+      uuid: crypto.randomUUID(),
+      type: "page",
+      value: value,
+      html: ""
+    }
+    let section = "elements";
+    console.log(`---addNewPage() - section: ${section} - uuid: ${uuid} - type: ${newData.type}`);
+    console.log(newData);
+
+    newData.elements = [];
+
+    // Object.keys(newData).forEach(key => {
+    //   console.log(`Property: ${key}, Value: ${newData[key]}`);
+    // });
+
+    const updated = insertData(data, uuid, newData);
+
+    console.log("Updated Data:");
+    console.log(data);
+
+    console.log("-------NEW PAGE CREATED: ", newData.uuid);
+    return writeFile(this.datafile, JSON.stringify(data));
+    //return data; // return the full structure with the update included
+
+    function insertData(obj, uuid, newData) {
+      if (typeof obj !== 'object' || obj === null) return false;
+
+      // If the current object matches the uuid, modify it
+      if (obj.uuid === uuid) {
+        // console.log(`----found the uuid of ${obj.uuid}, looking for section "${section}"`);
+        // console.log(obj.elements);
+        // Customize this based on what you want to update:
+        // For example, if you're adding to an "elements" array:
+        if (Array.isArray(obj[section])) {
+          obj[section].push(newData); // ✅ mutation
+        } else {
+          console.log("---couldn't find this section");
+
+          //it probably isn't good to create a section where there is none, because it indicates that it wasn't expected
+          //maybe an future option to create, but not by default
+          // obj[section] = [newData]; // initialize if missing
+          return false;
+        }
+        return true; // Found and updated
+      }
+
+      // Recursively walk through arrays or objects
+      for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const val = obj[key];
+          if (Array.isArray(val)) {
+            for (let item of val) {
+              if (insertData(item, uuid, newData)) return true;
+            }
+          } else if (typeof val === 'object') {
+            if (insertData(val, uuid, newData)) return true;
+          }
+        }
+      }
+
+      return false;
+    }
+  }
+
   async removeDataByUUID(uuid) {
     const data = (await this.getData()) || [];
 

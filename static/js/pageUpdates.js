@@ -63,7 +63,7 @@ $(function feedback() {
                 //TO DO - Make better form validation for entering choices
                 let splitText = item.value.split("||");
                 if (splitText[0] != undefined || splitText[0] != "" || splitText[1] != undefined || splitText[1] != "") {
-                    html = `<a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a>`;
+                    html = `<strong><a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a></strong>`;
                 } else {
                     html = `<a class="pageLink" href="#">(BROKEN LINK PLEASE FIX)</a>`;
                 }
@@ -104,7 +104,7 @@ $(function feedback() {
     function assemblePageEntry(item) {
         let html =
             `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-            <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
+            <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn" data-bs-target="#deletePageModalCenter">X</button>
             <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
                 data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
                 data-bs-target="#${item.type}UpdateModal">E</button>
@@ -147,7 +147,7 @@ $(function feedback() {
                 await fetch(`/page/${uuidInURL}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("-----testfetch: ");
+                        // console.log("-----testfetch: ");
                         console.log(data);
                         page = data.elements;
                     })
@@ -339,11 +339,21 @@ $(function feedback() {
             if (el_type == "choice") {
                 let splitValue = el_value.split("||");
                 let dropdown = document.getElementById("choiceDestinationModal");
+                console.log(`----splitValue: ${splitValue[1]}  dropdown: `);
                 let hiddendestination = document.getElementById("destinationModal");
+                let hiddenstoryuuid = document.getElementById("hiddenstoryuuid");
+                hiddenstoryuuid.value = button.dataset.bsStoryuuid;
 
                 modalInput.value = splitValue[0];
-                dropdown.value = splitValue[1];
-                hiddendestination.value = splitValue[1];
+                if (!splitValue[1]) {
+                    dropdown.value = "New";
+                    document.getElementById("destinationModal").value = "New";
+                } else {
+                    dropdown.value = splitValue[1];
+                    hiddendestination.value = splitValue[1];
+                }
+
+
 
             }
 
@@ -448,74 +458,6 @@ $(function feedback() {
 
     });
 
-    const choiceForm = document.getElementById("choiceFormModal");
-    choiceForm.addEventListener("submit", function (e) {
-        // Prevent the default submit form event
-        e.preventDefault();
-        console.log("-----CHOICE FORM SUBMIT FROM MODAL");
-
-        const formData = new FormData(choiceForm);
-
-        for (const pair of formData.entries()) {
-            console.log(pair[0], ":", pair[1]);
-        }
-
-        let assembledData = {
-            uuid: formData.get("hiddenchoiceuuid"),
-            newDataObj: { value: `${formData.get("modalchoiceInput")}||${formData.get("destinationModal")}`, html: `<a class="pageLink" href="/page/${formData.get("destinationModal")}/edit">${formData.get("modalchoiceInput")}</a>` }
-        }
-        console.log("----SENDING ASSEMBLED DATA...");
-        console.log(assembledData);
-
-        if (formData.get("choicerequest") == "POST") {
-            console.log("----creating new content");
-
-            // XHR POST request
-            $.ajax({
-                url: '/page/api',
-                type: 'POST',
-                // Gather all data from the form and create a JSON object from it
-                data: {
-                    uuid: formData.get("hiddenchoiceuuid"),
-                    section: formData.get("section"),
-                    type: "choice",
-                    value: `${formData.get("modalchoiceInput")}||${formData.get("destinationModal")}`,
-                    html: `<a class="pageLink" href="/page/${formData.get("destinationModal")}/edit">${formData.get("modalchoiceInput")}</a>`
-                },
-                success: function (data) {
-                    console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
-                    console.log(data);
-                    $('#myChoiceToast').toast('show');
-                    updateFeedback(data);
-                },
-                complete: function () {
-                    $(`.elementModal`).modal('hide');
-                }
-            });
-
-        } else {
-
-            $.ajax({
-                url: '/page/api',
-                type: 'PUT',
-                // Gather all data from the form and create a JSON object from it
-                data: {
-                    ...assembledData
-                },
-                success: function (data) {
-                    console.log(data);
-                    updateFeedback(data);
-                },
-                complete: function () {
-                    $(`.elementModal`).modal('hide');
-                }
-            });
-
-
-        }
-
-    });
-
     const uploadForm = document.getElementById("uploadFormModal");
     uploadForm.addEventListener("submit", async function (e) {
         // Prevent the default submit form event
@@ -592,6 +534,114 @@ $(function feedback() {
 
         }
 
+
+    });
+
+    const choiceForm = document.getElementById("choiceFormModal");
+    choiceForm.addEventListener("submit", function (e) {
+        // Prevent the default submit form event
+        e.preventDefault();
+        console.log("-----CHOICE FORM SUBMIT FROM MODAL");
+
+        const formData = new FormData(choiceForm);
+
+        for (const pair of formData.entries()) {
+            console.log(pair[0], ":", pair[1]);
+        }
+
+        let possibleNewDestinationUUID;
+
+        //BIG ADDITION - Create new page along with new choice and connect them together
+        if (formData.get("destinationModal") == "New") {
+            console.log("----creating new page with new choice...");
+            $.ajax({
+                url: `/page/newpage/${formData.get("hiddenstoryuuid")}`,
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("hiddenstoryuuid"),
+                    value: formData.get("modalchoiceInput")
+                },
+                success: function (data) {
+                    console.log("----WE CREATED PAGE FROM THE MODAL");
+                    console.log(data);
+                    $('#myPageToast').toast('show');
+                    possibleNewDestinationUUID = data.newUUID;
+                    console.log("----NEW POSSIBLE DESTINATION!!! ", possibleNewDestinationUUID);
+                    runSecondRequest(possibleNewDestinationUUID);
+                },
+                complete: function () {
+                    // $(`.elementModal`).modal('hide');
+                }
+            });
+        } else {
+            console.log("----we are NOT creating a new page with the new choice!");
+            possibleNewDestinationUUID = formData.get("destinationModal");
+            runSecondRequest(possibleNewDestinationUUID);
+        }
+
+
+
+        console.log("----NOW WHAT's THE FORM DATA? ");
+        for (const pair of formData.entries()) {
+            console.log("--", pair[0], ":", pair[1]);
+        }
+
+        function runSecondRequest(possibleNewDestinationUUID) {
+            let assembledData = {
+                uuid: formData.get("hiddenchoiceuuid"),
+                newDataObj: { value: `${formData.get("modalchoiceInput")}||${possibleNewDestinationUUID}`, html: `<a class="pageLink" href="/page/${possibleNewDestinationUUID}/edit">${formData.get("modalchoiceInput")}</a>` }
+            }
+            console.log("----SENDING ASSEMBLED DATA...");
+            console.log(assembledData);
+            console.log("----running second request");
+            if (formData.get("choicerequest") == "POST") {
+                console.log("----creating new content");
+
+                // XHR POST request
+                $.ajax({
+                    url: '/page/api',
+                    type: 'POST',
+                    // Gather all data from the form and create a JSON object from it
+                    data: {
+                        uuid: formData.get("hiddenchoiceuuid"),
+                        section: formData.get("section"),
+                        type: "choice",
+                        value: `${formData.get("modalchoiceInput")}||${possibleNewDestinationUUID}`,
+                        html: `<a class="pageLink" href="/page/${possibleNewDestinationUUID}/edit">${formData.get("modalchoiceInput")}</a>`
+                    },
+                    success: function (data) {
+                        console.log("----WE SUBMITTED CHOICES FROM THE MODAL");
+                        console.log(data);
+                        $('#myChoiceToast').toast('show');
+                        updateFeedback(data);
+                    },
+                    complete: function () {
+                        $(`.elementModal`).modal('hide');
+                    }
+                });
+
+            } else {
+
+                $.ajax({
+                    url: '/page/api',
+                    type: 'PUT',
+                    // Gather all data from the form and create a JSON object from it
+                    data: {
+                        ...assembledData
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        updateFeedback(data);
+                    },
+                    complete: function () {
+                        $(`.elementModal`).modal('hide');
+                    }
+                });
+
+
+            }
+        }
 
     });
 

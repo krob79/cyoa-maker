@@ -127,17 +127,17 @@ module.exports = (params) => {
             const { uuid, title, section, type, value, html } = request.body;
 
             const thisData = await storyService.getDataByUUID({ uuid });
-            console.log(`----reading in thisData...`);
-            console.log(thisData);
+            // console.log(`----reading in thisData...`);
+            // console.log(thisData);
             const hasSection = Object.hasOwn(thisData, section);
-            console.log(`----Does this object have a property named '${section}'? ${hasSection}`);
+            // console.log(`----Does this object have a property named '${section}'? ${hasSection}`);
             if (!hasSection) {
                 console.log("ERROR - No section exists to add this new content - possibly wrong UUID referenced as input");
                 throw Error({ message: "No section exists to add this new content - possibly wrong UUID" })
                 return response.redirect('/page');
             }
 
-            console.log("---adding to section: ", section);
+            // console.log("---adding to section: ", section);
 
             await storyService.addDataByUUID({ uuid, title, section, type, value, html });
 
@@ -223,6 +223,31 @@ module.exports = (params) => {
             await storyService.removeDataByUUID(uuid);
             const pageData = await storyService.getList();
             return response.json({ pageData, successMessage: 'Entry has been deleted!' });
+
+        } catch (err) {
+            next(err);
+        }
+
+    });
+
+    router.post('/newpage/:uuid', validations, async (request, response, next) => {
+
+        try {
+            const uuid = request.params.uuid;
+            console.log(`--- CALLING FOR NEW PAGE with story id: ${uuid}`);
+
+            const { value } = request.body;
+            console.log(`---request body text: ${value}`);
+            console.log(`-----calling addNewPage: uuid: ${uuid}`);
+            const newPageUUID = await storyService.addNewPage({ uuid, value });
+            console.log(`-----page has been created, calling getDataByUUID - uuid: ${uuid}`);
+            const thisData = await storyService.getDataByUUID({ uuid });
+            console.log("---after calling getDataByUUID....");
+            console.log(thisData.elements[thisData.elements.length - 1]);
+            const newUUID = thisData.elements[thisData.elements.length - 1].uuid;
+
+            // return response.json({ "response": "we made it" });
+            return response.json({ newUUID });
 
         } catch (err) {
             next(err);

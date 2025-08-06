@@ -17,7 +17,8 @@
                     data-bs-elementtype="image" data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
                     data-bs-target="#imageUpdateModal">New Image</button>
                 <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"
-                    data-bs-elementtype="choice" data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
+                    data-bs-elementtype="choice" data-bs-storyuuid="<%=story.uuid%>"
+                    data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
                     data-bs-target="#choiceUpdateModal">New Choice</button>
                 <hr>
                 <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal" data-bs-request="POST"

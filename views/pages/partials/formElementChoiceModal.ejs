@@ -4,9 +4,10 @@
     </div>
     <div class="modal-body">
         <form id="choiceFormModal" class="row g-3 mb-3 was-validated" novalidate>
+            <input type="hidden" name="hiddenstoryuuid" id="hiddenstoryuuid" value="<%=uuid %>">
             <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
             <input type="hidden" name="section" value="elements">
-            <input type="hidden" id="destinationModal" name="destinationModal" value="">
+            <input type="hidden" id="destinationModal" name="destinationModal" value="New">
             <input type="hidden" id="choicerequest" name="choicerequest" value="">
             <div class="row">
                 <div class="col-md-12">
@@ -22,7 +23,7 @@
                 <div class="col-md-12 input-group">
                     <label class="input-group-text" for="inputGroupSelect01">Link to Page:</label>
                     <select class="form-select" id="choiceDestinationModal" onchange="changeChoiceDestinationModal()">
-                        <option value="Choose Page"></option>
+                        <option selected value="New">Create New Page</option>
                         <% for (let i=0; i < pages.length; i++){ %>
                             <option value="<%= pages[i].uuid %>">
                                 <%=pages[i].title%>
@@ -33,11 +34,12 @@
                 <div class="valid-feedback">
                     Looks good!
                 </div>
+                <div class="col-md-12 modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Update</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" type="submit">Update</button>
-            </div>
+
 
         </form>
 
@@ -57,6 +59,7 @@
             let destinationModal = document.getElementById("destinationModal");
 
             if (display) {
+                console.log("---choice display!")
                 destinationModal.value = display;
             } else {
                 destinationModal.value = dropdown.value
@@ -70,4 +73,6 @@
             //   document.getElementById("choiceElementSubmit").disabled = false;
             // }
         }
+
+        changeChoiceDestinationModal("Create New Page");
     </script>
