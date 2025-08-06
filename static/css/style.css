@@ -83,6 +83,18 @@ div div.item-list :hover {
   cursor: pointer;
 }
 
+.pageIcon {
+  display: inline-block;
+  margin-right: 10px;
+  color: grey;
+}
+
+.pageIcon>div {
+  display: inline-block;
+  font-size: small;
+  color: #C1343F;
+}
+
 .item-delete-btn {
   left: 100%;
   cursor: pointer;
@@ -103,10 +115,15 @@ div div.item-list :hover {
 }
 
 .editElement {
+  padding: 0;
   left: 95%;
   position: absolute;
   width: 35px;
   height: 35px;
+}
+
+.editElement>path {
+  color: white;
 }
 
 #previewModal {
