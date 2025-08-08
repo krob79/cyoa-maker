@@ -85,7 +85,7 @@
 
                 <div class="feedback-items">
                     <% pageListItems.forEach(function (item) {%>
-                        <%- include(`partials/${listPartialToUse}`, {item: item}); %>
+                        <%- include(`partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs}); %>
                             <%})%>
 
                 </div>

@@ -45,14 +45,28 @@ module.exports = (params) => {
             const allData = await storyService.getList();
             const story = allData[0];
             const pages = allData[0].elements;
+            const allPageUUIDs = pages.map(p => p.uuid);
+            pages.forEach((p) => p.brokenlinks = 1);
+            // console.log(pages);
+            const allChoiceDestinations = pages.map(p => {
+                for (let i = 0; i < p.elements.length; i++) {
+                    if (p.elements[i].type == "choice") {
+                        return (p.elements[i].value.split("||")[1]);
+                    }
+                }
+            });
+
+
+            // console.log(pages);
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
+            if (pageData.type == "story") {
+
+            }
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
             let pageListItems = pageData.elements;
-            console.log("----what are the pageListItems?");
-            console.log(pageData);
             let listPartialToUse;
             //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
             switch (pageData.type) {
@@ -62,21 +76,12 @@ module.exports = (params) => {
                 case "page":
                     listPartialToUse = "elementPartial";
                     break;
-                case "text":
-                    listPartialToUse = "conditionPartial";
-                    break;
-                case "image":
-                    listPartialToUse = "conditionPartial";
-                    break;
-                case "choice":
-                    listPartialToUse = "conditionPartial";
-                    break;
                 default:
                     listPartialToUse = "conditionPartial";
                     break;
             }
 
-            return response.render('layout', { pageTitle: "WHATEVER", template: 'newList', story, pages, pageData, pageListItems, listPartialToUse, errors, successMessage });
+            return response.render('layout', { pageTitle: "WHATEVER", template: 'newList', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
             return next(err);
         }
@@ -214,6 +219,7 @@ module.exports = (params) => {
 
     });
 
+    //this deletes any entry with the uuid
     router.delete('/:uuid', async (request, response, next) => {
         console.log('---attempting to delete:', request.params.uuid);
         try {

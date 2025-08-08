@@ -29,7 +29,7 @@ $(function feedback() {
         return result;
     }
 
-    function findRegExGroups(str) {
+    function parseConditionString(str) {
         const regex = /([A-Za-z0-9]+)([<>=])([A-Za-z0-9]+)/gm;
 
         let m;
@@ -62,10 +62,18 @@ $(function feedback() {
             case "choice":
                 //TO DO - Make better form validation for entering choices
                 let splitText = item.value.split("||");
-                if (splitText[0] != undefined || splitText[0] != "" || splitText[1] != undefined || splitText[1] != "") {
+                if (verifyUUID(splitText[1])) {
                     html = `<strong><a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a></strong>`;
                 } else {
-                    html = `<a class="pageLink" href="#">(BROKEN LINK PLEASE FIX)</a>`;
+                    html = `<a class="pageLink" href="#"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14" id="Broken-Link-1--Streamline-Flex" height="14" width="14">
+  <g id="broken-link-1--break-broken-hyperlink-link-remove-unlink-chain">
+    <path id="Vector" stroke="#dd4f53" stroke-linecap="round" stroke-linejoin="round" d="M3.2931 7.1189 1.49673 8.91527c-0.47515 0.4771 -0.741931 1.12303 -0.741931 1.79633 0 0.6734 0.266781 1.3193 0.741931 1.7964 0.4771 0.4752 1.12302 0.7419 1.79637 0.7419 0.67335 0 1.31927 -0.2667 1.79637 -0.7419l1.0663 -1.0663" stroke-width="1"></path>
+    <path id="Vector_2" stroke="#dd4f53" stroke-linecap="round" stroke-linejoin="round" d="M8.92238 9.39559h1.78672c0.6726 0 1.3177 -0.26719 1.7933 -0.74279 0.4756 -0.4756 0.7428 -1.12066 0.7428 -1.79326 0 -0.6726 -0.2672 -1.31766 -0.7428 -1.79326s-1.1207 -0.74279 -1.7933 -0.74279H8.17309" stroke-width="1"></path>
+    <path id="Vector_3" stroke="#dd4f53" stroke-linecap="round" stroke-linejoin="round" d="m7.00112 0.75 -0.48031 1.92125" stroke-width="1"></path>
+    <path id="Vector_4" stroke="#dd4f53" stroke-linecap="round" stroke-linejoin="round" d="m0.757042 3.63184 1.921248 0.96062" stroke-width="1"></path>
+    <path id="Vector_5" stroke="#dd4f53" stroke-linecap="round" stroke-linejoin="round" d="m3.15861 0.75 0.96062 1.92125" stroke-width="1"></path>
+  </g>
+</svg> ${splitText[0]} </a>`;
                 }
                 break;
             case "text":
@@ -122,8 +130,16 @@ $(function feedback() {
         return html;
     }
 
+    function verifyUUID(uuid) {
+        // console.log(`----verifying ${uuid}`, allPageUUIDs.includes(uuid));
+        return allPageUUIDs.includes(uuid);
+    }
 
+    let allPageUUIDs = [];
     async function updateFeedback(data) {
+        allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
+
+        // console.log("---updateFeedback - allPageUUIDs? ", allPageUUIDs);
         $('.toast').toast();
         const render = [];
         let assembledHTML = "";
@@ -136,13 +152,11 @@ $(function feedback() {
             $('.feedback-form').trigger('reset');
             $('#uploadForm').trigger('reset');
 
-            //this is ridiculous to have to filter this out, but we'll do it for now.
-            //basically, we're re-filtering the whole data object here back down to the elements
-            //so that the changes happen instantly on the page
             let uuidInURL = findUuidInURL();
             console.log("---what's the data looking like?");
             console.log(data);
             let page;
+            //grab uuid from URL and use that to load in and display data
             if (uuidInURL) {
                 await fetch(`/page/${uuidInURL}`)
                     .then(response => response.json())
@@ -157,8 +171,9 @@ $(function feedback() {
             }
             console.log(page);
 
+            //rebuilding the elements and buttons
             $.each(page, function createHtml(key, item) {
-                console.log("-----type? ", item);
+                // console.log("-----type? ", item);
                 assembledHTML = "";
                 if (item.type == "page") {
                     //assemble HTML with functions to match what is shown on storyPage.ejs - need a better way to do this
@@ -177,9 +192,7 @@ $(function feedback() {
             // Create a list of errors
             console.log("---we got errors!", data);
             $.each(data.errors, function createHtml(key, error) {
-                render.push(`
-          <li>${error.msg}</li>
-        `);
+                render.push(`<li>${error.msg}</li>`);
             });
             // Set the status message
             $('.feedback-status').html(
@@ -306,70 +319,59 @@ $(function feedback() {
 
             console.log(`----MODAL OPENING - values found: UUID: ${uuidinput.value}, REQUEST: ${btn_request}, TYPE: ${el_type}, VALUE: ${el_value}`);
 
-            if (el_type == "text" || el_type == "image" || el_type == "choice") {
-                let conditionsLink = document.getElementById(`modal${el_type}Conditions`);
+            //Go into the modal for the element and create a dynamic link to edit that element's conditions
+            function createConditionEditLink(el_type, uuidinput) {
+                conditionsLink = document.getElementById(`modal${el_type}Conditions`);
                 conditionsLink.setAttribute('href', `/page/${uuidinput.value}/edit`);
                 conditionsLink.text = `Set Conditions for this ${el_type} >`;
             }
 
-            if (el_type == "page") {
-                modalInput.value = el_value;
-            }
+            let conditionsLink;
+            switch (el_type) {
+                case "text":
+                    createConditionEditLink(el_type, uuidinput);
+                    modalInput.value = el_value;
+                    break;
+                case "image":
+                    createConditionEditLink(el_type, uuidinput);
+                    let imgPreview = document.getElementById('previewModal');
 
-            if (el_type == "image") {
-                let imgPreview = document.getElementById('previewModal');
+                    //display an image preview only if it's an update, not a new image 
+                    if (btn_request == "PUT") {
+                        imgPreview.src = `/uploads/${el_value}`;
+                        imgPreview.style = "display: block;";
+                    } else {
+                        imgPreview.style = "display: none;";
+                    }
+                    break;
+                case "choice":
+                    createConditionEditLink(el_type, uuidinput);
+                    let splitValue = el_value.split("||");
+                    //TO DO: Clean up the logic and naming conventions of the choices and inputs
+                    let dropdown = document.getElementById("choiceDestinationModal");
+                    let hiddendestination = document.getElementById("destinationModal");
+                    let hiddenstoryuuid = document.getElementById("hiddenstoryuuid");
+                    hiddenstoryuuid.value = button.dataset.bsStoryuuid;
+                    modalInput.value = splitValue[0];
 
-                if (btn_request == "PUT") {
-                    imgPreview.src = `/uploads/${el_value}`;
-                    imgPreview.style = "display: block;";
-                } else {
-                    imgPreview.style = "display: none;";
-                }
-                let imgNameSplit = el_value.split(".");
-                // console.log(`---imgNameSplit: `, imgNameSplit);
-
-                //the code below isn't doing anything yet - do we need it?
-                let fileExtension = imgNameSplit[imgNameSplit.length - 1];
-                createImageFileFromUrl(`/uploads/${el_value}`, el_value, `image/${fileExtension}`).then(file => {
-                    console.log(file); // This is your new File object
-                    el_value = file;
-                });
-            }
-
-            if (el_type == "choice") {
-                let splitValue = el_value.split("||");
-                let dropdown = document.getElementById("choiceDestinationModal");
-                console.log(`----splitValue: ${splitValue[1]}  dropdown: `);
-                let hiddendestination = document.getElementById("destinationModal");
-                let hiddenstoryuuid = document.getElementById("hiddenstoryuuid");
-                hiddenstoryuuid.value = button.dataset.bsStoryuuid;
-
-                modalInput.value = splitValue[0];
-                if (!splitValue[1]) {
-                    dropdown.value = "New";
-                    document.getElementById("destinationModal").value = "New";
-                } else {
-                    dropdown.value = splitValue[1];
-                    hiddendestination.value = splitValue[1];
-                }
-
-
-
-            }
-
-            if (el_type == "condition") {
-                let conditionString = el_value;
-                let values = findRegExGroups(el_value);
-                document.getElementById('modalconditionInput').value = values[0];
-                document.getElementById('conditionComparisonModal').value = values[1];
-                document.getElementById('modalconditionInput2').value = values[2];
-
-            }
-
-            if (el_type == "text") {
-                //which one of these works?
-                // txtInput.value = `${el_value}`;
-                modalInput.value = el_value;
+                    if (!splitValue[1]) {
+                        dropdown.value = "New";
+                        document.getElementById("destinationModal").value = "New";
+                    } else {
+                        dropdown.value = splitValue[1];
+                        hiddendestination.value = splitValue[1];
+                    }
+                    break;
+                case "page":
+                    modalInput.value = el_value;
+                    break;
+                case "condition":
+                    let conditionString = el_value;
+                    let values = parseConditionString(el_value);
+                    document.getElementById('modalconditionInput').value = values[0];
+                    document.getElementById('conditionComparisonModal').value = values[1];
+                    document.getElementById('modalconditionInput2').value = values[2];
+                    break;
             }
 
             if (btn_request == "POST") {
@@ -551,7 +553,7 @@ $(function feedback() {
 
         let possibleNewDestinationUUID;
 
-        //BIG ADDITION - Create new page along with new choice and connect them together
+        //Create new page along with new choice and connect them together
         if (formData.get("destinationModal") == "New") {
             console.log("----creating new page with new choice...");
             $.ajax({
@@ -580,13 +582,12 @@ $(function feedback() {
             runSecondRequest(possibleNewDestinationUUID);
         }
 
-
-
         console.log("----NOW WHAT's THE FORM DATA? ");
         for (const pair of formData.entries()) {
             console.log("--", pair[0], ":", pair[1]);
         }
 
+        //we have to put this in a function so that it doesn't attempt to run before the page is created with a new ID
         function runSecondRequest(possibleNewDestinationUUID) {
             let assembledData = {
                 uuid: formData.get("hiddenchoiceuuid"),
