@@ -63,10 +63,9 @@ header .navbar-brand {
   margin-bottom: 10px;
 }
 
-/* p .pageText {
-  position: relative;
-  top: -75px;
-} */
+p.pageText {
+  max-width: 50%;
+}
 
 div div.item-list :hover {
   background-color: lightgoldenrodyellow;

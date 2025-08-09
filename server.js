@@ -1,16 +1,25 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
 //uploading files
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
-
 const path = require('path');
 const cookieSession = require('cookie-session');
 const createError = require('http-errors');
 const bodyParser = require('body-parser');
+
 const app = express();
 const port = 3000;
+
+const OpenAI = require('openai');
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+
 
 app.set('trust proxy', 1); //makes express trust cookies if passed through reverse proxy
 app.set('view engine', 'ejs'); //allows for parsing of EJS templating engine 
@@ -26,7 +35,7 @@ const storyService = new StoryService('./data/story.json');
 
 const routes = require('./routes');
 
-app.locals.siteName = "Kyle's Badass MF'in Website";
+app.locals.siteName = "Kyle's BYOA";
 
 // Ensure uploads folder exists
 const uploadDir = path.join(__dirname, '/static', '/uploads');
@@ -68,7 +77,7 @@ app.post('/upload', function (req, res) {
     console.log("----from app.post /upload: ");
     let sampleFile;
     let uploadPath;
-    //console.log(req.files.file);
+    // console.log(req.files.file);
 
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({ msg: 'No files were uploaded.' });
@@ -88,6 +97,46 @@ app.post('/upload', function (req, res) {
         res.json(sampleFile.name);
     });
 });
+
+app.post('/generate-text', async (req, res) => {
+    try {
+        const response = await openai.responses.create({
+            model: "gpt-5",
+            input: req.body.prompt
+        });
+
+        console.log(response.output_text);
+        return res.json(response.output_text);
+    } catch (error) {
+        console.error('Error calling OpenAI API:', error);
+        res.status(500).json({ error: 'Failed to generate text.' });
+    }
+});
+
+app.post('/generate-img', async (req, res) => {
+    try {
+        const response = await openai.images.generate({
+            model: "dall-e-3", // or "dall-e-2"
+            prompt: "Generate an image of a happy baby duck surfing on a big wave",
+            n: 1, // Number of images to generate (DALL-E 3 supports only 1)
+            size: "1024x1024", // Image size
+            quality: "standard", // or "hd" for DALL-E 3
+        });
+
+        const imageUrl = response.data[0].url;
+        console.log("Generated Image URL:", imageUrl);
+        return res.json(imageUrl);
+
+    } catch (error) {
+        console.error("Error generating image:", error);
+        if (error.response) {
+            console.error(error.response.status, error.response.data);
+        }
+        return res.json(error);
+    }
+}
+
+);
 
 app.use((response, request, next) => {
     return next(createError(404, 'File not found! DAAAAMN'));

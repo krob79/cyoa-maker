@@ -1,40 +1,13 @@
 <nav class="navbar navbar navbar-expand-md navbar-dark bg-dark">
   <div class="container">
-    <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar-collapse"
-      aria-expanded="false">
-      <span class="sr-only">Toggle navigation</span> &#x2630;
-    </button>
     <a href="/" class="navbar-brand">
-      <%=siteName %> &lt; <%= pageTitle %>
+      <%=siteName %> &gt; <%= pageTitle %>
     </a>
-    <div class="collapse navbar-collapse" id="navbar-collapse">
+
+    <div class="navbar" id="navbar">
       <ul class="nav navbar-nav ml-auto">
         <li class="nav-item">
-          <a href="/" class="nav-link">Home</a>
-        </li>
-        <li class="nav-item">
-          <a href="/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit" class="nav-link">CYOA Pages</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a href="/speakers" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Speakers
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/speakers">All Speakers</a>
-            <div class="dropdown-divider"></div>
-
-            <% speakerNames.forEach(function (speaker) {%>
-              <a class="dropdown-item" href="/speakers/<%=speaker.shortname%>">
-                <%=speaker.name%>
-              </a>
-              <%})%>
-
-
-          </div>
-        </li>
-        <li class="nav-item">
-          <a href="/feedback" class="nav-link">Feedback</a>
+          <a href="/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit" class="nav-link">View All Pages</a>
         </li>
       </ul>
     </div>
