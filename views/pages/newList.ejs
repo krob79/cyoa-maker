@@ -100,15 +100,27 @@
                 <h1>
                     <% if(pageData.type=="story" || pageData.type=="page" ){ %>
                         <%= pageData.value %>
-                            <%}else{%>
-                                Editing <%= pageData.type %>
+                            <%}else if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ){%>
+                                Editing Condition of <%= pageData.type %> element
                                     <%}%>
                 </h1>
 
                 <div id="draggableList" class="list-group feedback-items">
-                    <% pageListItems.forEach(function (item) {%>
-                        <%- include(`partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs}); %>
+
+                    <%if(pageListItems){%>
+                        <% pageListItems.forEach(function (item) {%>
+                            <div class="content-chunk">
+                                <div class="drag-handle">::</div>
+                                <%- include(`partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs});
+                                    %>
+                            </div>
                             <%})%>
+                                <%} else {%>
+                                    <p>No items yet listed</p>
+                                    <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
+                                    <%}%>
+
+
 
                 </div>
             </div>

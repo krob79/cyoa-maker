@@ -47,6 +47,23 @@ header .navbar-brand {
   background: #C8EBFB;
 }
 
+.content-chunk {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+}
+
+.drag-handle {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  background-color: lightgray;
+  min-width: 20px;
+  text-align: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .maincontent {
   line-height: 160%;
 }
@@ -172,7 +189,8 @@ p.pageText {
 
 .feedback-item {
   border-bottom: 1px solid gray;
-  padding: 8px 0;
+  padding: 8px 8px;
+  width: 100%;
 }
 
 .feedback-title {

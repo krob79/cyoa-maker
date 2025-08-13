@@ -1,0 +1,266 @@
+[
+    {
+        "title": "Story Title",
+        "uuid": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "story",
+        "value": "Story Title",
+        "elements": [
+            {
+                "title": "First Page",
+                "type": "page",
+                "uuid": "2ae2b720-9501-4cc8-92b7-eacd5165bdf1",
+                "value": "First Page",
+                "elements": [
+                    {
+                        "uuid": "81ed4dd9-b8f6-468d-84ec-079aaa43f91e",
+                        "type": "text",
+                        "value": "Once upon a time, two people went scuba diving....blorpity blorp",
+                        "html": "<p class=\"pageText\">Once upon a time, two people went scuba diving....blorpity blorp</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "948a2615-24e3-46e9-90bd-72a9c6cf517a",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_18.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "60f3d868-5ec5-4d5c-b4f9-9828281cf5da",
+                        "type": "text",
+                        "value": "While they were there, they decided to do some snorkeling...glub",
+                        "html": "<p class=\"pageText\">While they were there, they decided to do some snorkeling...glub</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "eec7a070-ed8e-45fe-a7e3-83fd7dd67861",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_3.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_3.jpg\">",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "30509781-1d03-4e61-b8d9-e9d645fc3ccd",
+                        "type": "text",
+                        "value": "But then they decided to get on a boat instead...much better...",
+                        "html": "<p class=\"pageText\">But then they decided to get on a boat instead...much better...</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "931f9627-a49a-49ce-8f73-13252cb0281c",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_16.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_16.jpg\">",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "9fc55fde-3a04-4b8c-b76c-dc18b93fc32d",
+                        "type": "text",
+                        "value": "And then they took a trip to Ruby Falls...",
+                        "html": "<p class=\"pageText\">And then they took a trip to Ruby Falls...</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Go to the Second Page||11552105-993e-4ab5-a28f-219ce482281c",
+                        "uuid": "53bd6851-afc8-43d5-b969-f8179413f852",
+                        "type": "choice",
+                        "value": "Go to the Second Page||11552105-993e-4ab5-a28f-219ce482281c",
+                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">Go to the Second Page</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "dad_photos_phonescan_7.jpg",
+                        "uuid": "4d382a1e-5db6-444b-9861-7b3c91ebe657",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_7.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_7.jpg\">",
+                        "elements": []
+                    },
+                    {
+                        "title": "Whoopdy Doo||New",
+                        "uuid": "b85f0719-e646-4a00-aec3-e1c5d0c49d08",
+                        "type": "choice",
+                        "value": "Whoopdy Doo||New",
+                        "html": "<a class=\"pageLink\" href=\"/page/New/edit\">Whoopdy Doo</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Second Page",
+                "type": "page",
+                "uuid": "11552105-993e-4ab5-a28f-219ce482281c",
+                "value": "Second Page",
+                "elements": [
+                    {
+                        "uuid": "ed39a9e8-ab1d-4ce3-a9ab-13ae70805e03",
+                        "type": "text",
+                        "value": "This is another page...and it's very cool... I'm editing the content from a different place and it still works because the UUID and information is contained within the button!",
+                        "html": "<p class=\"pageText\">This is another page...and it's very cool... I'm editing the content from a different place and it still works because the UUID and information is contained within the button!</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "058d93ff-e716-44d7-b2be-53146addd1da",
+                        "type": "text",
+                        "value": "...and it had even more and different wild and crazy stuff on it",
+                        "html": "<p class=\"pageText\">...and it had even more and different wild and crazy stuff on it</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "722fed85-eaeb-41b3-977b-69f45c7f65d1",
+                        "type": "text",
+                        "value": "It&#x27;s fun when things start to work!\nBut then...there's always more stuff and bugs that surface and you have to deal with those! Ugh!",
+                        "html": "<p class=\"pageText\">It&#x27;s fun when things start to work!\nBut then...there's always more stuff and bugs that surface and you have to deal with those! Ugh!</p>",
+                        "elements": []
+                    },
+                    {
+                        "uuid": "61df4899-9455-416c-a1e4-07ec56dba4e9",
+                        "type": "text",
+                        "value": "Hell yeah! I updated this damn thing!",
+                        "html": "<p class=\"pageText\">Hell yeah! I updated this damn thing!</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Go Poop Here||ab6301f4-4214-4ba8-98e3-3ea718717cad",
+                        "uuid": "8e706fd5-9bdc-4619-912f-54bc0ce37562",
+                        "type": "choice",
+                        "value": "Go To This Stupid Page||2ae2b720-9501-4cc8-92b7-eacd5165bdf1",
+                        "html": "<a class=\"pageLink\" href=\"/page/2ae2b720-9501-4cc8-92b7-eacd5165bdf1/edit\">Go To This Stupid Page</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Go to the Second Page||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "uuid": "7cc06c19-2987-4271-b928-439edc3c8955",
+                        "type": "choice",
+                        "value": "Go to the Second Page||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">Go to the Second Page</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "More stuff||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "uuid": "49c383e4-ff56-4171-9523-fb04b758de70",
+                        "type": "choice",
+                        "value": "More stuff||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">More stuff</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "dad_photos_phonescan_9.jpg",
+                        "uuid": "0d974ff1-0cde-4ca9-b574-f1b78c5205d6",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_9.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_9.jpg\">",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Start Page",
+                "uuid": "9f2d5712-91c8-4138-bb47-c23eb00edf5f",
+                "type": "page",
+                "value": "Start Page",
+                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "elements": [
+                    {
+                        "title": "You are walking through the woods and you&amp;#x27;re pretty relaxed. What could happen to you here?",
+                        "uuid": "8c1059c7-a2c6-4785-9069-d6f0f9fe59fb",
+                        "type": "text",
+                        "value": "You are walking through the woods and you're pretty relaxed. What could happen to you here?\nPlenty. There's a path to your left and a path to your right. From the left comes sounds of strange animals. From the right comes human voices, but babbling incoherently with occasional wild psychotic screaming. Great choices! What now, hotshot....?",
+                        "html": "<p class=\"pageText\">You are walking through the woods and you're pretty relaxed. What could happen to you here?\nPlenty. There's a path to your left and a path to your right. From the left comes sounds of strange animals. From the right comes human voices, but babbling incoherently with occasional wild psychotic screaming. Great choices! What now, hotshot....?</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Take the left path and deal with the strange animals||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "uuid": "0757d163-71c6-4491-8bd5-c1118d0ba874",
+                        "type": "choice",
+                        "value": "Take the left path and deal with the strange animals||8fd6d351-2e56-4955-a098-de254bad9adc",
+                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">Take the left path and deal with the strange animals</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Take the right path and hopefully the human sounds lead to safe humans||ab6301f4-4214-4ba8-98e3-3ea718717cad",
+                        "uuid": "944253d1-764b-42d8-b33c-df2c63458979",
+                        "type": "choice",
+                        "value": "Take the right path and hopefully the human sounds lead to safe humans||ab6301f4-4214-4ba8-98e3-3ea718717cad",
+                        "html": "<a class=\"pageLink\" href=\"/page/ab6301f4-4214-4ba8-98e3-3ea718717cad/edit\">Take the right path and hopefully the human sounds lead to safe humans</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Left Path In Woods",
+                "uuid": "8fd6d351-2e56-4955-a098-de254bad9adc",
+                "type": "page",
+                "value": "Left Path In Woods",
+                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "elements": [
+                    {
+                        "title": "You take the left path and the sounds get closer. You see movement in the bushes. And then, a creature jumps out. It is a young cat, and it looks scared. What do you do?",
+                        "uuid": "c765049f-296e-40d4-8b47-d8a28bb42f3a",
+                        "type": "text",
+                        "value": "WHOOP WHOOP more update why no disappear? This is now working, thank god",
+                        "html": "<p class=\"pageText\">WHOOP WHOOP more update why no disappear? This is now working, thank god</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Here&#x27;s some more text!",
+                        "uuid": "644072b3-4905-4972-9cb3-557d7a7a1216",
+                        "type": "text",
+                        "value": "Here's some more text! Yaaaaay!",
+                        "html": "<p class=\"pageText\">Here's some more text! Yaaaaay!</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Here&#x27;s One Link||11552105-993e-4ab5-a28f-219ce482281c",
+                        "uuid": "75c64973-d562-49e1-8244-937f6b46e18a",
+                        "type": "choice",
+                        "value": "Here's One Link||9f2d5712-91c8-4138-bb47-c23eb00edf5f",
+                        "html": "<a class=\"pageLink\" href=\"/page/9f2d5712-91c8-4138-bb47-c23eb00edf5f/edit\">Here's One Link</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "And Here&#x27;s One More||a97dad75-1895-4948-b1c7-d20f025cab23",
+                        "uuid": "200377dc-984f-4f7b-825e-dbbd50a60bae",
+                        "type": "choice",
+                        "value": "And Here's One More Link||11552105-993e-4ab5-a28f-219ce482281c",
+                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">And Here's One More Link</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Right Path In Woods",
+                "uuid": "ab6301f4-4214-4ba8-98e3-3ea718717cad",
+                "type": "page",
+                "value": "Right Path In Woods",
+                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "elements": []
+            },
+            {
+                "title": "Farts Page",
+                "uuid": "a97dad75-1895-4948-b1c7-d20f025cab23",
+                "type": "page",
+                "value": "Here's One Link",
+                "html": "<a class=\"pageLink\" href=\"/page/9f2d5712-91c8-4138-bb47-c23eb00edf5f/edit\">Here's One Link</a>",
+                "elements": [
+                    {
+                        "title": "dfsdsdds",
+                        "uuid": "426a7d80-315d-4ee8-928b-0741465ab034",
+                        "type": "text",
+                        "value": "zzzzzzzzzzzz",
+                        "html": "<p class=\"pageText\">zzzzzzzzzzzz</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "dad_photos_phonescan_10.jpg",
+                        "uuid": "427caf8f-ea2b-4c66-9ebc-c78e367c9cba",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_18.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
+                        "elements": []
+                    }
+                ]
+            }
+        ]
+    }
+]

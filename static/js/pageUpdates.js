@@ -7,6 +7,12 @@ $(function feedback() {
 
     console.log("--------loading pageUpdates.js!");
 
+    let el = document.getElementById('draggableList');
+    let sortable = new Sortable(el, {
+        swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
+
+    });
+
     function findUuidInURL() {
         const currentUrl = window.location.href;
         const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gm;
@@ -89,23 +95,26 @@ $(function feedback() {
     //TO DO: these two functions are nearly identical - let's get this down to one
     function assembleElementEntry(item) {
         let html =
-            `<div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-                <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
-                <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
-                    data-bs-elementuuid="${item.uuid}"
-                    data-bs-elementvalue="${item.value}"
-                    data-bs-target="#${item.type}UpdateModal">E</button>
-                <div class="feedback-item ${item.type}">
-                    <div class="feedback-info media-body">
-                        <div class="feedback-head">
-                            <div class="feedback-title"></div>
-                        </div>
-                        <div class="feedback-message">
-                            ${outputHtmlForElement(item)}
+            `<div class="content-chunk">
+             <div class="drag-handle">::</div>
+                    <div data-uuid="${item.uuid}" class="feedback-item list-group-item item-list media-list">
+                        <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
+                        <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
+                            data-bs-elementuuid="${item.uuid}"
+                            data-bs-elementvalue="${item.value}"
+                            data-bs-target="#${item.type}UpdateModal">E</button>
+                        <div class="feedback-item ${item.type}">
+                            <div class="feedback-info media-body">
+                                <div class="feedback-head">
+                                    <div class="feedback-title"></div>
+                                </div>
+                                <div class="feedback-message">
+                                    ${outputHtmlForElement(item)}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
+             </div>`;
         return html;
     }
 
@@ -130,12 +139,56 @@ $(function feedback() {
         return html;
     }
 
+    //a small function that just looks at all existing UUIDs and verifies if the supplied UUID actually exists
+    //used for determining if choice elements contain UUIDs for pages that have been deleted
     function verifyUUID(uuid) {
         // console.log(`----verifying ${uuid}`, allPageUUIDs.includes(uuid));
         return allPageUUIDs.includes(uuid);
     }
 
+    async function reorderElements({ from, to }) {
+        console.log(`---calling reorderElements!! ${from} - ${to}`);
+        let uuidInURL = findUuidInURL();
+        let elements;
+        //grab uuid from URL and use that to load in and display data
+        if (uuidInURL) {
+            await fetch(`/page/${uuidInURL}`)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("-----testfetch: ");
+                    // console.log(data);
+                    elements = data.elements;
+                })
+
+            //Make deep copy of the array so that ALL nested elements are swapped as well
+            let deepCopyArray = structuredClone(elements);
+            //swap the elements in the array
+            [deepCopyArray[from], deepCopyArray[to]] = [deepCopyArray[to], deepCopyArray[from]];
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: uuidInURL,
+                    newDataObj: { elements: deepCopyArray }
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED REORDERED ELEMENTS!!");
+                    console.log(data);
+                    updateFeedback(data);
+                }
+            });
+
+        } else {
+            console.log("-----ERROR: NO UUID FOUND IN URL!!!");
+        }
+
+    }
+
     let allPageUUIDs = [];
+    let currentElements = [];
     async function updateFeedback(data) {
         allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
 
@@ -171,10 +224,13 @@ $(function feedback() {
             }
             // console.log(page);
 
+            assembledHTML = '';
+            assembledHTML = '<div id="draggableList" class="list-group feedback-items">';
+            render.push(assembledHTML);
             //rebuilding the elements and buttons
             $.each(page, function createHtml(key, item) {
                 // console.log("-----type? ", item);
-                assembledHTML = "";
+
                 if (item.type == "page") {
                     //assemble HTML with functions to match what is shown on storyPage.ejs - need a better way to do this
                     assembledHTML += assemblePageEntry(item);
@@ -183,6 +239,8 @@ $(function feedback() {
                 }
                 render.push(assembledHTML);
             });
+            assembledHTML = '</div>';
+            render.push(assembledHTML);
             // Update feedback-items with what the REST API returned
             $('.feedback-items').html(render.join('\n'));
             // Output the success message
@@ -484,6 +542,7 @@ $(function feedback() {
     });
 
     async function createLocalImgUploadPath(formData) {
+        //used for when users browse their hard drive for an image and select it to add
         //call fetch to "/upload" app route, using the formData as the request body
         //this is the fetch request that actually needs the file object from the form
         const res = await fetch('/upload', { method: 'POST', body: formData });
@@ -513,6 +572,8 @@ $(function feedback() {
 
         //needed when user is browsing for local images on their hard drive
         let imgPath;
+
+        //FIRST FETCH REQUEST
         //if the form submitted is from regular local images, generate the img copy and return the file path
         if (e.target.id == "uploadFormModal") {
             imgPath = await createLocalImgUploadPath(formData);
@@ -531,7 +592,6 @@ $(function feedback() {
         }
 
         if (formData.get("imagerequest") == "POST") {
-
             $.ajax({
                 url: '/page/api',
                 type: 'POST',
@@ -607,6 +667,7 @@ $(function feedback() {
                     $('#myPageToast').toast('show');
                     possibleNewDestinationUUID = data.newUUID;
                     console.log("----NEW POSSIBLE DESTINATION!!! ", possibleNewDestinationUUID);
+                    //run the second process for creating or updating the choice link
                     runSecondRequest(possibleNewDestinationUUID);
                 },
                 complete: function () {
@@ -616,6 +677,7 @@ $(function feedback() {
         } else {
             console.log("----we are NOT creating a new page with the new choice!");
             possibleNewDestinationUUID = formData.get("destinationModal");
+            //run the second process for creating or updating or creating the choice link
             runSecondRequest(possibleNewDestinationUUID);
         }
 
