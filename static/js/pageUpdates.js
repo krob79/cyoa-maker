@@ -153,8 +153,8 @@ $(function feedback() {
             $('#uploadForm').trigger('reset');
 
             let uuidInURL = findUuidInURL();
-            console.log("---what's the data looking like?");
-            console.log(data);
+            // console.log("---what's the data looking like?");
+            // console.log(data);
             let page;
             //grab uuid from URL and use that to load in and display data
             if (uuidInURL) {
@@ -162,14 +162,14 @@ $(function feedback() {
                     .then(response => response.json())
                     .then(data => {
                         // console.log("-----testfetch: ");
-                        console.log(data);
+                        // console.log(data);
                         page = data.elements;
                     })
 
             } else {
                 console.log("-----ERROR: NO UUID FOUND IN URL!!!");
             }
-            console.log(page);
+            // console.log(page);
 
             //rebuilding the elements and buttons
             $.each(page, function createHtml(key, item) {
@@ -190,7 +190,7 @@ $(function feedback() {
         } else {
             // There was an error
             // Create a list of errors
-            console.log("---we got errors!", data);
+            // console.log("---we got errors!", data);
             $.each(data.errors, function createHtml(key, error) {
                 render.push(`<li>${error.msg}</li>`);
             });
@@ -288,17 +288,23 @@ $(function feedback() {
     initializeDeleteButtons();
     initializeDeleteButtonFromModal();
 
-
-    //this is not really being used at the moment, but created it to try and store a file reference in a file input field...?
-    async function createImageFileFromUrl(imageUrl, fileName = 'image.png', fileType = 'image/png') {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const imageFile = new File([blob], fileName, { type: fileType });
-        return imageFile;
-    }
-
     //code applied to all modals that have forms for creating / updating page elements
     const elementModals = document.querySelectorAll('.elementModal');
+    const elementAiModals = document.querySelectorAll('.elementAiModal');
+    elementAiModals.forEach(modal => {
+        modal.addEventListener('show.bs.modal', event => {
+            // Pull data from the button that triggered the modal
+            let button = event.relatedTarget // Button that triggered the modal
+
+            let uuidinput = document.getElementById(`hiddenAiImageuuid`);
+            uuidinput.value = button.dataset.bsElementuuid;
+
+
+
+        });
+
+    });
+
     elementModals.forEach(modal => {
         modal.addEventListener('show.bs.modal', event => {
 
@@ -350,14 +356,17 @@ $(function feedback() {
                     //TO DO: Clean up the logic and naming conventions of the choices and inputs
                     let dropdown = document.getElementById("choiceDestinationModal");
                     let hiddendestination = document.getElementById("destinationModal");
+                    //we need the story UUID to create a new page, if needed
                     let hiddenstoryuuid = document.getElementById("hiddenstoryuuid");
                     hiddenstoryuuid.value = button.dataset.bsStoryuuid;
                     modalInput.value = splitValue[0];
 
                     if (!splitValue[1]) {
+                        //if there isn't a destination available, set the value of the dropdown AND the hidden destination value to "new"
                         dropdown.value = "New";
                         document.getElementById("destinationModal").value = "New";
                     } else {
+                        //otherwise, set both to the value found
                         dropdown.value = splitValue[1];
                         hiddendestination.value = splitValue[1];
                     }
@@ -391,6 +400,10 @@ $(function feedback() {
 
     //this code fires every time the element modals disappear
     $('.elementModal').on('hidden.bs.modal', function (event) {
+        $(this).removeData('bs.modal');
+    });
+
+    $('.elementAiModal').on('hidden.bs.modal', function (event) {
         $(this).removeData('bs.modal');
     });
 
@@ -460,19 +473,19 @@ $(function feedback() {
 
     });
 
-    const uploadForm = document.getElementById("uploadFormModal");
-    uploadForm.addEventListener("submit", async function (e) {
-        // Prevent the default submit form event
-        e.preventDefault();
+    const uploadImageForm = document.getElementById("uploadFormModal");
+    uploadImageForm.addEventListener("submit", (e) => {
+        submitImage(e);
+    });
 
-        //create formData object from form
-        const formData = new FormData(uploadForm);
-        console.log("----SUBMITTING IMAGE FORM DATA FROM MODAL");
-        for (const pair of formData.entries()) {
-            console.log("--", pair[0], ":", pair[1]);
-        }
+    const uploadImageFormModal_AI = document.getElementById("uploadImageFormModal_AI");
+    uploadImageFormModal_AI.addEventListener("submit", (e) => {
+        submitImage(e);
+    });
 
+    async function createLocalImgUploadPath(formData) {
         //call fetch to "/upload" app route, using the formData as the request body
+        //this is the fetch request that actually needs the file object from the form
         const res = await fetch('/upload', { method: 'POST', body: formData });
         if (!res.ok) {
             const err = await res.text();
@@ -480,13 +493,39 @@ $(function feedback() {
         }
 
         const imgPath = await res.json();
-        // console.log("----image found from modal: ", imgPath);
+        console.log("----createLocalImgUploadPath(): ", imgPath);
+        return imgPath;
+
+    }
+
+    async function submitImage(e) {
+        //get the right form ID
+        const uploadForm = document.getElementById(e.target.id);
+        // Prevent the default submit form event
+        e.preventDefault();
+
+        //create formData object from form
+        const formData = new FormData(uploadForm);
+        console.log("----SUBMITTING IMAGE FORM DATA FROM MODAL ", e.target.id);
+        for (const pair of formData.entries()) {
+            console.log("--", pair[0], ":", pair[1]);
+        }
+
+        //needed when user is browsing for local images on their hard drive
+        let imgPath;
+        //if the form submitted is from regular local images, generate the img copy and return the file path
+        if (e.target.id == "uploadFormModal") {
+            imgPath = await createLocalImgUploadPath(formData);
+        } else {
+
+        }
+
 
         let assembledData = {
-            uuid: formData.get("uuid"),
+            uuid: formData.get(`uuid`),
             newDataObj: { value: imgPath, html: `<img class="pageImage" src="/uploads/${imgPath}">` }
         }
-        console.log("----SENDING ASSEMBLED DATA in PUT request to /page/api");
+        console.log(`----SENDING ASSEMBLED DATA in ${formData.get("imagerequest")} request to /page/api`);
         for (const pair of formData.entries()) {
             console.log("--", pair[0], ":", pair[1]);
         }
@@ -498,7 +537,7 @@ $(function feedback() {
                 type: 'POST',
                 // Gather all data from the form and create a JSON object from it
                 data: {
-                    uuid: formData.get("uuid"),
+                    uuid: formData.get(`uuid`),
                     section: formData.get("section"),
                     type: "image",
                     value: imgPath,
@@ -535,9 +574,7 @@ $(function feedback() {
             });
 
         }
-
-
-    });
+    };
 
     const choiceForm = document.getElementById("choiceFormModal");
     choiceForm.addEventListener("submit", function (e) {

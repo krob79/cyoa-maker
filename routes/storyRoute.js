@@ -1,5 +1,5 @@
-const express = require('express');
-const { check, validationResult } = require('express-validator');
+import express from 'express';
+import { check, validationResult } from 'express-validator';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ const idValidation = [
         .withMessage('UUID not found.'),
 ];
 
-module.exports = (params) => {
+export default (params) => {
     const { storyService } = params;
 
     router.get('/', async (request, response, next) => {

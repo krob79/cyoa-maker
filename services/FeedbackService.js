@@ -83,4 +83,4 @@ class FeedbackService {
   }
 }
 
-module.exports = FeedbackService;
+export default FeedbackService;

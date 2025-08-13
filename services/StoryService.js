@@ -1,5 +1,5 @@
-const fs = require('fs');
-const util = require('util');
+import fs from 'fs';
+import util from 'util';
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
@@ -78,7 +78,7 @@ class StoryService {
 
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
-        console.log(`----found the uuid of ${obj.uuid}, looking for section "${section}"`);
+        // console.log(`----found the uuid of ${obj.uuid}, looking for section "${section}"`);
         console.log(obj.elements);
         // Customize this based on what you want to update:
         // For example, if you're adding to an "elements" array:
@@ -350,4 +350,4 @@ class StoryService {
   }
 }
 
-module.exports = StoryService;
+export default StoryService;

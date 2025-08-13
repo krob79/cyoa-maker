@@ -1,5 +1,6 @@
 {
   "name": "linkedinlearning",
+  "type": "module",
   "version": "1.0.0",
   "description": "1.0.0",
   "main": "server.js",
@@ -20,7 +21,8 @@
     "express-fileupload": "^1.5.2",
     "express-validator": "^7.2.1",
     "http-errors": "^2.0.0",
-    "openai": "^5.12.2"
+    "openai": "^5.12.2",
+    "sortablejs": "^1.15.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

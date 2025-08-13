@@ -5,6 +5,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
   integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK" crossorigin="anonymous"></script>
 <script src="/js/pageUpdates.js"></script>
+<script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+<script type="text/javascript">
+  let el = document.getElementById('draggableList');
+  let sortable = new Sortable(el, {
+    swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, onEnd: (evt) => { console.log(evt.oldIndex) },
+
+  });
+  // new Sortable(draggableList, {
+  //     animation: 150,
+  //     ghostClass: 'blue-background-class'
+  // });
+</script>
 <% if (locals.artwork) { console.log("--locals!", locals); %>
   <script src="/js/pixgrid.js"></script>
   <% } %>

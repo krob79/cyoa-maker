@@ -42,6 +42,11 @@ header .navbar-brand {
   font-size: 1.2em;
 }
 
+.ghost {
+  opacity: .5;
+  background: #C8EBFB;
+}
+
 .maincontent {
   line-height: 160%;
 }
@@ -65,11 +70,6 @@ header .navbar-brand {
 
 p.pageText {
   max-width: 50%;
-}
-
-div div.item-list :hover {
-  background-color: lightgoldenrodyellow;
-  cursor: pointer;
 }
 
 .pageImage {

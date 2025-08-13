@@ -33,7 +33,7 @@ const idValidation = [
         .withMessage('UUID not found.'),
 ];
 
-module.exports = (params) => {
+export default (params) => {
     const { feedbackService } = params;
 
     router.get('/', async (request, response, next) => {

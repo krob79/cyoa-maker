@@ -1,15 +1,15 @@
-const express = require('express');
+import express from 'express';
 
-const speakersRoute = require('./speakers');
-const feedbackRoute = require('./feedback');
-const storyPageRoute = require('./storyRoute');
+// import speakersRoute from './speakers.js';
+// import feedbackRoute from './feedback.js';
+import storyPageRoute from './storyRoute.js';
 
 const router = express.Router();
 
-module.exports = (params) => {
+export default (params) => {
     // console.log(`---params? `, params);
 
-    const { speakersService } = params;
+    // const { speakersService } = params;
 
     // router.use((request, response, next) => {
     //     console.log("---middleware?");
@@ -18,17 +18,18 @@ module.exports = (params) => {
 
     router.get('/', async (request, response, next) => {
         try {
-            const artwork = await speakersService.getAllArtwork();
-            const topSpeakers = await speakersService.getList();
+            // const artwork = await speakersService.getAllArtwork();
+            // const topSpeakers = await speakersService.getList();
 
-            if (!request.session.visitcount) {
-                request.session.visitcount = 1;
-            } else {
-                request.session.visitcount += 1;
-                console.log(`---NUM OF VISITS: ${request.session.visitcount}`);
-            }
-            //response.sendFile(path.join(__dirname, './static/index.html'));
-            return response.render('layout', { pageTitle: 'Peace, y\'all!', template: 'index', topSpeakers, artwork });
+            // if (!request.session.visitcount) {
+            //     request.session.visitcount = 1;
+            // } else {
+            //     request.session.visitcount += 1;
+            //     console.log(`---NUM OF VISITS: ${request.session.visitcount}`);
+            // }
+            // //response.sendFile(path.join(__dirname, './static/index.html'));
+            // return response.render('layout', { pageTitle: 'Peace, y\'all!', template: 'index', topSpeakers, artwork });
+            return response.send("MAIN PAGE");
         } catch (err) {
             return next(err);
         }
@@ -43,8 +44,8 @@ module.exports = (params) => {
         }
     });
 
-    router.use('/speakers', speakersRoute(params));
-    router.use('/feedback', feedbackRoute(params));
+    // router.use('/speakers', speakersRoute(params));
+    // router.use('/feedback', feedbackRoute(params));
     router.use('/page', storyPageRoute(params));
 
     return router;

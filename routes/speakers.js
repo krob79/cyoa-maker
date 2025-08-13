@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-module.exports = (params) => {
+export default (params) => {
 
     const { speakersService } = params;
 

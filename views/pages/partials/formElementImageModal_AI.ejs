@@ -1,0 +1,96 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title element-modal-title" id="modalimageLabel">Form Title</h5>
+    </div>
+    <div class="modal-body" class="row g-3 was-validated" novalidate>
+        <form id="uploadImageFormModal_AI">
+            <input type="hidden" id="hiddenAiImageuuid" name="uuid" value="">
+            <input type="hidden" name="section" value="elements">
+            <input type="hidden" id="imagerequest_ai" name="imagerequest" value="POST">
+            <input type="hidden" id="imagepath_ai" name="imagepath_ai" value="">
+            <img id="aipreviewModal_ai" name="aipreviewModal" src="" alt="Image preview"
+                style="max-width: 100%; display: none; margin-top: 10px;" />
+            <div id="aiModalSpinner" style="display:none;" class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea id="modalimagePrompt" class="form-control"
+                    style="max-width: 100%; display: block; margin-top: 10px;"
+                    placeholder="Add your prompt here"></textarea>
+                <p>Ex: "Generate an image of a cowboy riding a dinosaur"</p>
+                <button type="button" class="btn btn-info" id="aiImagePreviewBtn">Generate
+                    Preview</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960">
+                        <path
+                            d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144zM480-80q-83 0-156-31.5T197-197t-85.5-127T80-480t31.5-156T197-763t127-85.5T480-880t156 31.5T763-763t85.5 127T880-480t-31.5 156T763-197t-127 85.5T480-80m0-80q134 0 227-93t93-227-93-227-227-93-227 93-93 227 93 227 227 93m0-320" />
+                    </svg>Cancel</button>
+                <button class="btn btn-success" type="submit" id="inputGroupFileAddon04"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960">
+                        <path
+                            d="m424-296 282-282-56-56-226 226-114-114-56 56zm56 216q-83 0-156-31.5T197-197t-85.5-127T80-480t31.5-156T197-763t127-85.5T480-880t156 31.5T763-763t85.5 127T880-480t-31.5 156T763-197t-127 85.5T480-80m0-80q134 0 227-93t93-227-93-227-227-93-227 93-93 227 93 227 227 93m0-320" />
+                    </svg>Use This</button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+<%- include('formElementValidation', {}); %>
+    <script>
+        //code for showing preview image in modal display
+        const aipreviewModal = document.getElementById('aipreviewModal_ai');
+        const modalimagePrompt = document.getElementById('modalimagePrompt');
+        const aiImagePreviewBtn = document.getElementById('aiImagePreviewBtn');
+        const aiModalSpinner = document.getElementById('aiModalSpinner');
+        aiImagePreviewBtn.addEventListener("click", (e) => {
+            console.log('clicked AI preview button');
+            submitFormData();
+
+        });
+
+        async function submitFormData() {
+            const formData = new FormData(); // Or from an existing form as shown above
+            formData.append('prompt', modalimagePrompt.value);
+            aiModalSpinner.style.display = "block";
+            try {
+                const response = await fetch('/generate-img', {
+                    method: 'POST', // Or 'PUT', 'DELETE', etc.
+                    body: formData, // The FormData object is automatically handled as 'multipart/form-data'
+                });
+
+                if (response.ok) {
+                    const result = await response.json(); // Or response.text()
+                    console.log('Submission successful:', result);
+                    aiModalSpinner.style.display = "none";
+                    aipreviewModal.src = result;
+                    aipreviewModal.style.display = "block";
+                } else {
+                    console.error('Submission failed:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Network error or other issue:', error);
+            }
+        }
+
+        async function saveImage(url, filepath) {
+            try {
+                const file = fs.createWriteStream(filepath);
+                https.get(url, (response) => {
+                    response.pipe(file);
+                    file.on('finish', () => {
+                        file.close();
+                        console.log("Image downloaded and saved successfully!");
+                    });
+                });
+            } catch (error) {
+                console.error("Error saving image:", error);
+            }
+        }
+
+    </script>

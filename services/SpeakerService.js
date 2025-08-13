@@ -117,4 +117,4 @@ class SpeakerService {
   }
 }
 
-module.exports = SpeakerService;
+export default SpeakerService;
