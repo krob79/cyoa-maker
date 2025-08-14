@@ -54,6 +54,7 @@ export default (params) => {
                         return (p.elements[i].value.split("||")[1]);
                     }
                 }
+
             });
 
 

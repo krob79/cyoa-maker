@@ -1,6 +1,6 @@
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="maincontent">
                 <% if(pageData.type=="story" ) {%>
                     <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal"
@@ -95,7 +95,7 @@
                                         </div>
             </div>
         </div>
-        <aside class="col-md-8">
+        <aside class="col-md-9">
             <div class="maincontent feedback">
                 <h1>
                     <% if(pageData.type=="story" || pageData.type=="page" ){ %>
@@ -106,7 +106,6 @@
                 </h1>
 
                 <div id="draggableList" class="list-group feedback-items">
-
                     <%if(pageListItems){%>
                         <% pageListItems.forEach(function (item) {%>
                             <div class="content-chunk">
@@ -119,9 +118,6 @@
                                     <p>No items yet listed</p>
                                     <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
                                     <%}%>
-
-
-
                 </div>
             </div>
         </aside>
