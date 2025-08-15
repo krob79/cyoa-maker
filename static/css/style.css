@@ -86,11 +86,11 @@ header .navbar-brand {
 }
 
 p.pageText {
-  max-width: 50%;
+  max-width: 90%;
 }
 
 .pageImage {
-  max-width: 80%;
+  max-width: 90%;
 }
 
 /* .pageLink {} */
@@ -111,16 +111,30 @@ p.pageText {
   color: #C1343F;
 }
 
-.item-delete-btn {
-  left: 100%;
-  cursor: pointer;
+.editButtons {
+  /* width: 100%; */
+  gap: 15px;
+  /* flex-direction: column; */
   position: absolute;
+  right: 0%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  /* background-color: #C1343F; */
+}
+
+.item-delete-btn {
+  cursor: pointer;
   border-radius: 5px;
-  background-color: #C1343F;
-  /* text-align: center; */
-  color: white;
-  padding: 0px, 0px;
-  width: 35px;
+  padding: 0px;
+  width: 40px;
+  height: 35px;
+  /* background-color: #C1343F; */
+}
+
+.editElement {
+  padding: 0;
+  width: 40px;
   height: 35px;
 }
 
@@ -128,18 +142,6 @@ p.pageText {
   color: #155724;
   background-color: #d4edda;
   border-color: #c3e6cb;
-}
-
-.editElement {
-  padding: 0;
-  left: 95%;
-  position: absolute;
-  width: 35px;
-  height: 35px;
-}
-
-.editElement>path {
-  color: white;
 }
 
 #previewModal {
@@ -205,6 +207,8 @@ p.pageText {
 .feedback-item:last-of-type {
   border-bottom: none;
 }
+
+
 
 
 /**  pixgrid **/

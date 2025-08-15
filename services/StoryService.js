@@ -87,9 +87,7 @@ class StoryService {
         } else {
           console.log("---couldn't find this section");
 
-          //it probably isn't good to create a section where there is none, because it indicates that it wasn't expected
-          //maybe an future option to create, but not by default
-          // obj[section] = [newData]; // initialize if missing
+          obj[section] = [newData]; // initialize if missing
           return false;
         }
         return true; // Found and updated
@@ -157,9 +155,7 @@ class StoryService {
         } else {
           console.log("---couldn't find this section");
 
-          //it probably isn't good to create a section where there is none, because it indicates that it wasn't expected
-          //maybe an future option to create, but not by default
-          // obj[section] = [newData]; // initialize if missing
+          obj[section] = [newData]; // initialize if missing
           return false;
         }
         return true; // Found and updated
@@ -233,6 +229,8 @@ class StoryService {
     const data = (await this.getData()) || [];
 
     console.log(`-----calling updateDataByUUID()`);
+    console.log(`----received newDataObj`);
+    console.log(newDataObj);
 
     const updated = updateData(data, uuid, newDataObj);
 
@@ -247,6 +245,10 @@ class StoryService {
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
         console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
+        console.log(`---assigning:`);
+        console.log(obj);
+        console.log(`----to:`);
+        console.log(newDataObj);
         let updated = Object.assign(obj, newDataObj);
 
         return true; // Found and updated

@@ -98,11 +98,21 @@ $(function feedback() {
             `<div class="content-chunk">
              <div class="drag-handle">::</div>
                     <div data-uuid="${item.uuid}" class="feedback-item list-group-item item-list media-list">
-                        <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">X</button>
-                        <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
-                            data-bs-elementuuid="${item.uuid}"
-                            data-bs-elementvalue="${item.value}"
-                            data-bs-target="#${item.type}UpdateModal">E</button>
+                        <div class="editButtons">
+                            <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" name="deleteIcon" width="24" height="24" viewBox="0 -960 960 960">
+                                    <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120zm400-600H280v520h400zM360-280h80v-360h-80zm160 0h80v-360h-80zM280-720v520z" />
+                                </svg>
+                            </button>
+                            <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
+                                data-bs-elementuuid="${item.uuid}"
+                                data-bs-elementvalue="${item.value}"
+                                data-bs-target="#${item.type}UpdateModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24" viewBox="0 -960 960 960">
+                                    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120zm160-240v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5-5.5 29.5T897-728L530-360zm481-424-56-56zM440-440h56l232-232-28-28-29-28-231 231zm260-260-29-28zl28 28z" />
+                                </svg>
+                            </button>
+                        </div>
                         <div class="feedback-item ${item.type}">
                             <div class="feedback-info media-body">
                                 <div class="feedback-head">
@@ -138,15 +148,25 @@ $(function feedback() {
             `<div class="content-chunk">
                 <div class="drag-handle">::</div>
             <div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
-            <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn" data-bs-target="#deletePageModalCenter">X</button>
-            <button type="button" class="btn btn-secondary editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
-                data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
-                data-bs-target="#${item.type}UpdateModal">E</button>
+            <div class="editButtons">
+                <button type="button" data-bs-uuid="${item.uuid}" data-bs-toggle="modal" data-bs-toggle="${item.type}" data-bs-elementtype="${item.type}" data-bs-target="#pageDeleteModal" class="btn item-delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" name="deleteIcon" width="24" height="24" viewBox="0 -960 960 960">
+                        <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120zm400-600H280v520h400zM360-280h80v-360h-80zm160 0h80v-360h-80zM280-720v520z" />
+                    </svg>
+                </button>
+                <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT" data-bs-elementtype="${item.type}"
+                    data-bs-elementuuid="${item.uuid}" data-bs-elementvalue="${item.value}"
+                    data-bs-target="#${item.type}UpdateModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24" viewBox="0 -960 960 960">
+                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120zm160-240v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5-5.5 29.5T897-728L530-360zm481-424-56-56zM440-440h56l232-232-28-28-29-28-231 231zm260-260-29-28zl28 28z" />
+                    </svg>
+                </button>
+            </div>
             <div class="feedback-item ${item.type}">
                 <div class="feedback-info media-body">
                     <div class="feedback-head">
                         <div class="feedback-title">${item.value}</div>
-                        ${(item.elements.filter(el => el.type == 'text').length > 0) ? `<div class="pageIcon">
+                        ${(item.elements && item.elements.filter(el => el.type == 'text').length > 0) ? `<div class="pageIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-type" viewBox="0 0 16 16">
                                 <path
@@ -156,7 +176,7 @@ $(function feedback() {
                                 ${item.elements.filter(el => el.type == 'text').length}
                             </div>
                         </div>` : ''}
-                        ${(item.elements.filter(el => el.type == 'image').length > 0) ? `<div class="pageIcon">
+                        ${(item.elements && item.elements.filter(el => el.type == 'image').length > 0) ? `<div class="pageIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-image" viewBox="0 0 16 16">
                                 <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
@@ -167,7 +187,7 @@ $(function feedback() {
                                 ${item.elements.filter(el => el.type == 'image').length}
                             </div>
                         </div>` : ''}
-                        ${(item.elements.filter(el => el.type == 'choice').length > 0) ? `<div class="pageIcon">
+                        ${(item.elements && item.elements.filter(el => el.type == 'choice').length > 0) ? `<div class="pageIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                 fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
                                 <path
@@ -230,19 +250,22 @@ $(function feedback() {
             //Make deep copy of the array so that ALL nested elements are swapped as well
             let deepCopyArray = structuredClone(elements);
             //swap the elements in the array
-            // [deepCopyArray[from], deepCopyArray[to]] = [deepCopyArray[to], deepCopyArray[from]];
             deepCopyArray = moveElement(deepCopyArray, from, to);
 
+            let myNewDataObj = { elements: deepCopyArray };
+            console.log("----HERE's the newDataObj to be submitted");
+            console.log(myNewDataObj);
 
             // XHR POST request
             $.ajax({
                 url: '/page/api',
                 type: 'PUT',
+                contentType: 'application/json; charset=UTF-8',
                 // Gather all data from the form and create a JSON object from it
-                data: {
+                data: JSON.stringify({
                     uuid: uuidInURL,
-                    newDataObj: { elements: deepCopyArray }
-                },
+                    newDataObj: myNewDataObj
+                }),
                 success: function (data) {
                     console.log("----WE SUBMITTED REORDERED ELEMENTS!!");
                     console.log(data);
@@ -395,12 +418,12 @@ $(function feedback() {
                 complete: function (story) {
                     // console.log("---COMPLETE");
                     //updateFeedback(response.responseJSON);
-                    $('#deletePageModalCenter').modal('hide');
+                    $('#pageDeleteModal').modal('hide');
                 }
             });
         });
 
-        $('#deletePageModalCenter').on('show.bs.modal', function (event) {
+        $('#pageDeleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var uuid = button.data('bsUuid') // Extract info from data-* attributes
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
@@ -927,7 +950,7 @@ $(function feedback() {
                 // Gather all data from the form and create a JSON object from it
                 data: {
                     uuid: formData.get("uuid"),
-                    newDataObj: { value: formData.get("modalpageInput") }
+                    newDataObj: { title: formData.get("modalpageInput"), value: formData.get("modalpageInput") }
                 },
                 success: function (data) {
                     console.log("----WE UPDATED PAGE FROM THE MODAL");

@@ -42,9 +42,16 @@ export default (params) => {
         response.setHeader('Pragma', 'no-cache');
         response.setHeader('Expires', '0');
         try {
+            //get the entire list of data
             const allData = await storyService.getList();
+            //the first "child" should be the story object
             const story = allData[0];
-            const pages = allData[0].elements;
+            //all elements of the story object should be page objects
+            let pages = story.elements;
+            //if no elements array is found, create an empty one
+            if (!pages) {
+                allData[0].elements = [];
+            }
             const allPageUUIDs = pages.map(p => p.uuid);
             pages.forEach((p) => p.brokenlinks = 1);
             // console.log(pages);
@@ -58,18 +65,17 @@ export default (params) => {
             });
 
 
-            // console.log(pages);
+            //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-            if (pageData.type == "story") {
-
-            }
+            let pageListItems = pageData.elements;
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
-            let pageListItems = pageData.elements;
+
             let listPartialToUse;
             //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
+            //Based on what type of object we are looking at, we will need the right partial to display the data
             switch (pageData.type) {
                 case "story":
                     listPartialToUse = "pagePartial";
@@ -137,11 +143,11 @@ export default (params) => {
             // console.log(thisData);
             const hasSection = Object.hasOwn(thisData, section);
             // console.log(`----Does this object have a property named '${section}'? ${hasSection}`);
-            if (!hasSection) {
-                console.log("ERROR - No section exists to add this new content - possibly wrong UUID referenced as input");
-                throw Error({ message: "No section exists to add this new content - possibly wrong UUID" })
-                return response.redirect('/page');
-            }
+            // if (!hasSection) {
+            //     console.log("ERROR - No section exists to add this new content - possibly wrong UUID referenced as input");
+            //     throw Error({ message: "No section exists to add this new content - possibly wrong UUID" })
+            //     return response.redirect('/page');
+            // }
 
             // console.log("---adding to section: ", section);
 
@@ -187,14 +193,14 @@ export default (params) => {
                 }
                 return response.json({ errors: errors.array() });
             }
-            console.log("----request body:");
+            console.log("----page/api - PUT request - request body:");
             console.log(request.body);
 
 
             const { uuid, newDataObj } = request.body;
 
 
-            await storyService.updateDataByUUID(uuid, newDataObj);
+            let xyz = await storyService.updateDataByUUID(uuid, newDataObj);
             const pageData = await storyService.getList();
             return response.json({ pageData, successMessage: 'Entry has been updated!' });
 

@@ -106,7 +106,7 @@
                 </h1>
 
                 <div id="draggableList" class="list-group feedback-items">
-                    <%if(pageListItems){%>
+                    <%if(pageListItems.length> 0){%>
                         <% pageListItems.forEach(function (item) {%>
                             <div class="content-chunk">
                                 <div class="drag-handle">::</div>
@@ -115,7 +115,7 @@
                             </div>
                             <%})%>
                                 <%} else {%>
-                                    <p>No items yet listed</p>
+                                    <p><strong>No items yet listed</strong></p>
                                     <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
                                     <%}%>
                 </div>
