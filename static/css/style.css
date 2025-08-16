@@ -44,7 +44,7 @@ header .navbar-brand {
 
 .ghost {
   opacity: .5;
-  background: #C8EBFB;
+  background: hsl(50, 91%, 47%);
 }
 
 .content-chunk {

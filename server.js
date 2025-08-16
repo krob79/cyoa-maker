@@ -124,6 +124,19 @@ async function saveImage(url, filepath) {
     }
 }
 
+async function deleteImage(filename) {
+    const deletePath = uploadDir + '/' + filename; // Replace with the actual file path
+    console.log("--deleting from: ", deletePath);
+    fs.unlink(deletePath, (err) => {
+        if (err) {
+            throw new Error("Error: ", err.message);
+        }
+        console.log('File deleted successfully!');
+        return;
+    });
+
+}
+
 
 //making a copy of an image from a local directory and placing it in the '/uploads' directory
 app.post('/upload', function (req, res) {
@@ -173,7 +186,7 @@ app.post('/generate-img', async (req, res) => {
     let promptPortion = req.body.prompt.split(" ", 4);
     let newFilename = promptPortion.join("_");
     newFilename += Math.floor(Math.random() * ((Math.floor(1000)) - (Math.ceil(1)) + 1) + (Math.ceil(1)));
-    console.log("----NEW AI FILE NAME!!!! ", newFilename);
+    // console.log("----NEW AI FILE NAME!!!! ", newFilename);
     try {
         const response = await openai.images.generate({
             model: "dall-e-3", // or "dall-e-2"
@@ -185,7 +198,7 @@ app.post('/generate-img', async (req, res) => {
 
         //this should be the returned URL from OpenAI's API
         const imageUrl = response.data[0].url;
-        console.log("Generated Image URL:", imageUrl);
+        // console.log("Generated Image URL:", imageUrl);
 
         //download and create local version of generated image
         let uploadPath = uploadDir + '/' + `${newFilename}.jpg`;
@@ -193,9 +206,9 @@ app.post('/generate-img', async (req, res) => {
 
         let splitPath = uploadPath.split('/');
         let shortenedPath = splitPath[splitPath.length - 1];
-        console.log(uploadPath);
+        console.log("---shortened path: ", shortenedPath);
 
-        return res.json(shortenedPath);
+        return res.json({ url: imageUrl, local: shortenedPath });
 
     } catch (error) {
         console.error("Error generating image:", error);
@@ -205,8 +218,27 @@ app.post('/generate-img', async (req, res) => {
         return res.json(error);
     }
 }
-
 );
+
+app.delete('/generate-img', async (req, res) => {
+    console.log("----using /generate-img DELETE route - req.body.filename: ", req.body.filename);
+    try {
+        // let result = await deleteImage(req.body.filename);
+        const deletePath = uploadDir + '/' + req.body.filename; // Replace with the actual file path
+        console.log("--deleting from: ", deletePath);
+        fs.unlink(deletePath, (err) => {
+            if (err) {
+                throw new Error("Error: ", err.message);
+            }
+            // console.log('File deleted successfully!');
+            // return;
+        });
+        return res.status(200).json({ msg: 'File was deleted.' });
+    } catch (error) {
+        next(error);
+    }
+
+});
 
 app.use((request, response, next) => {
     return next(createError(404, 'File not found! DAAAAMN'));

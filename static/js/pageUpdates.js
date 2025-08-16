@@ -60,7 +60,7 @@ $(function feedback() {
         let html = "";
         switch (item.type) {
             case "page":
-                html = `<a class="pageLink" href="/page/${item.uuid}/edit">Edit Page</a>`;
+                html = `<a class="pageLink" href="/page/${item.uuid}/edit">View Page</a>`;
                 break;
             case "image":
                 html = `<img class="pageImage" src="/uploads/${item.value}">`;
@@ -97,7 +97,7 @@ $(function feedback() {
         let html =
             `<div class="content-chunk">
              <div class="drag-handle">::</div>
-                    <div data-uuid="${item.uuid}" class="feedback-item list-group-item item-list media-list">
+                    <div data-uuid="${item.uuid}" class="feedback-item item-list media-list">
                         <div class="editButtons">
                             <button type="button" data-bs-uuid="${item.uuid}" class="btn item-delete-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" name="deleteIcon" width="24" height="24" viewBox="0 -960 960 960">
