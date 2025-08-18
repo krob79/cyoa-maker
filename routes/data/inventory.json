@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "data": {
+    "items": [
+      {
+        "name": "apple",
+        "amount": 10,
+        "meta": {
+          "createdAt": "2025-08-17T19:26:30.166Z"
+        }
+      }
+    ],
+    "characters": [
+      {
+        "name": "bob",
+        "amount": 5,
+        "meta": {
+          "createdAt": "2025-08-17T20:06:20.588Z"
+        }
+      },
+      {
+        "name": "betty",
+        "amount": 4,
+        "meta": {
+          "createdAt": "2025-08-17T20:12:58.718Z"
+        }
+      }
+    ],
+    "locations": [],
+    "storyevents": []
+  }
+}

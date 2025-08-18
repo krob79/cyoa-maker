@@ -3,6 +3,8 @@ import { check, validationResult } from 'express-validator';
 
 const router = express.Router();
 
+import inventory from './inventory.js';
+
 const validations = [
     check('value')
         .trim()
@@ -41,6 +43,13 @@ export default (params) => {
         response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         response.setHeader('Pragma', 'no-cache');
         response.setHeader('Expires', '0');
+
+        // inventory.setAmount('items', 'apple', 0);
+        // inventory.dispatchEvent({ evt: 'itemevent', name: 'apple', amount: 5 });
+
+        // console.log("----get apple: ", inventory.get('items', 'apple'));
+        // console.log("----APPLES > 100? " + inventory.check('apple>100'));
+
         try {
             //get the entire list of data
             const allData = await storyService.getList();
@@ -53,9 +62,8 @@ export default (params) => {
                 allData[0].elements = [];
             }
             const allPageUUIDs = pages.map(p => p.uuid);
-            pages.forEach((p) => p.brokenlinks = 1);
-            // console.log(pages);
-            const allChoiceDestinations = pages.map(p => {
+
+            const allConditions = pages.map(p => {
                 for (let i = 0; i < p.elements.length; i++) {
                     if (p.elements[i].type == "choice") {
                         return (p.elements[i].value.split("||")[1]);
@@ -78,13 +86,13 @@ export default (params) => {
             //Based on what type of object we are looking at, we will need the right partial to display the data
             switch (pageData.type) {
                 case "story":
-                    listPartialToUse = "pagePartial";
+                    listPartialToUse = "pagePartial"; //used for displaying pages as list items
                     break;
                 case "page":
-                    listPartialToUse = "elementPartial";
+                    listPartialToUse = "elementPartial"; //used for displaying page elements as list items
                     break;
                 default:
-                    listPartialToUse = "conditionPartial";
+                    listPartialToUse = "conditionPartial"; //used for displaying conditions of an element as list items
                     break;
             }
 
@@ -184,6 +192,7 @@ export default (params) => {
 
     });
 
+    //update text, image, or condition from JSON file
     router.put('/api', updateValidations, async (request, response, next) => {
         try {
             const errors = validationResult(request);
@@ -210,6 +219,7 @@ export default (params) => {
 
     });
 
+    //delete text, image, or condition from JSON file
     router.delete('/api', async (request, response, next) => {
         console.log('---request body:', request.body);
         try {
@@ -226,7 +236,7 @@ export default (params) => {
 
     });
 
-    //this deletes any entry with the uuid
+    //this deletes any entry with the uuid - is this better than the one above?
     router.delete('/:uuid', async (request, response, next) => {
         console.log('---attempting to delete:', request.params.uuid);
         try {
@@ -243,6 +253,7 @@ export default (params) => {
 
     });
 
+    //
     router.post('/newpage/:uuid', validations, async (request, response, next) => {
 
         try {

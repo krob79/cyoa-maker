@@ -20,7 +20,7 @@
         <div class="feedback-info media-body">
             <div class="feedback-head">
                 <div class="feedback-title">
-                    <%=item.value %>
+                    from partial: <%-item.value %>
                 </div>
                 <%if(item.elements && item.elements.filter( el=> el.type == 'text').length >0){%>
                     <div class="pageIcon">

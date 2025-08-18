@@ -165,7 +165,7 @@ $(function feedback() {
             <div class="feedback-item ${item.type}">
                 <div class="feedback-info media-body">
                     <div class="feedback-head">
-                        <div class="feedback-title">${item.value}</div>
+                        <div class="feedback-title">from update: ${item.value}</div>
                         ${(item.elements && item.elements.filter(el => el.type == 'text').length > 0) ? `<div class="pageIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-type" viewBox="0 0 16 16">
@@ -448,9 +448,6 @@ $(function feedback() {
 
             let uuidinput = document.getElementById(`hiddenAiImageuuid`);
             uuidinput.value = button.dataset.bsElementuuid;
-
-
-
         });
 
     });
@@ -649,6 +646,9 @@ $(function feedback() {
 
     }
 
+
+
+    //this function is called for submitting both regular images or AI-generated images
     async function submitImage(e) {
         //get the right form ID
         const uploadForm = document.getElementById(e.target.id);
@@ -669,10 +669,9 @@ $(function feedback() {
         //if the form submitted is from regular local images, generate the img copy and return the file path
         if (e.target.id == "uploadFormModal") {
             imgPath = await createLocalImgUploadPath(formData);
-        } else {
-
+        } else if (e.target.id == "uploadImageFormModal_AI") {
+            imgPath = formData.get("imagepath_ai");
         }
-
 
         let assembledData = {
             uuid: formData.get(`uuid`),
@@ -703,7 +702,14 @@ $(function feedback() {
                     updateFeedback(data);
                 },
                 complete: function () {
-                    $('.elementModal').modal('hide');
+                    if (e.target.id == "uploadFormModal") {
+                        $('.elementModal').modal('hide');
+                    } else if (e.target.id == "uploadImageFormModal_AI") {
+                        aiForm_reset();
+                        $('.elementAiModal').modal('hide');
+                    }
+
+
                 }
             });
 

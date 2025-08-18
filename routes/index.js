@@ -2,14 +2,12 @@ import express from 'express';
 
 // import speakersRoute from './speakers.js';
 // import feedbackRoute from './feedback.js';
-import storyPageRoute from './storyRoute.js';
+import storyRoute from './storyRoute.js';
+import inventoryRoute from './inventoryRoute.js';
 
 const router = express.Router();
 
 export default (params) => {
-    // console.log(`---params? `, params);
-
-    // const { speakersService } = params;
 
     // router.use((request, response, next) => {
     //     console.log("---middleware?");
@@ -18,15 +16,7 @@ export default (params) => {
 
     router.get('/', async (request, response, next) => {
         try {
-            // const artwork = await speakersService.getAllArtwork();
-            // const topSpeakers = await speakersService.getList();
 
-            // if (!request.session.visitcount) {
-            //     request.session.visitcount = 1;
-            // } else {
-            //     request.session.visitcount += 1;
-            //     console.log(`---NUM OF VISITS: ${request.session.visitcount}`);
-            // }
             // //response.sendFile(path.join(__dirname, './static/index.html'));
             // return response.render('layout', { pageTitle: 'Peace, y\'all!', template: 'index', topSpeakers, artwork });
             return response.send("MAIN PAGE");
@@ -46,7 +36,8 @@ export default (params) => {
 
     // router.use('/speakers', speakersRoute(params));
     // router.use('/feedback', feedbackRoute(params));
-    router.use('/page', storyPageRoute(params));
+    router.use('/page', storyRoute(params));
+    router.use('/inventory', inventoryRoute(params));
 
     return router;
 }

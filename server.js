@@ -1,17 +1,3 @@
-// require('dotenv').config();
-// const express = require('express');
-// const cors = require('cors');
-
-// //uploading files
-// const fileUpload = require('express-fileupload');
-// const fs = require('fs');
-// const https = require('https');
-// const path = require('path');
-// const cookieSession = require('cookie-session');
-// const createError = require('http-errors');
-// const bodyParser = require('body-parser');
-// const OpenAI = require('openai');
-
 import 'dotenv/config';
 
 import express from 'express';
@@ -27,6 +13,9 @@ import createError from 'http-errors';
 import bodyParser from 'body-parser';
 import OpenAI from 'openai';
 import Sortable from 'sortablejs';
+
+// import inventory from './routes/inventory.js'; // ensure singleton loads once
+// import inventoryRouter from './routes/inventoryRoute.js';
 
 const app = express();
 const port = 3000;
@@ -85,26 +74,14 @@ app.use(cors());
 // Enable file upload middleware
 app.use(fileUpload());
 
+// app.use('/inventory', inventoryRouter);
 app.use('/', routes({ storyService }));
 
 
-//this is not really being used at the moment, but created it to try and store a file reference in a file input field...?
-async function createImageFileFromUrl(imageUrl, fileName = 'image.png', fileType = 'image/png') {
-    try {
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP ERROR! Status: ${response.status}`)
-        }
-        const blob = await response.blob();
-        const imageFile = new File([blob], fileName, { type: fileType });
-        return imageFile;
-    } catch (e) {
-        console.error(`ERROR creating file from URL: ${error}`);
-        return null;
-    }
-
-}
-
+// Optional graceful shutdown persistence
+// process.on('SIGINT', async () => {
+//     try { await inventory.save(); } finally { process.exit(0); }
+// });
 
 //downloading an image from a URL
 async function saveImage(url, filepath) {
@@ -120,7 +97,7 @@ async function saveImage(url, filepath) {
         });
         return file;
     } catch (error) {
-        console.error("Error saving image:", error);
+        console.error("Error saving image:");
     }
 }
 
@@ -202,11 +179,10 @@ app.post('/generate-img', async (req, res) => {
 
         //download and create local version of generated image
         let uploadPath = uploadDir + '/' + `${newFilename}.jpg`;
-        const dlImage = await saveImage(imageUrl, uploadPath);
+        const dlImageFile = await saveImage(imageUrl, uploadPath);
 
         let splitPath = uploadPath.split('/');
         let shortenedPath = splitPath[splitPath.length - 1];
-        console.log("---shortened path: ", shortenedPath);
 
         return res.json({ url: imageUrl, local: shortenedPath });
 
