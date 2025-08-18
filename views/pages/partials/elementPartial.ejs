@@ -1,11 +1,13 @@
 <div data-uuid="<%=item.uuid %>" class="feedback-item item-list media-list">
     <div class="editButtons">
+        <!-- Delete button with SVG trashcan icon -->
         <button type="button" data-bs-uuid="<%=item.uuid %>" data-bs-elementType="<%=item.type %>"
             class="btn item-delete-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 viewBox="0 -960 960 960">
                 <path
                     d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120zm400-600H280v520h400zM360-280h80v-360h-80zm160 0h80v-360h-80zM280-720v520z" />
             </svg></button>
+        <!-- Edit button with SVG pencil icon -->
         <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT"
             data-bs-elementType="<%=item.type %>" data-bs-elementuuid="<%=item.uuid %>"
             data-bs-elementvalue="<%=item.value %>" data-bs-target="#<%=item.type %>UpdateModal"><svg
@@ -15,12 +17,13 @@
             </svg></button>
     </div>
 
-    <div class="feedback-item <%=item.type %>">
+    <div class="feedback-item <%=item.type %> <%= item.isVisible? '':'edit-hidden' %>">
         <div class="feedback-info media-body">
             <div class="feedback-head">
                 <div class="feedback-title"></div>
             </div>
             <div class="feedback-message">
+                <!-- If the element is of type "choice" and contains a reference to a UUID that exists, then display it or indicate that this is a broken link -->
                 <% if (item.type=='choice' ){ %>
                     <% if (allPageUUIDs.includes(item.value.split("||")[1])){%>
                         <strong><a href="/page/<%=item.value.split('||')[1]%>/edit">
@@ -57,6 +60,7 @@
                                         <%}%>
             </div>
         </div>
+        <!-- Includes a link to a edit conditions page if an element array is detected -->
         <% if (item.elements && item.elements.length> 0){%>
             <div class="feedback-message">
 

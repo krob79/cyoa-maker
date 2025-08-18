@@ -47,6 +47,10 @@ header .navbar-brand {
   background: hsl(50, 91%, 47%);
 }
 
+.edit-hidden {
+  opacity: 0.4;
+}
+
 .content-chunk {
   display: flex;
   align-items: center;

@@ -7,6 +7,7 @@ $(function feedback() {
 
     console.log("--------loading pageUpdates.js!");
 
+    //applying drag and drop code
     let el = document.getElementById('draggableList');
     let sortable = new Sortable(el, {
         swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
@@ -113,7 +114,7 @@ $(function feedback() {
                                 </svg>
                             </button>
                         </div>
-                        <div class="feedback-item ${item.type}">
+                        <div class="feedback-item ${item.type} ${item.isVisible ? '' : 'edit-hidden'}">
                             <div class="feedback-info media-body">
                                 <div class="feedback-head">
                                     <div class="feedback-title">${(item.type == 'condition') ?

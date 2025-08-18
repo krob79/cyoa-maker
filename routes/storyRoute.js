@@ -45,9 +45,9 @@ export default (params) => {
         response.setHeader('Expires', '0');
 
         // inventory.setAmount('items', 'apple', 0);
-        // inventory.dispatchEvent({ evt: 'itemevent', name: 'apple', amount: 5 });
+        inventory.dispatchEvent({ evt: 'itemevent', name: 'woodencane', amount: 1 });
 
-        // console.log("----get apple: ", inventory.get('items', 'apple'));
+        console.log("----get apple: ", inventory.get('items', 'apple'));
         // console.log("----APPLES > 100? " + inventory.check('apple>100'));
 
         try {
@@ -63,19 +63,28 @@ export default (params) => {
             }
             const allPageUUIDs = pages.map(p => p.uuid);
 
-            const allConditions = pages.map(p => {
-                for (let i = 0; i < p.elements.length; i++) {
-                    if (p.elements[i].type == "choice") {
-                        return (p.elements[i].value.split("||")[1]);
-                    }
-                }
-
-            });
-
-
             //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-            let pageListItems = pageData.elements;
+            // let pageListItems = pageData.elements;
+
+            let pageListItems = pageData.elements.map(el => {
+                // console.log(`---what type is this element? ${el.type}`);
+                //default true value, because there may be no conditions applied
+                el.isVisible = true;
+                el.opacity = "1";
+                //checking if these elements are the type which would have conditions
+                if (el.type == "text" || el.type == "image" || el.type == "choice") {
+                    for (let i = 0; i < el.elements.length; i++) {
+                        console.log(`---Checking condition...${inventory.check(el.elements[i].value)}`);
+                        if (!inventory.check(el.elements[i].value)) {
+                            el.isVisible = false;
+                            el.opacity = "0.4";
+                        }
+                    }
+                }
+                return el;
+            });
+
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;

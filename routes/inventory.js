@@ -179,10 +179,18 @@ class Inventory extends EventEmitter {
         return null;
     }
 
+    _decodeEntities(str) {
+        return str
+            .replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .replace(/&equals;/gi, '=');
+    }
+
     /** Parse "name op value" like 'apple>2' or 'persontomeet="Bob Smith"'. */
     _parseCondition(expr) {
         if (typeof expr !== 'string') throw new Error('Condition must be a string');
-        const s = expr.trim();
+        const s = this._decodeEntities(expr.trim());
 
         // name (group1), operator (group2), value (group3)
         const m = s.match(/^(.+?)(<=|>=|==|=|!=|<|>)(.+)$/);
