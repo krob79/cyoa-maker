@@ -120,6 +120,7 @@ p.pageText {
   gap: 15px;
   /* flex-direction: column; */
   position: absolute;
+  z-index: 10;
   right: 0%;
   display: flex;
   justify-content: flex-end;

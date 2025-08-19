@@ -3,45 +3,51 @@
         <h5 class="modal-title element-modal-title" id="modalchoiceLabel">Form Title</h5>
     </div>
     <div class="modal-body">
-        <form id="choiceFormModal" class="row g-3 mb-3 was-validated" novalidate>
-            <input type="hidden" name="hiddenstoryuuid" id="hiddenstoryuuid" value="<%=uuid %>">
-            <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
-            <input type="hidden" name="section" value="elements">
-            <input type="hidden" id="destinationModal" name="destinationModal" value="New">
-            <input type="hidden" id="choicerequest" name="choicerequest" value="">
-            <div class="row">
-                <div class="col-md-12">
-                    <a id="modalchoiceConditions" href="">Review Conditions For This Choice ></a>
+        <div class="container-fluid">
+            <form id="choiceFormModal" class="row g-3 mb-3 was-validated" novalidate>
+                <input type="hidden" name="hiddenstoryuuid" id="hiddenstoryuuid" value="<%=uuid %>">
+                <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
+                <input type="hidden" name="section" value="elements">
+                <input type="hidden" id="destinationModal" name="destinationModal" value="New">
+                <input type="hidden" id="choicerequest" name="choicerequest" value="">
+                <div class="row">
+
                 </div>
-                <div class="col-md-12 input-group">
-                    <span class="input-group-text" id="basic-addon3">Link Label:</span>
-                    <input type="text" class="form-control" name="modalchoiceInput" id="modalchoiceInput"
-                        aria-describedby="basic-addon3 basic-addon4">
+                <div class="row">
+                    <div class="col-md-12 input-group">
+                        <span class="input-group-text" id="basic-addon3">Link Label:</span>
+                        <input type="text" class="form-control" name="modalchoiceInput" id="modalchoiceInput"
+                            aria-describedby="basic-addon3 basic-addon4">
+                    </div>
+                    <div class="col-md-6 input-group">
+                        <label class="input-group-text" for="inputGroupSelect01">Link to Page:</label>
+                        <select class="form-select" id="choiceDestinationModal"
+                            onchange="changeChoiceDestinationModal()">
+                            <option selected value="New">Create New Page</option>
+                            <% for (let i=0; i < pages.length; i++){ %>
+                                <option value="<%= pages[i].uuid %>">
+                                    <%=pages[i].title%>
+                                </option>
+                                <%}%>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <a id="modalchoiceConditions" href="">Review Conditions For This Choice ></a>
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 input-group">
-                    <label class="input-group-text" for="inputGroupSelect01">Link to Page:</label>
-                    <select class="form-select" id="choiceDestinationModal" onchange="changeChoiceDestinationModal()">
-                        <option selected value="New">Create New Page</option>
-                        <% for (let i=0; i < pages.length; i++){ %>
-                            <option value="<%= pages[i].uuid %>">
-                                <%=pages[i].title%>
-                            </option>
-                            <%}%>
-                    </select>
+                <div class="row">
+                    <div class="col-md-12 modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit">Update</button>
+                    </div>
                 </div>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
-                <div class="col-md-12 modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" type="submit">Update</button>
-                </div>
-            </div>
 
 
-        </form>
+            </form>
+        </div>
 
     </div>
 

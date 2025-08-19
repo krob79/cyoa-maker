@@ -1,0 +1,111 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title element-modal-title" id="modaleventLabel">Form Title</h5>
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid">
+            <form id="eventFormModal" class="row g-3 mb-3 was-validated" novalidate>
+                <input type="hidden" name="hiddeneventuuid" id="hiddeneventuuid" value="<%=uuid %>">
+                <input type="hidden" name="section" value="elements">
+                <input type="hidden" id="comparisonModal" name="comparisonModal" value="">
+                <input type="hidden" id="eventrequest" name="eventrequest" value="">
+                <div class="row">
+                    <div class="col-md-12">
+                        Make This Event Trigger:
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="eventType" id="eventType1" value="auto">
+                            <label class="form-check-label" for="eventType1">
+                                Immediately
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="eventType" id="eventType2" value="user"
+                                checked>
+                            <label class="form-check-label" for="eventType2">
+                                From User Action
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">Property Name:</span>
+                            <input type="text" class="form-control" name="modaleventInput" id="modaleventInput"
+                                aria-describedby="basic-addon3 basic-addon4">
+                        </div>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- <div class="input-group" width="50px"> -->
+                        <label class="input-group-text" for="inputGroupSelect01">Change:</label>
+                        <select class="form-select" id="eventComparisonModal" name="eventComparisonModal"
+                            onchange="changeeventComparisonModal()">
+                            <option value="-">decrease by</option>
+                            <option value="=">set equal to</option>
+                            <option value="+">increase by</option>
+                        </select>
+                        <!-- </div> -->
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon4">Value:</span>
+                            <input type="text" class="form-control" name="modaleventInput2" id="modaleventInput2"
+                                aria-describedby="basic-addon3 basic-addon4">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" type="submit">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+</div>
+<%- include('formElementValidation', {}); %>
+    <script>
+        const radioButtons = document.querySelectorAll('input[name="radioDefault"]');
+        radioButtons.forEach(radioButton => {
+            radioButton.addEventListener('change', function () {
+                // This function will execute when the selection changes
+                if (this.checked) {
+                    console.log("Selected radio button value:", this.value);
+                    // You can perform other actions here based on the selected value
+                }
+            });
+        });
+
+        function changeeventComparisonModal(display = null) {
+
+            let dropdown = document.getElementById('eventComparisonModal');
+            let hiddeneventuuid = document.getElementById("hiddeneventuuid");
+            let comparisonModal = document.getElementById("comparisonModal");
+
+            if (display) {
+                comparisonModal.value = display;
+            } else {
+                comparisonModal.value = dropdown.value
+            }
+
+            console.log("calling changeeventComparisonModal() ", dropdown.value);
+            // console.log(choiceDropdown);
+            // if (destination.value == "Choose Page") {
+            //   document.getElementById("choiceElementSubmit").disabled = true;
+            // } else {
+            //   document.getElementById("choiceElementSubmit").disabled = false;
+            // }
+        }
+
+    </script>

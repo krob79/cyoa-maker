@@ -44,11 +44,7 @@ export default (params) => {
         response.setHeader('Pragma', 'no-cache');
         response.setHeader('Expires', '0');
 
-        // inventory.setAmount('items', 'apple', 0);
-        inventory.dispatchEvent({ evt: 'itemevent', name: 'woodencane', amount: 1 });
 
-        console.log("----get apple: ", inventory.get('items', 'apple'));
-        // console.log("----APPLES > 100? " + inventory.check('apple>100'));
 
         try {
             //get the entire list of data
@@ -75,16 +71,19 @@ export default (params) => {
                 //checking if these elements are the type which would have conditions
                 if (el.type == "text" || el.type == "image" || el.type == "choice") {
                     for (let i = 0; i < el.elements.length; i++) {
-                        console.log(`---Checking condition...${inventory.check(el.elements[i].value)}`);
+                        console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
                         if (!inventory.check(el.elements[i].value)) {
                             el.isVisible = false;
-                            el.opacity = "0.4";
+                            // el.opacity = "0.4";
                         }
                     }
                 }
+                //if type is event, parse the string value and dispatch any auto events
+                if (el.type == "event") {
+                    inventory.parseEventCommand(el.value);
+                }
                 return el;
             });
-
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
@@ -111,6 +110,7 @@ export default (params) => {
         }
     });
 
+    //used to pull data about an element, not to view as a page
     router.get('/:uuid', async (request, response, next) => {
         const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
         return response.json(pageData);
@@ -159,15 +159,13 @@ export default (params) => {
             // console.log(`----reading in thisData...`);
             // console.log(thisData);
             const hasSection = Object.hasOwn(thisData, section);
-            // console.log(`----Does this object have a property named '${section}'? ${hasSection}`);
-            // if (!hasSection) {
-            //     console.log("ERROR - No section exists to add this new content - possibly wrong UUID referenced as input");
-            //     throw Error({ message: "No section exists to add this new content - possibly wrong UUID" })
-            //     return response.redirect('/page');
-            // }
 
-            // console.log("---adding to section: ", section);
-
+            /*
+            TO DO: Figure out if there is a simpler way and perhaps just give all of the FormData to this service and have 
+            the whole thing written to the datafile? That way, we can structure our FormData how we like and not worry about
+            shoehorning data into certain slots? We were trying to make all data objects structured the same for ease of use,
+            but it might have made things more complicated instead? Ex: Choices and their values and having to split text
+            */
             await storyService.addDataByUUID({ uuid, title, section, type, value, html });
 
             const pageData = await storyService.getList();

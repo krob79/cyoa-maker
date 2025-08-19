@@ -37,7 +37,17 @@ $(function feedback() {
     }
 
     function parseConditionString(str) {
+        console.log("---parseCondition ", str);
+        str = str.replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .replace(/&equals;/gi, '=');
+
+        console.log("---parseCondition ", str);
+
         const regex = /([A-Za-z0-9]+)([<>=])([A-Za-z0-9]+)/gm;
+
+
 
         let m;
         let result = [];
@@ -49,8 +59,9 @@ $(function feedback() {
 
             // The result can be accessed through the `m`-variable.
             m.forEach((match, groupIndex) => {
-                // console.log(`Found match, group ${groupIndex}: ${match}`);
+                console.log(`Found match, group ${groupIndex}: ${match}`);
             });
+
             result = [m[1], m[2], m[3]];
         }
 
@@ -166,7 +177,7 @@ $(function feedback() {
             <div class="feedback-item ${item.type}">
                 <div class="feedback-info media-body">
                     <div class="feedback-head">
-                        <div class="feedback-title">from update: ${item.value}</div>
+                        <div class="feedback-title">${item.value}</div>
                         ${(item.elements && item.elements.filter(el => el.type == 'text').length > 0) ? `<div class="pageIcon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-type" viewBox="0 0 16 16">
@@ -523,12 +534,25 @@ $(function feedback() {
                     modalInput.value = el_value;
                     break;
                 case "condition":
-                    let conditionString = el_value;
                     let values = parseConditionString(el_value);
                     document.getElementById('modalconditionInput').value = values[0];
                     document.getElementById('conditionComparisonModal').value = values[1];
                     document.getElementById('modalconditionInput2').value = values[2];
                     break;
+                case "event":
+                    let eValues = el_value.split("_");
+                    let eType = eValues[0];
+                    document.getElementById('modaleventInput').value = eValues[1];
+                    document.getElementById('eventComparisonModal').value = eValues[2];
+                    document.getElementById("modaleventInput2").value = eValues[3];
+                    const radios = document.getElementsByName("eventType"); // Get all radio buttons with the specified name
+                    for (let i = 0; i < radios.length; i++) {
+                        if (radios[i].value === eType) {
+                            radios[i].checked = true;
+                            break; // Exit the loop once the desired radio button is found and checked
+                        }
+                    }
+
             }
 
             if (btn_request == "POST") {
@@ -840,6 +864,97 @@ $(function feedback() {
 
 
             }
+        }
+
+    });
+
+    const eventForm = document.getElementById("eventFormModal");
+    eventForm.addEventListener("submit", function (e) {
+        // Prevent the default submit form event
+        e.preventDefault();
+        console.log("-----event FORM SUBMIT FROM MODAL");
+
+        const formData = new FormData(eventForm);
+
+        for (const pair of formData.entries()) {
+            console.log(pair[0], ":", pair[1]);
+        }
+
+        let possibleNewDestinationUUID;
+
+        //we have to put this in a function so that it doesn't attempt to run before the page is created with a new ID
+
+        let assembledData = {
+            uuid: formData.get("hiddeneventuuid"),
+            newDataObj: {
+                occurs: formData.get('eventType'),
+                property: formData.get('modaleventInput'),
+                operator: formData.get('eventComparisonModal'),
+                amount: formData.get('modaleventInput2'),
+                value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')}`,
+                html: `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                    height="24" fill="currentColor" viewBox="0 -960 960 960">
+                                    <path
+                                        d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
+                                </svg>  Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong>`
+            }
+        }
+        console.log("----SENDING ASSEMBLED DATA...");
+        console.log(assembledData);
+
+        if (formData.get("eventrequest") == "POST") {
+            console.log("----creating new content");
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'POST',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    uuid: formData.get("hiddeneventuuid"),
+                    section: formData.get("section"),
+                    type: `event`,
+                    occurs: formData.get('eventType'),
+                    property: formData.get('modaleventInput'),
+                    operator: formData.get('eventComparisonModal'),
+                    amount: formData.get('modaleventInput2'),
+                    value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')}`,
+                    html: `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                    height="24" fill="currentColor" viewBox="0 -960 960 960">
+                                    <path
+                                        d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
+                                </svg>  Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong>`
+                },
+                success: function (data) {
+                    console.log("----WE SUBMITTED eventS FROM THE MODAL");
+                    console.log(data);
+                    $('#myChoiceToast').toast('show');
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+        } else {
+
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                // Gather all data from the form and create a JSON object from it
+                data: {
+                    ...assembledData
+                },
+                success: function (data) {
+                    console.log(data);
+                    updateFeedback(data);
+                },
+                complete: function () {
+                    $(`.elementModal`).modal('hide');
+                }
+            });
+
+
         }
 
     });

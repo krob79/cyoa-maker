@@ -4,14 +4,14 @@
     "items": [
       {
         "name": "apple",
-        "amount": 111,
+        "amount": 4,
         "meta": {
           "createdAt": "2025-08-17T19:26:30.166Z"
         }
       },
       {
         "name": "woodencane",
-        "amount": 4,
+        "amount": 1,
         "meta": {
           "createdAt": "2025-08-18T15:47:05.891Z"
         }

@@ -250,6 +250,31 @@ class Inventory extends EventEmitter {
         }
     }
 
+    parseEventCommand(str) {
+        let split = str.split('_');
+        let eType = split[0];
+        let eProperty = split[1];
+        let eOperator = split[2];
+        let eAmount = split[3];
+        console.log(`----found event - ${eType} / ${eProperty} / ${eOperator} / ${eAmount}`);
+        if (eType == "auto") {
+            switch (eOperator) {
+                case "+":
+                    console.log(`---increasing amount of ${eProperty} by ${eAmount}`);
+                    this.dispatchEvent({ evt: 'itemevent', name: eProperty, amount: eAmount });
+                    break;
+                case "=":
+                    this.setAmount('items', eProperty, eAmount);
+                    break;
+                case "-":
+                    this.dispatchEvent({ evt: 'itemevent', name: eProperty, amount: (eAmount * -1) });
+                    break;
+            }
+
+        }
+
+    }
+
     /** Single entry point for your event syntax */
     dispatchEvent(evt) {
         if (!evt || !evt.evt || !evt.name) return;

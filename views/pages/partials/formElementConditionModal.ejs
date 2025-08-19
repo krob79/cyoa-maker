@@ -3,45 +3,53 @@
         <h5 class="modal-title element-modal-title" id="modalconditionLabel">Form Title</h5>
     </div>
     <div class="modal-body">
-        <form id="conditionFormModal" class="row g-3 mb-3 was-validated" novalidate>
-            <input type="hidden" name="hiddenconditionuuid" id="hiddenconditionuuid" value="<%=uuid %>">
-            <input type="hidden" name="section" value="elements">
-            <input type="hidden" id="comparisonModal" name="comparisonModal" value="">
-            <input type="hidden" id="conditionrequest" name="conditionrequest" value="">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="input-group">
-                        <span class="input-group-text" id="basic-addon3">Property Name:</span>
-                        <input type="text" class="form-control" name="modalconditionInput" id="modalconditionInput"
-                            aria-describedby="basic-addon3 basic-addon4">
-                    </div>
-                    <div class="valid-feedback">
-                        Looks good!
-                    </div>
-                </div>
-                <div class="col-md-12 input-group">
-                    <label class="input-group-text" for="inputGroupSelect01">Comparison:</label>
-                    <select class="form-select" id="conditionComparisonModal" name="conditionComparisonModal"
-                        onchange="changeconditionComparisonModal()">
-                        <option value="<">&lt;</option>
-                        <option value="=">=</option>
-                        <option value=">">&gt;</option>
-                    </select>
-                </div>
-                <div class="col-md-12">
-                    <div class="input-group">
-                        <span class="input-group-text" id="basic-addon4">Value:</span>
-                        <input type="text" class="form-control" name="modalconditionInput2" id="modalconditionInput2"
-                            aria-describedby="basic-addon3 basic-addon4">
+        <div class="container-fluid">
+            <form id="conditionFormModal" class="row g-3 mb-3 was-validated" novalidate>
+                <input type="hidden" name="hiddenconditionuuid" id="hiddenconditionuuid" value="<%=uuid %>">
+                <input type="hidden" name="section" value="elements">
+                <input type="hidden" id="comparisonModal" name="comparisonModal" value="">
+                <input type="hidden" id="conditionrequest" name="conditionrequest" value="">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon3">Property Name:</span>
+                            <input type="text" class="form-control" name="modalconditionInput" id="modalconditionInput"
+                                aria-describedby="basic-addon3 basic-addon4">
+                        </div>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" type="submit">Update</button>
-            </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- <div class="input-group" width="50px"> -->
+                        <label class="input-group-text" for="inputGroupSelect01">Comparison:</label>
+                        <select class="form-select" id="conditionComparisonModal" name="conditionComparisonModal"
+                            onchange="changeconditionComparisonModal()">
+                            <option value="<">&lt;</option>
+                            <option value="=">=</option>
+                            <option value=">">&gt;</option>
+                        </select>
+                        <!-- </div> -->
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon4">Value:</span>
+                            <input type="text" class="form-control" name="modalconditionInput2"
+                                id="modalconditionInput2" aria-describedby="basic-addon3 basic-addon4">
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" type="submit">Update</button>
+                        </div>
+                    </div>
+                </div>
 
-        </form>
+            </form>
+        </div>
 
     </div>
 
