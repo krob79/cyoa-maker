@@ -1,0 +1,27 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="maincontent feedback">
+                <h1>
+                    <% if(pageData.type=="story" || pageData.type=="page" ){ %>
+                        <%= pageData.value %>
+                            <%}else if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ){%>
+                                Editing Condition of <%= pageData.type %> element
+                                    <%}%>
+                </h1>
+
+                <div class="list-group feedback-items">
+                    <%if(pageListItems.length> 0){%>
+                        <% pageListItems.forEach(function (item) {%>
+                            <div class="content-chunk">
+                                <%- include(`./partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs});
+                                    %>
+                            </div>
+                            <%})%>
+                                <%}%>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

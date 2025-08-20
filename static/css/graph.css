@@ -1,0 +1,72 @@
+/* public/graph.css */
+:root {
+    --bg: #0b1020;
+    --ink: #e9ecf1;
+    --muted: #93a1b1;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #243047;
+    background: #0f152a;
+    position: sticky;
+    top: 0;
+}
+
+.bar h1 {
+    font-size: 1.1rem;
+    margin: 0;
+    letter-spacing: .02em;
+    font-weight: 600;
+}
+
+main {
+    padding: 0.5rem;
+}
+
+.link {
+    fill: none;
+    stroke: #395985;
+    stroke-width: 1.5px;
+}
+
+.node circle {
+    fill: #17223c;
+    stroke: #7aa2f7;
+    stroke-width: 1.5px;
+}
+
+.node circle.cycle {
+    stroke: #e87979;
+    stroke-dasharray: 3 2;
+}
+
+.node text {
+    font-size: 12px;
+    dominant-baseline: middle;
+    fill: var(--ink);
+}
+
+#tree {
+    width: 100%;
+    height: 75vh;
+    border: 1px solid #243047;
+    background: linear-gradient(180deg, #0c1327, #0b1020 35% 65%, #0c1327);
+    border-radius: 8px;
+}

@@ -4,6 +4,7 @@ import { check, validationResult } from 'express-validator';
 const router = express.Router();
 
 import inventory from './inventory.js';
+import StoryService from '../services/StoryService.js';
 
 const validations = [
     check('value')
@@ -39,12 +40,19 @@ export default (params) => {
 
     });
 
+    router.get('/graph', (req, res) => {
+        res.render('graph', { title: 'Story Graph' });
+    })
+
+    router.get('/api/story', async (req, res) => {
+        const story = await storyService.getList();
+        res.json(story);
+    });
+
     router.get('/:uuid/edit', async (request, response, next) => {
         response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         response.setHeader('Pragma', 'no-cache');
         response.setHeader('Expires', '0');
-
-
 
         try {
             //get the entire list of data
@@ -110,6 +118,75 @@ export default (params) => {
         }
     });
 
+    router.get('/:uuid/view', async (request, response, next) => {
+        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        response.setHeader('Pragma', 'no-cache');
+        response.setHeader('Expires', '0');
+
+        try {
+            //get the entire list of data
+            const allData = await storyService.getList();
+            //the first "child" should be the story object
+            const story = allData[0];
+            //all elements of the story object should be page objects
+            let pages = story.elements;
+            //if no elements array is found, create an empty one
+            if (!pages) {
+                allData[0].elements = [];
+            }
+            const allPageUUIDs = pages.map(p => p.uuid);
+
+            //Get list items for this specific UUID
+            const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
+            // let pageListItems = pageData.elements;
+
+            let pageListItems = pageData.elements.map(el => {
+                // console.log(`---what type is this element? ${el.type}`);
+                //default true value, because there may be no conditions applied
+                el.isVisible = true;
+                el.opacity = "1";
+                //checking if these elements are the type which would have conditions
+                if (el.type == "text" || el.type == "image" || el.type == "choice") {
+                    for (let i = 0; i < el.elements.length; i++) {
+                        console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
+                        if (!inventory.check(el.elements[i].value)) {
+                            el.isVisible = false;
+                            // el.opacity = "0.4";
+                        }
+                    }
+                }
+                //if type is event, parse the string value and dispatch any auto events
+                if (el.type == "event") {
+                    inventory.parseEventCommand(el.value);
+                }
+                return el;
+            });
+
+            const errors = request.session.pageData ? request.session.pageData.errors : false;
+            const successMessage = request.session.pageData ? request.session.pageData.message : false;
+            request.session.pageData = {};
+
+            let listPartialToUse;
+            //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
+            //Based on what type of object we are looking at, we will need the right partial to display the data
+            switch (pageData.type) {
+                case "story":
+                    listPartialToUse = "pagePartial"; //used for displaying pages as list items
+                    break;
+                case "page":
+                    listPartialToUse = "elementPartial"; //used for displaying page elements as list items
+                    break;
+                default:
+                    listPartialToUse = "conditionPartial"; //used for displaying conditions of an element as list items
+                    break;
+            }
+
+            return response.render('final', { pageTitle: "View Mode", template: 'storyPage', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
+        } catch (err) {
+            return next(err);
+        }
+    });
+
     //used to pull data about an element, not to view as a page
     router.get('/:uuid', async (request, response, next) => {
         const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
@@ -117,27 +194,27 @@ export default (params) => {
 
     });
 
-    router.post('/', validations, async (request, response, next) => {
-        console.log("--- post /");
-        try {
-            const result = validationResult(request);
-            if (!result.isEmpty()) {
-                request.session.feedback = {
-                    errors: errors.array(),
-                }
-                return response.redirect('/');
-            }
-            //if we get this far without errors, we assume the request body is valid, so grab those values
-            const { name, email, title, message } = request.body;
-            //
-            await storyService.addEntry(uuid, name, email, title, message);
-            request.session.feedback = { message: 'Thank you for your feedback!' };
-            // return response.send(`Feedback posted`);
-            return response.redirect('/');
-        } catch (err) {
-            return next(err);
-        }
-    });
+    // router.post('/', validations, async (request, response, next) => {
+    //     console.log("--- post /");
+    //     try {
+    //         const result = validationResult(request);
+    //         if (!result.isEmpty()) {
+    //             request.session.feedback = {
+    //                 errors: errors.array(),
+    //             }
+    //             return response.redirect('/');
+    //         }
+    //         //if we get this far without errors, we assume the request body is valid, so grab those values
+    //         const { name, email, title, message } = request.body;
+    //         //
+    //         await storyService.addEntry(uuid, name, email, title, message);
+    //         request.session.feedback = { message: 'Thank you for your feedback!' };
+    //         // return response.send(`Feedback posted`);
+    //         return response.redirect('/');
+    //     } catch (err) {
+    //         return next(err);
+    //     }
+    // });
 
     router.post('/api', validations, async (request, response, next) => {
         console.log("--- post /api");

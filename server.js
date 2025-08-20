@@ -12,10 +12,6 @@ import cookieSession from 'cookie-session';
 import createError from 'http-errors';
 import bodyParser from 'body-parser';
 import OpenAI from 'openai';
-import Sortable from 'sortablejs';
-
-// import inventory from './routes/inventory.js'; // ensure singleton loads once
-// import inventoryRouter from './routes/inventoryRoute.js';
 
 const app = express();
 const port = 3000;

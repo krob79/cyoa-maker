@@ -1,0 +1,27 @@
+<div id="page">
+    <div id="mid_panel">
+        <div id="content_wrapper" style="display: block;">
+            <div id="content">
+                <h1>
+                    <font dir="auto" style="vertical-align: inherit;">
+                        <font dir="auto" style="vertical-align: inherit;">Let's start with Undum</font>
+                    </font>
+                </h1>
+                <h2></h2>
+                <p>
+                    <%if(pageListItems.length> 0){%>
+                        <% pageListItems.forEach(function (item) {%>
+                            <%if(item.type=="text" || item.type=="image" || item.type=="choice" ){%>
+                                <%- include(`./partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs});
+                                    %>
+                                    <%}%>
+
+                                        <%})%>
+                                            <%}%>
+                </p>
+            </div>
+            <a name="end_of_content"></a>
+        </div>
+
+    </div>
+</div>
