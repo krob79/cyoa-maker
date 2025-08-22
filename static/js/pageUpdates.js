@@ -9,10 +9,13 @@ $(function feedback() {
 
     //applying drag and drop code
     let el = document.getElementById('draggableList');
-    let sortable = new Sortable(el, {
-        swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
-
-    });
+    try {
+        let sortable = new Sortable(el, {
+            swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
+        });
+    } catch (err) {
+        console.log("---no sortable objects found");
+    }
 
     function findUuidInURL() {
         const currentUrl = window.location.href;

@@ -813,7 +813,7 @@ https://codingislove.com/css-speech-bubbles/
 
 /* Main content */
 #content_wrapper {
-    max-width: 40em;
+    max-width: 50em;
     /*    max-width: 28em;*/
     position: relative;
     background: #e6e6c6 url("../images/misc/text_bg.jpg") repeat left top;

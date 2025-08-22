@@ -40,7 +40,7 @@ export default (params) => {
 
     });
 
-    router.get('/graph', (req, res) => {
+    router.get('/:uuid/graph', (req, res) => {
         res.render('graph', { title: 'Story Graph' });
     })
 

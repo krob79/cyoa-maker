@@ -70,6 +70,8 @@
                                 </svg>
                             </button> -->
                             <hr>
+                            <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
+                            <a href="/page/<%=pageData.uuid%>/graph/">View Graph</a><br />
                             <%}%>
                                 <!-- If the data type you're currently viewing is of type "text", "image", or "choice", then the list should show elements from one text/image/choice element that have a type of "condition". The "New Condition" button should be visible to create more of these conditions for a single text/image/choice element  -->
                                 <% if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ) {%>
