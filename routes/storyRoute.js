@@ -112,7 +112,7 @@ export default (params) => {
                     break;
             }
 
-            return response.render('layout', { pageTitle: "Editor Mode", template: 'newList', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
+            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
             return next(err);
         }

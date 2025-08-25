@@ -15,6 +15,13 @@
         "meta": {
           "createdAt": "2025-08-18T15:47:05.891Z"
         }
+      },
+      {
+        "name": "banana",
+        "amount": 4200,
+        "meta": {
+          "createdAt": "2025-08-24T16:59:34.199Z"
+        }
       }
     ],
     "characters": [

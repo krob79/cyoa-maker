@@ -1,7 +1,5 @@
 import express from 'express';
 
-// import speakersRoute from './speakers.js';
-// import feedbackRoute from './feedback.js';
 import storyRoute from './storyRoute.js';
 import inventoryRoute from './inventoryRoute.js';
 
@@ -34,8 +32,6 @@ export default (params) => {
         }
     });
 
-    // router.use('/speakers', speakersRoute(params));
-    // router.use('/feedback', feedbackRoute(params));
     router.use('/page', storyRoute(params));
     router.use('/inventory', inventoryRoute(params));
 

@@ -7,14 +7,11 @@ $(function feedback() {
 
     console.log("--------loading pageUpdates.js!");
 
-    //applying drag and drop code
-    let el = document.getElementById('draggableList');
-    try {
-        let sortable = new Sortable(el, {
-            swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
-        });
-    } catch (err) {
-        console.log("---no sortable objects found");
+    //a small function that just looks at all existing UUIDs and verifies if the supplied UUID actually exists
+    //used for determining if choice elements contain UUIDs for pages that have been deleted
+    function verifyUUID(uuid) {
+        // console.log(`----verifying ${uuid}`, allPageUUIDs.includes(uuid));
+        return allPageUUIDs.includes(uuid);
     }
 
     function findUuidInURL() {
@@ -39,50 +36,93 @@ $(function feedback() {
         return result;
     }
 
-    function parseConditionString(str) {
-        console.log("---parseCondition ", str);
-        str = str.replace(/&gt;/gi, '>')
-            .replace(/&lt;/gi, '<')
-            .replace(/&amp;/gi, '&')
-            .replace(/&equals;/gi, '=');
+    //applying drag and drop code
+    let el = document.getElementById('draggableList');
+    try {
+        let sortable = new Sortable(el, {
+            swapThreshold: 0.75, ghostClass: 'ghost', animation: 150, handle: ".drag-handle", onEnd: (evt) => { reorderElements({ from: evt.oldIndex, to: evt.newIndex }); console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`) },
+        });
+    } catch (err) {
+        console.log("---no sortable objects found");
+    }
 
-        console.log("---parseCondition ", str);
-
-        const regex = /([A-Za-z0-9]+)([<>=])([A-Za-z0-9]+)/gm;
-
-
-
-        let m;
-        let result = [];
-        while ((m = regex.exec(str)) !== null) {
-            // This is necessary to avoid infinite loops with zero-width matches
-            if (m.index === regex.lastIndex) {
-                regex.lastIndex++;
+    function moveElement(arr, old_index, new_index) {
+        // Handle cases where new_index is beyond the current array length by padding with undefined
+        if (new_index >= arr.length) {
+            let k = new_index - arr.length + 1;
+            while (k--) {
+                arr.push(undefined);
             }
+        }
+        // Remove the element from its old position and store it
+        const [element] = arr.splice(old_index, 1);
+        // Insert the stored element at the new position
+        arr.splice(new_index, 0, element);
+        return arr;
+    }
 
-            // The result can be accessed through the `m`-variable.
-            m.forEach((match, groupIndex) => {
-                console.log(`Found match, group ${groupIndex}: ${match}`);
+    async function reorderElements({ from, to }) {
+        console.log(`---calling reorderElements!! ${from} - ${to}`);
+        let uuidInURL = findUuidInURL();
+        let elements;
+        //grab uuid from URL and use that to load in and display data
+        if (uuidInURL) {
+            await fetch(`/page/${uuidInURL}`)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log("-----testfetch: ");
+                    // console.log(data);
+                    elements = data.elements;
+                })
+
+            //Make deep copy of the array so that ALL nested elements are swapped as well
+            let deepCopyArray = structuredClone(elements);
+            //swap the elements in the array
+            deepCopyArray = moveElement(deepCopyArray, from, to);
+
+            let myNewDataObj = { elements: deepCopyArray };
+            console.log("----HERE's the newDataObj to be submitted");
+            console.log(myNewDataObj);
+
+            // XHR POST request
+            $.ajax({
+                url: '/page/api',
+                type: 'PUT',
+                contentType: 'application/json; charset=UTF-8',
+                // Gather all data from the form and create a JSON object from it
+                data: JSON.stringify({
+                    uuid: uuidInURL,
+                    newDataObj: myNewDataObj
+                }),
+                success: function (data) {
+                    console.log("----WE SUBMITTED REORDERED ELEMENTS!!");
+                    console.log(data);
+                    updateDisplay(data);
+                }
             });
 
-            result = [m[1], m[2], m[3]];
+        } else {
+            console.log("-----ERROR: NO UUID FOUND IN URL!!!");
         }
 
-        return result;
     }
 
     function outputHtmlForElement(item) {
         let html = "";
+        let splitText = "";
         switch (item.type) {
             case "page":
                 html = `<a class="pageLink" href="/page/${item.uuid}/edit">View Page</a>`;
+                break;
+            case "text":
+                html = `<p class='pageText'>${item.value}</p>`;
                 break;
             case "image":
                 html = `<img class="pageImage" src="/uploads/${item.value}">`;
                 break;
             case "choice":
                 //TO DO - Make better form validation for entering choices
-                let splitText = item.value.split("||");
+                splitText = item.value.split("||");
                 if (verifyUUID(splitText[1])) {
                     html = `<strong><a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a></strong>`;
                 } else {
@@ -97,8 +137,11 @@ $(function feedback() {
 </svg> ${splitText[0]} </a>`;
                 }
                 break;
-            case "text":
-                html = `<p class='pageText'>${item.value}</p>`;
+            case "event":
+                splitText = item.value.split("_");
+                html = `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
+<path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
+</svg> Custom ${splitText[0]} event: ${splitText[1]}${splitText[2]}${splitText[3]}</strong>`;
                 break;
             case "condition":
                 html = `<p>${item.value}</p>`;
@@ -226,86 +269,18 @@ $(function feedback() {
         return html;
     }
 
-    //a small function that just looks at all existing UUIDs and verifies if the supplied UUID actually exists
-    //used for determining if choice elements contain UUIDs for pages that have been deleted
-    function verifyUUID(uuid) {
-        // console.log(`----verifying ${uuid}`, allPageUUIDs.includes(uuid));
-        return allPageUUIDs.includes(uuid);
-    }
-
-    function moveElement(arr, old_index, new_index) {
-        // Handle cases where new_index is beyond the current array length by padding with undefined
-        if (new_index >= arr.length) {
-            let k = new_index - arr.length + 1;
-            while (k--) {
-                arr.push(undefined);
-            }
-        }
-        // Remove the element from its old position and store it
-        const [element] = arr.splice(old_index, 1);
-        // Insert the stored element at the new position
-        arr.splice(new_index, 0, element);
-        return arr;
-    }
-
-    async function reorderElements({ from, to }) {
-        console.log(`---calling reorderElements!! ${from} - ${to}`);
-        let uuidInURL = findUuidInURL();
-        let elements;
-        //grab uuid from URL and use that to load in and display data
-        if (uuidInURL) {
-            await fetch(`/page/${uuidInURL}`)
-                .then(response => response.json())
-                .then(data => {
-                    // console.log("-----testfetch: ");
-                    // console.log(data);
-                    elements = data.elements;
-                })
-
-            //Make deep copy of the array so that ALL nested elements are swapped as well
-            let deepCopyArray = structuredClone(elements);
-            //swap the elements in the array
-            deepCopyArray = moveElement(deepCopyArray, from, to);
-
-            let myNewDataObj = { elements: deepCopyArray };
-            console.log("----HERE's the newDataObj to be submitted");
-            console.log(myNewDataObj);
-
-            // XHR POST request
-            $.ajax({
-                url: '/page/api',
-                type: 'PUT',
-                contentType: 'application/json; charset=UTF-8',
-                // Gather all data from the form and create a JSON object from it
-                data: JSON.stringify({
-                    uuid: uuidInURL,
-                    newDataObj: myNewDataObj
-                }),
-                success: function (data) {
-                    console.log("----WE SUBMITTED REORDERED ELEMENTS!!");
-                    console.log(data);
-                    updateFeedback(data);
-                }
-            });
-
-        } else {
-            console.log("-----ERROR: NO UUID FOUND IN URL!!!");
-        }
-
-    }
-
     let allPageUUIDs = [];
-    let currentElements = [];
-    async function updateFeedback(data) {
+
+    async function updateDisplay(data) {
         allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
 
-        // console.log("---updateFeedback - allPageUUIDs? ", allPageUUIDs);
+        // console.log("---updateDisplay - allPageUUIDs? ", allPageUUIDs);
         $('.toast').toast();
         const render = [];
         let assembledHTML = "";
         // Reset all error or success status messages
         $('.feedback-status').empty();
-        console.log("---Calling updateFeedback() - data errors and story? ", data);
+        console.log("---Calling updateDisplay() - data errors and story? ", data);
         // All went well
         if (!data.errors && data.pageData) {
             // The input was valid - reset the form
@@ -391,7 +366,7 @@ $(function feedback() {
                         success: function (story) {
                             // Handle successful deletion, e.g., update UI, show success message
                             console.log('Deletion successful:', story);
-                            updateFeedback(story);
+                            updateDisplay(story);
                         },
                         error: function (xhr, status, error) {
                             // Handle errors, e.g., display error message
@@ -400,7 +375,7 @@ $(function feedback() {
                         },
                         complete: function (story) {
                             // console.log("---COMPLETE");
-                            // updateFeedback(story);
+                            // updateDisplay(story);
                         }
                     });
                 });
@@ -423,7 +398,7 @@ $(function feedback() {
                 success: function (story) {
                     // Handle successful deletion, e.g., update UI, show success message
                     console.log('Deletion successful:', story);
-                    updateFeedback(story);
+                    updateDisplay(story);
                 },
                 error: function (xhr, status, error) {
                     // Handle errors, e.g., display error message
@@ -432,7 +407,7 @@ $(function feedback() {
                 },
                 complete: function (story) {
                     // console.log("---COMPLETE");
-                    //updateFeedback(response.responseJSON);
+                    //updateDisplay(response.responseJSON);
                     $('#pageDeleteModal').modal('hide');
                 }
             });
@@ -452,6 +427,7 @@ $(function feedback() {
     //run the initialization as soon as the page loads
     initializeDeleteButtons();
     initializeDeleteButtonFromModal();
+
 
     //code applied to all modals that have forms for creating / updating page elements
     const elementModals = document.querySelectorAll('.elementModal');
@@ -615,7 +591,7 @@ $(function feedback() {
                     console.log("----WE CREATED BULLSHIT FROM THE MODAL");
                     console.log(data);
                     $('#myTextToast').toast('show');
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -635,7 +611,7 @@ $(function feedback() {
                 success: function (data) {
                     console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
                     console.log(data);
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -673,8 +649,6 @@ $(function feedback() {
         return imgPath;
 
     }
-
-
 
     //this function is called for submitting both regular images or AI-generated images
     async function submitImage(e) {
@@ -727,7 +701,7 @@ $(function feedback() {
                     console.log("----WE SUBMITTED IMAGES FROM THE MODAL");
                     console.log(data);
                     $('#myImageToast').toast('show');
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     if (e.target.id == "uploadFormModal") {
@@ -752,7 +726,7 @@ $(function feedback() {
                 },
                 success: function (data) {
                     console.log(data);
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $('.elementModal').modal('hide');
@@ -840,7 +814,7 @@ $(function feedback() {
                         console.log("----WE SUBMITTED CHOICES FROM THE MODAL");
                         console.log(data);
                         $('#myChoiceToast').toast('show');
-                        updateFeedback(data);
+                        updateDisplay(data);
                     },
                     complete: function () {
                         $(`.elementModal`).modal('hide');
@@ -858,7 +832,7 @@ $(function feedback() {
                     },
                     success: function (data) {
                         console.log(data);
-                        updateFeedback(data);
+                        updateDisplay(data);
                     },
                     complete: function () {
                         $(`.elementModal`).modal('hide');
@@ -932,7 +906,7 @@ $(function feedback() {
                     console.log("----WE SUBMITTED eventS FROM THE MODAL");
                     console.log(data);
                     $('#myChoiceToast').toast('show');
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -950,7 +924,7 @@ $(function feedback() {
                 },
                 success: function (data) {
                     console.log(data);
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -999,7 +973,7 @@ $(function feedback() {
                     console.log("----WE SUBMITTED BULLSHIT FROM THE MODAL");
                     console.log(data);
                     $('#myConditionToast').toast('show');
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -1017,7 +991,7 @@ $(function feedback() {
                 },
                 success: function (data) {
                     console.log(data);
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -1060,7 +1034,7 @@ $(function feedback() {
                     console.log("----WE CREATED PAGE FROM THE MODAL");
                     console.log(data);
                     $('#myPageToast').toast('show');
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -1080,7 +1054,7 @@ $(function feedback() {
                 success: function (data) {
                     console.log("----WE UPDATED PAGE FROM THE MODAL");
                     console.log(data);
-                    updateFeedback(data);
+                    updateDisplay(data);
                 },
                 complete: function () {
                     $(`.elementModal`).modal('hide');
@@ -1091,5 +1065,36 @@ $(function feedback() {
 
     });
 
+    function parseConditionString(str) {
+        console.log("---parseCondition ", str);
+        str = str.replace(/&gt;/gi, '>')
+            .replace(/&lt;/gi, '<')
+            .replace(/&amp;/gi, '&')
+            .replace(/&equals;/gi, '=');
+
+        console.log("---parseCondition ", str);
+
+        const regex = /([A-Za-z0-9]+)([<>=])([A-Za-z0-9]+)/gm;
+
+
+
+        let m;
+        let result = [];
+        while ((m = regex.exec(str)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+
+            // The result can be accessed through the `m`-variable.
+            m.forEach((match, groupIndex) => {
+                console.log(`Found match, group ${groupIndex}: ${match}`);
+            });
+
+            result = [m[1], m[2], m[3]];
+        }
+
+        return result;
+    }
 
 });

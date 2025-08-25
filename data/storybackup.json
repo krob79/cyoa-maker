@@ -6,260 +6,660 @@
         "value": "Story Title",
         "elements": [
             {
-                "title": "First Page",
+                "title": "Start Adventure Here",
+                "uuid": "011eefb7-ae53-4123-92c3-293e2ecc8f04",
                 "type": "page",
-                "uuid": "2ae2b720-9501-4cc8-92b7-eacd5165bdf1",
-                "value": "First Page",
+                "value": "Start Adventure Here",
+                "html": "",
                 "elements": [
                     {
-                        "uuid": "81ed4dd9-b8f6-468d-84ec-079aaa43f91e",
+                        "title": "This is where the test adventure begins! An open world with pages you can revisit to unlock new content! Let&amp;#x27;s get started!",
+                        "uuid": "4d0a4f37-7922-46b3-854a-12049091c50d",
                         "type": "text",
-                        "value": "Once upon a time, two people went scuba diving....blorpity blorp",
-                        "html": "<p class=\"pageText\">Once upon a time, two people went scuba diving....blorpity blorp</p>",
+                        "value": "This is where the test adventure begins! An open world with pages you can revisit to unlock new content! Let's get started!",
+                        "html": "<p class=\"pageText\">This is where the test adventure begins! An open world with pages you can revisit to unlock new content! Let's get started!</p>",
                         "elements": []
                     },
                     {
-                        "uuid": "948a2615-24e3-46e9-90bd-72a9c6cf517a",
-                        "type": "image",
-                        "value": "dad_photos_phonescan_18.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "60f3d868-5ec5-4d5c-b4f9-9828281cf5da",
+                        "title": "You are walking down the road towards Gramps house, and you finally see the house appear around the bend of the road.",
+                        "uuid": "e92e7809-f9c3-4f99-bdfa-957067bf1b66",
                         "type": "text",
-                        "value": "While they were there, they decided to do some snorkeling...glub",
-                        "html": "<p class=\"pageText\">While they were there, they decided to do some snorkeling...glub</p>",
+                        "value": "You are walking down the road towards Gramps house, and you finally see the house appear around the bend of the road.",
+                        "html": "<p class=\"pageText\">You are walking down the road towards Gramps house, and you finally see the house appear around the bend of the road.</p>",
                         "elements": []
                     },
                     {
-                        "uuid": "eec7a070-ed8e-45fe-a7e3-83fd7dd67861",
-                        "type": "image",
-                        "value": "dad_photos_phonescan_3.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_3.jpg\">",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "30509781-1d03-4e61-b8d9-e9d645fc3ccd",
-                        "type": "text",
-                        "value": "But then they decided to get on a boat instead...much better...",
-                        "html": "<p class=\"pageText\">But then they decided to get on a boat instead...much better...</p>",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "931f9627-a49a-49ce-8f73-13252cb0281c",
-                        "type": "image",
-                        "value": "dad_photos_phonescan_16.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_16.jpg\">",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "9fc55fde-3a04-4b8c-b76c-dc18b93fc32d",
-                        "type": "text",
-                        "value": "And then they took a trip to Ruby Falls...",
-                        "html": "<p class=\"pageText\">And then they took a trip to Ruby Falls...</p>",
-                        "elements": []
-                    },
-                    {
-                        "title": "Go to the Second Page||11552105-993e-4ab5-a28f-219ce482281c",
-                        "uuid": "53bd6851-afc8-43d5-b969-f8179413f852",
+                        "title": "Head Toward House||f798bffa-34a8-4e5c-8a6b-155a30f505a0",
+                        "uuid": "e9e922cc-07c4-4258-a27b-abcb2b2d2bc2",
                         "type": "choice",
-                        "value": "Go to the Second Page||11552105-993e-4ab5-a28f-219ce482281c",
-                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">Go to the Second Page</a>",
+                        "value": "Head Toward House||f798bffa-34a8-4e5c-8a6b-155a30f505a0",
+                        "html": "<a class=\"pageLink\" href=\"/page/f798bffa-34a8-4e5c-8a6b-155a30f505a0/edit\">Head Toward House</a>",
                         "elements": []
                     },
                     {
-                        "title": "dad_photos_phonescan_7.jpg",
-                        "uuid": "4d382a1e-5db6-444b-9861-7b3c91ebe657",
+                        "title": "auto_woodencane_=_0",
+                        "uuid": "0bdcf3b7-7336-433e-810a-aa2a5256984d",
+                        "type": "event",
+                        "value": "auto_woodencane_=_0",
+                        "html": "<strong><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\"\nheight=\"24\" fill=\"currentColor\" viewBox=\"0 -960 960 960\">\n<path\nd=\"M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340\" />\n</svg>Custom auto event: woodencane=0 </strong>",
+                        "elements": []
+                    },
+                    {
+                        "title": "user_apple_=_5",
+                        "uuid": "256cc70d-9838-4ad1-a533-5206a02f6e15",
+                        "type": "event",
+                        "value": "user_banana_=_420",
+                        "html": "<strong><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\"\nheight=\"24\" fill=\"currentColor\" viewBox=\"0 -960 960 960\">\n<path\nd=\"M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340\" />\n</svg>Custom user event: banana=420 </strong>",
+                        "elements": [],
+                        "occurs": "user",
+                        "property": "banana",
+                        "operator": "=",
+                        "amount": "420"
+                    }
+                ]
+            },
+            {
+                "title": "Front Porch",
+                "uuid": "53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                "type": "page",
+                "value": "Front Porch",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "You approach the front porch and try knocking on the door. No answer. To the right of the door is a wooden cane.",
+                        "uuid": "2cf4cd2e-6173-419e-89ea-1e9155969067",
+                        "type": "text",
+                        "value": "You approach the front porch. It's a little dusty up here, but looks nice. There's a couple of rocking chairs.",
+                        "html": "<p class=\"pageText\">You approach the front porch. It's a little dusty up here, but looks nice. There's a couple of rocking chairs.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "To the right of the door is a wooden cane.",
+                        "uuid": "3bed7ae4-475d-462d-bc67-670449a18bde",
+                        "type": "text",
+                        "value": "Propped up against one of the chairs is a wooden cane.",
+                        "html": "<p class=\"pageText\">Propped up against one of the chairs is a wooden cane.</p>",
+                        "elements": [
+                            {
+                                "title": "woodencane&lt;1",
+                                "uuid": "f2f335f6-af06-435d-8bfc-a700508981e5",
+                                "type": "condition",
+                                "value": "woodencane<1",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "title": "item-porchstick.png",
+                        "uuid": "bc183412-ae78-441e-b2da-70eb6724de6b",
                         "type": "image",
-                        "value": "dad_photos_phonescan_7.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_7.jpg\">",
-                        "elements": []
+                        "value": "item-porchstick.png",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/item-porchstick.png\">",
+                        "elements": [
+                            {
+                                "title": "woodencane&lt;1",
+                                "uuid": "28a57856-89d6-4289-8b42-f7a99d578835",
+                                "type": "condition",
+                                "value": "woodencane<1",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
                     },
                     {
-                        "title": "Whoopdy Doo||New",
-                        "uuid": "b85f0719-e646-4a00-aec3-e1c5d0c49d08",
+                        "title": "Take The Wooden Cane||c2201a08-7b02-4739-a1e4-aad26618252d",
+                        "uuid": "7f6aa675-70c3-4d68-b72c-d8ba5e01c721",
                         "type": "choice",
-                        "value": "Whoopdy Doo||New",
-                        "html": "<a class=\"pageLink\" href=\"/page/New/edit\">Whoopdy Doo</a>",
+                        "value": "Take The Wooden Cane||c2201a08-7b02-4739-a1e4-aad26618252d",
+                        "html": "<a class=\"pageLink\" href=\"/page/c2201a08-7b02-4739-a1e4-aad26618252d/edit\">Take The Wooden Cane</a>",
+                        "elements": [
+                            {
+                                "title": "woodencane&lt;1",
+                                "uuid": "48961e39-a255-4744-ba23-de52c3d797ee",
+                                "type": "condition",
+                                "value": "woodencane<1",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Try the side gate||54c77e9e-b625-4d59-b14c-ff5cf45b72e7",
+                        "uuid": "f0007486-e99a-4ad7-a039-a305d07df368",
+                        "type": "choice",
+                        "value": "Try the Side Gate||54c77e9e-b625-4d59-b14c-ff5cf45b72e7",
+                        "html": "<a class=\"pageLink\" href=\"/page/54c77e9e-b625-4d59-b14c-ff5cf45b72e7/edit\">Try the Side Gate</a>",
                         "elements": []
                     }
                 ]
             },
             {
-                "title": "Second Page",
+                "title": "Gramps House",
+                "uuid": "f798bffa-34a8-4e5c-8a6b-155a30f505a0",
                 "type": "page",
-                "uuid": "11552105-993e-4ab5-a28f-219ce482281c",
-                "value": "Second Page",
+                "value": "Gramps House",
+                "html": "",
                 "elements": [
                     {
-                        "uuid": "ed39a9e8-ab1d-4ce3-a9ab-13ae70805e03",
-                        "type": "text",
-                        "value": "This is another page...and it's very cool... I'm editing the content from a different place and it still works because the UUID and information is contained within the button!",
-                        "html": "<p class=\"pageText\">This is another page...and it's very cool... I'm editing the content from a different place and it still works because the UUID and information is contained within the button!</p>",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "058d93ff-e716-44d7-b2be-53146addd1da",
-                        "type": "text",
-                        "value": "...and it had even more and different wild and crazy stuff on it",
-                        "html": "<p class=\"pageText\">...and it had even more and different wild and crazy stuff on it</p>",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "722fed85-eaeb-41b3-977b-69f45c7f65d1",
-                        "type": "text",
-                        "value": "It&#x27;s fun when things start to work!\nBut then...there's always more stuff and bugs that surface and you have to deal with those! Ugh!",
-                        "html": "<p class=\"pageText\">It&#x27;s fun when things start to work!\nBut then...there's always more stuff and bugs that surface and you have to deal with those! Ugh!</p>",
-                        "elements": []
-                    },
-                    {
-                        "uuid": "61df4899-9455-416c-a1e4-07ec56dba4e9",
-                        "type": "text",
-                        "value": "Hell yeah! I updated this damn thing!",
-                        "html": "<p class=\"pageText\">Hell yeah! I updated this damn thing!</p>",
-                        "elements": []
-                    },
-                    {
-                        "title": "Go Poop Here||ab6301f4-4214-4ba8-98e3-3ea718717cad",
-                        "uuid": "8e706fd5-9bdc-4619-912f-54bc0ce37562",
-                        "type": "choice",
-                        "value": "Go To This Stupid Page||2ae2b720-9501-4cc8-92b7-eacd5165bdf1",
-                        "html": "<a class=\"pageLink\" href=\"/page/2ae2b720-9501-4cc8-92b7-eacd5165bdf1/edit\">Go To This Stupid Page</a>",
-                        "elements": []
-                    },
-                    {
-                        "title": "Go to the Second Page||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "uuid": "7cc06c19-2987-4271-b928-439edc3c8955",
-                        "type": "choice",
-                        "value": "Go to the Second Page||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">Go to the Second Page</a>",
-                        "elements": []
-                    },
-                    {
-                        "title": "More stuff||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "uuid": "49c383e4-ff56-4171-9523-fb04b758de70",
-                        "type": "choice",
-                        "value": "More stuff||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">More stuff</a>",
-                        "elements": []
-                    },
-                    {
-                        "title": "dad_photos_phonescan_9.jpg",
-                        "uuid": "0d974ff1-0cde-4ca9-b574-f1b78c5205d6",
+                        "title": "bg_grampshouse_386x146.png",
+                        "uuid": "99c10dd7-1a30-410a-aa5d-33e41fe26bd1",
                         "type": "image",
-                        "value": "dad_photos_phonescan_9.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_9.jpg\">",
+                        "value": "bg_grampshouse_386x146.png",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/bg_grampshouse_386x146.png\">",
+                        "elements": []
+                    },
+                    {
+                        "title": "You&#x27;re walking down the road towards Gramps house, and you finally arrive. You&#x27;re facing the front of the house by the road. There is a front porch entrance and to the side, there&#x27;s a gate to the rear of the house.",
+                        "uuid": "fb03d489-3bae-4ea8-9f70-bccd1bf5edcb",
+                        "type": "text",
+                        "value": "You are facing the front of Gramp's house by the road. There is a front porch entrance and to the side, there is a gate to the rear of the house.",
+                        "html": "<p class=\"pageText\">You are facing the front of Gramp's house by the road. There is a front porch entrance and to the side, there is a gate to the rear of the house.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "uuid": "59a25c34-d665-472e-b8c0-61bd122506a3",
+                        "type": "choice",
+                        "value": "Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "html": "<a class=\"pageLink\" href=\"/page/53406bdc-03fb-4899-b4a3-8f6cabd24183/edit\">Front Porch</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Side Gate||54c77e9e-b625-4d59-b14c-ff5cf45b72e7",
+                        "uuid": "cd049476-19d6-4de8-a57e-7bf60233d199",
+                        "type": "choice",
+                        "value": "Side Gate||54c77e9e-b625-4d59-b14c-ff5cf45b72e7",
+                        "html": "<a class=\"pageLink\" href=\"/page/54c77e9e-b625-4d59-b14c-ff5cf45b72e7/edit\">Side Gate</a>",
                         "elements": []
                     }
                 ]
             },
             {
-                "title": "Start Page",
-                "uuid": "9f2d5712-91c8-4138-bb47-c23eb00edf5f",
+                "title": "Side Gate",
+                "uuid": "54c77e9e-b625-4d59-b14c-ff5cf45b72e7",
                 "type": "page",
-                "value": "Start Page",
-                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "value": "Side Gate",
+                "html": "",
                 "elements": [
                     {
-                        "title": "You are walking through the woods and you&amp;#x27;re pretty relaxed. What could happen to you here?",
-                        "uuid": "8c1059c7-a2c6-4785-9069-d6f0f9fe59fb",
+                        "title": "You take the side gate and walk behind the house. Gramps is there.",
+                        "uuid": "c6d9e18d-a354-47e9-a0d1-d9d02d2a1c48",
                         "type": "text",
-                        "value": "You are walking through the woods and you're pretty relaxed. What could happen to you here?\nPlenty. There's a path to your left and a path to your right. From the left comes sounds of strange animals. From the right comes human voices, but babbling incoherently with occasional wild psychotic screaming. Great choices! What now, hotshot....?",
-                        "html": "<p class=\"pageText\">You are walking through the woods and you're pretty relaxed. What could happen to you here?\nPlenty. There's a path to your left and a path to your right. From the left comes sounds of strange animals. From the right comes human voices, but babbling incoherently with occasional wild psychotic screaming. Great choices! What now, hotshot....?</p>",
+                        "value": "You take the side gate and walk behind the house. Gramps is there.",
+                        "html": "<p class=\"pageText\">You take the side gate and walk behind the house. Gramps is there.</p>",
                         "elements": []
                     },
                     {
-                        "title": "Take the left path and deal with the strange animals||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "uuid": "0757d163-71c6-4491-8bd5-c1118d0ba874",
+                        "title": "Would you mind going back to the front of the house and bringing me my cane?",
+                        "uuid": "7c974e91-61b4-4fa7-a159-76ed78ffd1ff",
+                        "type": "text",
+                        "value": "'Hey there, my boy,' he says, 'Good to see ya! Would you mind going back to the front of the house and bringing me my cane?'",
+                        "html": "<p class=\"pageText\">'Hey there, my boy,' he says, 'Good to see ya! Would you mind going back to the front of the house and bringing me my cane?'</p>",
+                        "elements": [
+                            {
+                                "title": "woodencane&lt;1",
+                                "uuid": "7f5a2e6d-1cc5-48fb-95c7-d987800895ec",
+                                "type": "condition",
+                                "value": "woodencane<1",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "title": "&quot;Ah, there&#x27;s my cane! Thanks for grabbing it for me!&quot;",
+                        "uuid": "f624e204-18a1-404e-94cc-6728030ab70b",
+                        "type": "text",
+                        "value": "&quot;Ah, you've got my cane! Thanks for grabbing it for me!&quot;",
+                        "html": "<p class=\"pageText\">&quot;Ah, you've got my cane! Thanks for grabbing it for me!&quot;</p>",
+                        "elements": [
+                            {
+                                "title": "woodencane&gt;0",
+                                "uuid": "c59bbf45-49e1-4d3a-99bb-fd39755765e3",
+                                "type": "condition",
+                                "value": "woodencane>0",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "title": "profile_gramps_133x146.png",
+                        "uuid": "07311510-7385-4cb3-af2b-d1d2400f2e3e",
+                        "type": "image",
+                        "value": "profile_gramps_133x146.png",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/profile_gramps_133x146.png\">",
+                        "elements": [
+                            {
+                                "title": "woodencane&gt;0",
+                                "uuid": "7d32ae90-1950-47c3-8e2a-262ba4bd591e",
+                                "type": "condition",
+                                "value": "woodencane>0",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Back to the Front of The House||f798bffa-34a8-4e5c-8a6b-155a30f505a0",
+                        "uuid": "a967aef4-70b2-4a68-a6cc-edceff2f051b",
                         "type": "choice",
-                        "value": "Take the left path and deal with the strange animals||8fd6d351-2e56-4955-a098-de254bad9adc",
-                        "html": "<a class=\"pageLink\" href=\"/page/8fd6d351-2e56-4955-a098-de254bad9adc/edit\">Take the left path and deal with the strange animals</a>",
+                        "value": "Back to the Front of The House||f798bffa-34a8-4e5c-8a6b-155a30f505a0",
+                        "html": "<a class=\"pageLink\" href=\"/page/f798bffa-34a8-4e5c-8a6b-155a30f505a0/edit\">Back to the Front of The House</a>",
                         "elements": []
                     },
                     {
-                        "title": "Take the right path and hopefully the human sounds lead to safe humans||ab6301f4-4214-4ba8-98e3-3ea718717cad",
-                        "uuid": "944253d1-764b-42d8-b33c-df2c63458979",
+                        "title": "No Problem, Gramps!||bfe500bb-e7f4-44cc-bd8c-8431cd863e0e",
+                        "uuid": "146ecfd5-097a-408f-95f6-25fc65197385",
                         "type": "choice",
-                        "value": "Take the right path and hopefully the human sounds lead to safe humans||ab6301f4-4214-4ba8-98e3-3ea718717cad",
-                        "html": "<a class=\"pageLink\" href=\"/page/ab6301f4-4214-4ba8-98e3-3ea718717cad/edit\">Take the right path and hopefully the human sounds lead to safe humans</a>",
-                        "elements": []
+                        "value": "You're Welcome, Gramps!||bfe500bb-e7f4-44cc-bd8c-8431cd863e0e",
+                        "html": "<a class=\"pageLink\" href=\"/page/bfe500bb-e7f4-44cc-bd8c-8431cd863e0e/edit\">You're Welcome, Gramps!</a>",
+                        "elements": [
+                            {
+                                "title": "woodencane&gt;0",
+                                "uuid": "5c0312b1-09eb-453d-be50-8e374d76bc6a",
+                                "type": "condition",
+                                "value": "woodencane>0",
+                                "html": "",
+                                "elements": []
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "title": "Left Path In Woods",
-                "uuid": "8fd6d351-2e56-4955-a098-de254bad9adc",
+                "title": "Take The Wooden Cane",
+                "uuid": "c2201a08-7b02-4739-a1e4-aad26618252d",
                 "type": "page",
-                "value": "Left Path In Woods",
-                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "value": "Take The Wooden Cane",
+                "html": "",
                 "elements": [
                     {
-                        "title": "You take the left path and the sounds get closer. You see movement in the bushes. And then, a creature jumps out. It is a young cat, and it looks scared. What do you do?",
-                        "uuid": "c765049f-296e-40d4-8b47-d8a28bb42f3a",
+                        "title": "You got the cane! It seems nice and sturdy!",
+                        "uuid": "42aaf266-d36d-4737-9d98-8aefe04fcd4d",
                         "type": "text",
-                        "value": "WHOOP WHOOP more update why no disappear? This is now working, thank god",
-                        "html": "<p class=\"pageText\">WHOOP WHOOP more update why no disappear? This is now working, thank god</p>",
+                        "value": "You got the cane! It seems nice and sturdy!",
+                        "html": "<p class=\"pageText\">You got the cane! It seems nice and sturdy!</p>",
                         "elements": []
                     },
                     {
-                        "title": "Here&#x27;s some more text!",
-                        "uuid": "644072b3-4905-4972-9cb3-557d7a7a1216",
-                        "type": "text",
-                        "value": "Here's some more text! Yaaaaay!",
-                        "html": "<p class=\"pageText\">Here's some more text! Yaaaaay!</p>",
-                        "elements": []
-                    },
-                    {
-                        "title": "Here&#x27;s One Link||11552105-993e-4ab5-a28f-219ce482281c",
-                        "uuid": "75c64973-d562-49e1-8244-937f6b46e18a",
+                        "title": "Back to Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "uuid": "a43f998d-1815-4113-a64c-6ba423143b65",
                         "type": "choice",
-                        "value": "Here's One Link||9f2d5712-91c8-4138-bb47-c23eb00edf5f",
-                        "html": "<a class=\"pageLink\" href=\"/page/9f2d5712-91c8-4138-bb47-c23eb00edf5f/edit\">Here's One Link</a>",
+                        "value": "Back to Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "html": "<a class=\"pageLink\" href=\"/page/53406bdc-03fb-4899-b4a3-8f6cabd24183/edit\">Back to Front Porch</a>",
                         "elements": []
                     },
                     {
-                        "title": "And Here&#x27;s One More||a97dad75-1895-4948-b1c7-d20f025cab23",
-                        "uuid": "200377dc-984f-4f7b-825e-dbbd50a60bae",
-                        "type": "choice",
-                        "value": "And Here's One More Link||11552105-993e-4ab5-a28f-219ce482281c",
-                        "html": "<a class=\"pageLink\" href=\"/page/11552105-993e-4ab5-a28f-219ce482281c/edit\">And Here's One More Link</a>",
+                        "title": "auto_woodencane_=_1",
+                        "uuid": "a26a0730-c580-4574-a5e0-03e91eae2fb8",
+                        "type": "event",
+                        "value": "auto_woodencane_=_1",
+                        "html": "<strong><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\"\nheight=\"24\" fill=\"currentColor\" viewBox=\"0 -960 960 960\">\n<path\nd=\"M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340\"/>\n</svg>Custom auto event: woodencane=1 </strong>",
                         "elements": []
                     }
                 ]
             },
             {
-                "title": "Right Path In Woods",
-                "uuid": "ab6301f4-4214-4ba8-98e3-3ea718717cad",
+                "title": "Hanging Out With Gramps",
+                "uuid": "bfe500bb-e7f4-44cc-bd8c-8431cd863e0e",
                 "type": "page",
-                "value": "Right Path In Woods",
-                "html": "<a class=\"pageText\" href=\"/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit\">Edit Page</a>",
+                "value": "Hanging Out With Gramps",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "That was the end of the experiment with Gramps. The event for the wooden stick will reset if you start over at the first page.",
+                        "uuid": "2b3aa79c-73d7-4f62-b650-f904f30c9cac",
+                        "type": "text",
+                        "value": "That was the end of the experiment with Gramps. The event for the wooden stick will reset if you start over at the first page.",
+                        "html": "<p class=\"pageText\">That was the end of the experiment with Gramps. The event for the wooden stick will reset if you start over at the first page.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Go to the First Page||011eefb7-ae53-4123-92c3-293e2ecc8f04",
+                        "uuid": "faf1937c-7007-48af-968a-cca4d25627f6",
+                        "type": "choice",
+                        "value": "Go to the First Page||011eefb7-ae53-4123-92c3-293e2ecc8f04",
+                        "html": "<a class=\"pageLink\" href=\"/page/011eefb7-ae53-4123-92c3-293e2ecc8f04/edit\">Go to the First Page</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Start of The Forest",
+                "uuid": "355d1ba8-1c34-4120-8ce2-8373cde3facb",
+                "type": "page",
+                "value": "Start of The Forest",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "You are walking in the woods. There&#x27;s a fork in the path. Which path do you take?",
+                        "uuid": "017a000f-f720-470b-b249-6db42902ae76",
+                        "type": "text",
+                        "value": "You are walking in the woods. There&#x27;s a fork in the path. Which path do you take?",
+                        "html": "<p class=\"pageText\">You are walking in the woods. There's a fork in the path. Which path do you take?</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Take The Left Path||5b6f3133-efb5-4ce1-aabf-db24cfbb7a6e",
+                        "uuid": "2f30312a-ea97-40cd-a7fd-77868b198218",
+                        "type": "choice",
+                        "value": "Take The Left Path||5b6f3133-efb5-4ce1-aabf-db24cfbb7a6e",
+                        "html": "<a class=\"pageLink\" href=\"/page/5b6f3133-efb5-4ce1-aabf-db24cfbb7a6e/edit\">Take The Left Path</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Take The Right Path||1cf99af0-9b98-473d-80d5-eb449115a75b",
+                        "uuid": "36fb80b9-9057-40bc-8425-dab3f69c3d5a",
+                        "type": "choice",
+                        "value": "Take The Right Path||1cf99af0-9b98-473d-80d5-eb449115a75b",
+                        "html": "<a class=\"pageLink\" href=\"/page/1cf99af0-9b98-473d-80d5-eb449115a75b/edit\">Take The Right Path</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "dad_photos_phonescan_14.jpg",
+                        "uuid": "e261edc4-5b22-43a4-ae01-52f342331025",
+                        "type": "image",
+                        "value": "dad_photos_phonescan_14.jpg",
+                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_14.jpg\">",
+                        "elements": []
+                    },
+                    {
+                        "title": "Go DO This||ed8563e3-1bdc-4837-8317-4c3d3af57de6",
+                        "uuid": "31d2c721-5d11-43d4-85d1-12adb94430e0",
+                        "type": "choice",
+                        "value": "Go DO This||ed8563e3-1bdc-4837-8317-4c3d3af57de6",
+                        "html": "<a class=\"pageLink\" href=\"/page/ed8563e3-1bdc-4837-8317-4c3d3af57de6/edit\">Go DO This</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "ethehrheh",
+                        "uuid": "8daf1370-3e88-42c4-8ce4-8a2ffe5aa97b",
+                        "type": "text",
+                        "value": "ethehrheh",
+                        "html": "<p class=\"pageText\">ethehrheh</p>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Take The Left Path",
+                "uuid": "5b6f3133-efb5-4ce1-aabf-db24cfbb7a6e",
+                "type": "page",
+                "value": "Take The Left Path",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "You continue to walk and you see a clearing. A big waterfall is right in front of you! Also, behind the waterfall appears to be a cave.",
+                        "uuid": "cae70e68-1bf5-439e-befb-0d77d352d2d4",
+                        "type": "text",
+                        "value": "You continue to walk and you see a clearing. A big waterfall is right in front of you! Also, behind the waterfall appears to be a cave.",
+                        "html": "<p class=\"pageText\">You continue to walk and you see a clearing. A big waterfall is right in front of you! Also, behind the waterfall appears to be a cave.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Swim in the water||138b251b-3241-4f09-9d4b-b32b52694538",
+                        "uuid": "5c56d624-c4df-404c-ae7b-0e099d8a09a9",
+                        "type": "choice",
+                        "value": "Swim in the water||138b251b-3241-4f09-9d4b-b32b52694538",
+                        "html": "<a class=\"pageLink\" href=\"/page/138b251b-3241-4f09-9d4b-b32b52694538/edit\">Swim in the water</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Check Out The Cave||71b5cd0e-bc8f-4994-8c76-c277d2caceab",
+                        "uuid": "c61052fd-84d3-4a1f-9dee-0a232be6ae9d",
+                        "type": "choice",
+                        "value": "Check Out The Cave||71b5cd0e-bc8f-4994-8c76-c277d2caceab",
+                        "html": "<a class=\"pageLink\" href=\"/page/71b5cd0e-bc8f-4994-8c76-c277d2caceab/edit\">Check Out The Cave</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Take The Right Path",
+                "uuid": "1cf99af0-9b98-473d-80d5-eb449115a75b",
+                "type": "page",
+                "value": "Take The Right Path",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "You keep walking into the forest from the right path and come across a tree that is covered in shiny, golden apples. Sparkles pop up from the fruit! You realize you are very hungry. But then you notice a sign positioned at the base of the tree, with a single word displayed in angrily painted lettering. \nDONT.",
+                        "uuid": "8e8e0722-63e6-4d38-98c9-39580c16d49e",
+                        "type": "text",
+                        "value": "You keep walking into the forest from the right path and come across a tree that is covered in shiny, golden apples. Sparkles pop up from the fruit! You realize you are very hungry. But then you notice a sign positioned at the base of the tree, with a single word displayed in angrily painted lettering. \nDONT.",
+                        "html": "<p class=\"pageText\">You keep walking into the forest from the right path and come across a tree that is covered in shiny, golden apples. Sparkles pop up from the fruit! You realize you are very hungry. But then you notice a sign positioned at the base of the tree, with a single word displayed in angrily painted lettering. \nDONT.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Pick An Apple||5492c598-7699-4055-8a25-10a49f4073cb",
+                        "uuid": "71e04683-c44f-49d4-9d9e-c0a8f4c2c5d3",
+                        "type": "choice",
+                        "value": "Pick An Apple||5492c598-7699-4055-8a25-10a49f4073cb",
+                        "html": "<a class=\"pageLink\" href=\"/page/5492c598-7699-4055-8a25-10a49f4073cb/edit\">Pick An Apple</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Keep Walking||a7a3a289-eba1-4b7f-a888-fd40cb1b9c0f",
+                        "uuid": "7394f35c-5fe2-4912-b5e5-1aa5ba7723f1",
+                        "type": "choice",
+                        "value": "Keep Walking||a7a3a289-eba1-4b7f-a888-fd40cb1b9c0f",
+                        "html": "<a class=\"pageLink\" href=\"/page/a7a3a289-eba1-4b7f-a888-fd40cb1b9c0f/edit\">Keep Walking</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Swim in the water",
+                "uuid": "138b251b-3241-4f09-9d4b-b32b52694538",
+                "type": "page",
+                "value": "Swim in the water",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "The water feels good, but the current is strong...you&#x27;re starting to lose control as you drift further down the stream. You see a branch hanging over from the left, but there&#x27;s also a flat rock you might be able to swim to on the right.",
+                        "uuid": "baa17572-9f1c-443d-bdcc-a05eaf9b823e",
+                        "type": "text",
+                        "value": "The water at the base of the falls feels good, but the current is strong...you are starting to lose control as you drift further down the stream! You see a branch hanging over from the left, but there&#x27;s also a flat rock you might be able to swim to on the right.",
+                        "html": "<p class=\"pageText\">The water at the base of the falls feels good, but the current is strong...you are starting to lose control as you drift further down the stream! You see a branch hanging over from the left, but there&#x27;s also a flat rock you might be able to swim to on the right.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Grab The Branch||1cd4b53a-69d4-43b9-8960-b7804e555da8",
+                        "uuid": "d491b913-406a-497c-b3e6-8d42b72c66cc",
+                        "type": "choice",
+                        "value": "Grab The Branch||1cd4b53a-69d4-43b9-8960-b7804e555da8",
+                        "html": "<a class=\"pageLink\" href=\"/page/1cd4b53a-69d4-43b9-8960-b7804e555da8/edit\">Grab The Branch</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Swim To The Rock||8191264d-b9a4-40ad-b6a9-97e402e7123b",
+                        "uuid": "09b67754-fb4e-48fd-94ea-09d65ca1ada1",
+                        "type": "choice",
+                        "value": "Swim To The Rock||8191264d-b9a4-40ad-b6a9-97e402e7123b",
+                        "html": "<a class=\"pageLink\" href=\"/page/8191264d-b9a4-40ad-b6a9-97e402e7123b/edit\">Swim To The Rock</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Check Out The Cave",
+                "uuid": "71b5cd0e-bc8f-4994-8c76-c277d2caceab",
+                "type": "page",
+                "value": "Check Out The Cave",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "The cave is dark, but there&#x27;s still enough light to see the way. As you turn a corner, you see a golden light coming from up ahead. You also hear a voice? Growling? Not sure.",
+                        "uuid": "4705a14c-225c-46b2-8028-dd03a093bd5e",
+                        "type": "text",
+                        "value": "The cave is dark, but there&#x27;s still enough light to see the way. As you turn a corner, you see a golden light coming from up ahead. You also hear a voice? Growling? Not sure.",
+                        "html": "<p class=\"pageText\">The cave is dark, but there's still enough light to see the way. As you turn a corner, you see a golden light coming from up ahead. You also hear a voice? Growling? Not sure.</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Check out the golden light||c7e011c7-a377-454b-acf6-75f49768b426",
+                        "uuid": "3d1ecbb1-2e50-4650-9ea0-a21b14658be1",
+                        "type": "choice",
+                        "value": "Check out the golden light||c7e011c7-a377-454b-acf6-75f49768b426",
+                        "html": "<a class=\"pageLink\" href=\"/page/c7e011c7-a377-454b-acf6-75f49768b426/edit\">Check out the golden light</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Nevermind, leave the cave and take a swim||138b251b-3241-4f09-9d4b-b32b52694538",
+                        "uuid": "1c65eb76-3e02-402b-9e33-df9743193f77",
+                        "type": "choice",
+                        "value": "Nevermind, leave the cave and take a swim||138b251b-3241-4f09-9d4b-b32b52694538",
+                        "html": "<a class=\"pageLink\" href=\"/page/138b251b-3241-4f09-9d4b-b32b52694538/edit\">Nevermind, leave the cave and take a swim</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Grab The Branch",
+                "uuid": "1cd4b53a-69d4-43b9-8960-b7804e555da8",
+                "type": "page",
+                "value": "Grab The Branch",
+                "html": "",
                 "elements": []
             },
             {
-                "title": "Farts Page",
-                "uuid": "a97dad75-1895-4948-b1c7-d20f025cab23",
+                "title": "Swim To The Rock",
+                "uuid": "8191264d-b9a4-40ad-b6a9-97e402e7123b",
                 "type": "page",
-                "value": "Here's One Link",
-                "html": "<a class=\"pageLink\" href=\"/page/9f2d5712-91c8-4138-bb47-c23eb00edf5f/edit\">Here's One Link</a>",
+                "value": "Swim To The Rock",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Check out the golden light",
+                "uuid": "c7e011c7-a377-454b-acf6-75f49768b426",
+                "type": "page",
+                "value": "Check out the golden light",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Pick An Apple",
+                "uuid": "5492c598-7699-4055-8a25-10a49f4073cb",
+                "type": "page",
+                "value": "Pick An Apple",
+                "html": "",
                 "elements": [
                     {
-                        "title": "dfsdsdds",
-                        "uuid": "426a7d80-315d-4ee8-928b-0741465ab034",
+                        "title": "You look around and listen closely. You don&#x27;t detect any hostile presence, human or creature. One apple missing won&#x27;t harm anyone. You reach up and pluck an apple from the tree.\n\nImmediately, there is a loud howl of pain and anger. &quot;WHO DID THAT!??&quot; The tree shakes and starts waving it&#x27;s branches like arms. It starts to pull its roots from the ground and wiggle them like feet. The tree does not appear to see you....yet.",
+                        "uuid": "823c2301-f727-4866-bfe1-6a6df6fb6a79",
                         "type": "text",
-                        "value": "zzzzzzzzzzzz",
-                        "html": "<p class=\"pageText\">zzzzzzzzzzzz</p>",
+                        "value": "You look around and listen closely. You don&#x27;t detect any hostile presence, human or creature. One apple missing won&#x27;t harm anyone. You reach up and pluck an apple from the tree.\n\nImmediately, there is a loud howl of pain and anger. &quot;WHO DID THAT!??&quot; The tree shakes and starts waving it&#x27;s branches like arms. It starts to pull its roots from the ground and wiggle them like feet. The tree does not appear to see you....yet.",
+                        "html": "<p class=\"pageText\">You look around and listen closely. You don't detect any hostile presence, human or creature. One apple missing won't harm anyone. You reach up and pluck an apple from the tree.\n\nImmediately, there is a loud howl of pain and anger. \"WHO DID THAT!??\" The tree shakes and starts waving it's branches like arms. It starts to pull its roots from the ground and wiggle them like feet. The tree does not appear to see you....yet.</p>",
                         "elements": []
                     },
                     {
-                        "title": "dad_photos_phonescan_10.jpg",
-                        "uuid": "427caf8f-ea2b-4c66-9ebc-c78e367c9cba",
-                        "type": "image",
-                        "value": "dad_photos_phonescan_18.jpg",
-                        "html": "<img class=\"pageImage\" src=\"/uploads/dad_photos_phonescan_18.jpg\">",
+                        "title": "Return the apple and say sorry||68b03e1a-13a4-48ab-9725-8fb473959f7b",
+                        "uuid": "92e85969-406a-454f-88a0-c5cab22d23d4",
+                        "type": "choice",
+                        "value": "Return the apple and say sorry||68b03e1a-13a4-48ab-9725-8fb473959f7b",
+                        "html": "<a class=\"pageLink\" href=\"/page/68b03e1a-13a4-48ab-9725-8fb473959f7b/edit\">Return the apple and say sorry</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Drop The Apple and Run||20f6e827-959a-477b-a4a6-153e52c56e6d",
+                        "uuid": "876d69cc-2d78-40e9-b1e9-31ea85a0a583",
+                        "type": "choice",
+                        "value": "Drop The Apple and Run||20f6e827-959a-477b-a4a6-153e52c56e6d",
+                        "html": "<a class=\"pageLink\" href=\"/page/20f6e827-959a-477b-a4a6-153e52c56e6d/edit\">Drop The Apple and Run</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Keep The Apple and Run||d0a10cca-7581-4d35-8573-0175749e1f24",
+                        "uuid": "b946de39-f036-4b66-a43a-8523062bbdba",
+                        "type": "choice",
+                        "value": "Keep The Apple and Run||d0a10cca-7581-4d35-8573-0175749e1f24",
+                        "html": "<a class=\"pageLink\" href=\"/page/d0a10cca-7581-4d35-8573-0175749e1f24/edit\">Keep The Apple and Run</a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "auto_apple_=_1",
+                        "uuid": "ef64774a-c15a-4eb9-87d9-5548c4bd73cf",
+                        "type": "event",
+                        "value": "auto_apple_=_1",
+                        "html": "<strong><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\"\n                                    height=\"24\" fill=\"currentColor\" viewBox=\"0 -960 960 960\">\n                                    <path\n                                        d=\"M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340\" />\n                                </svg>  Custom auto event: apple=1 </strong>",
                         "elements": []
                     }
                 ]
+            },
+            {
+                "title": "Return the apple and say sorry",
+                "uuid": "68b03e1a-13a4-48ab-9725-8fb473959f7b",
+                "type": "page",
+                "value": "Return the apple and say sorry",
+                "html": "",
+                "elements": [
+                    {
+                        "title": "You put the apple on the ground as the tree turns around, revealing a very angry face that glares at you. It glares glares at the golden apple on the ground, like someone who has just had their hair pulled out.",
+                        "uuid": "0bb47a97-6b3a-4a4e-85c6-cd6bef253090",
+                        "type": "text",
+                        "value": "You put the apple on the ground as the tree turns around, revealing a very angry face that glares at you. It glares glares at the golden apple on the ground, like someone who has just had their hair pulled out.\n\"Can you not read the FREAKING SIGN?!?\"",
+                        "html": "<p class=\"pageText\">You put the apple on the ground as the tree turns around, revealing a very angry face that glares at you. It glares glares at the golden apple on the ground, like someone who has just had their hair pulled out.\n\"Can you not read the FREAKING SIGN?!?\"</p>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Heeeeyyyy...sorry tree. My bad. ||caf64890-fd2a-4b38-8625-a608637f4137",
+                        "uuid": "8e25fff2-0adc-4972-a415-f690daef82e1",
+                        "type": "choice",
+                        "value": "Heeeeyyyy...sorry tree. My bad. ||caf64890-fd2a-4b38-8625-a608637f4137",
+                        "html": "<a class=\"pageLink\" href=\"/page/caf64890-fd2a-4b38-8625-a608637f4137/edit\">Heeeeyyyy...sorry tree. My bad. </a>",
+                        "elements": []
+                    },
+                    {
+                        "title": "Here, you can have the apple back!||d09d7c2b-74d6-44cf-9f47-6e8411e76db1",
+                        "uuid": "dce55f47-e4b6-4c96-bd72-abadcb0e9784",
+                        "type": "choice",
+                        "value": "Here, you can have the apple back!||d09d7c2b-74d6-44cf-9f47-6e8411e76db1",
+                        "html": "<a class=\"pageLink\" href=\"/page/d09d7c2b-74d6-44cf-9f47-6e8411e76db1/edit\">Here, you can have the apple back!</a>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "title": "Drop The Apple and Run",
+                "uuid": "20f6e827-959a-477b-a4a6-153e52c56e6d",
+                "type": "page",
+                "value": "Drop The Apple and Run",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Keep The Apple and Run",
+                "uuid": "d0a10cca-7581-4d35-8573-0175749e1f24",
+                "type": "page",
+                "value": "Keep The Apple and Run",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Heeeeyyyy...sorry tree. My bad.",
+                "uuid": "caf64890-fd2a-4b38-8625-a608637f4137",
+                "type": "page",
+                "value": "Heeeeyyyy...sorry tree. My bad.",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Here, you can have the apple back!",
+                "uuid": "d09d7c2b-74d6-44cf-9f47-6e8411e76db1",
+                "type": "page",
+                "value": "Here, you can have the apple back!",
+                "html": "",
+                "elements": []
+            },
+            {
+                "title": "Go DO This",
+                "uuid": "ed8563e3-1bdc-4837-8317-4c3d3af57de6",
+                "type": "page",
+                "value": "Go DO This",
+                "html": "",
+                "elements": []
             }
         ]
     }
