@@ -229,13 +229,13 @@ class StoryService {
     const data = (await this.getData()) || [];
 
     console.log(`-----calling updateDataByUUID()`);
-    console.log(`----received newDataObj`);
-    console.log(newDataObj);
+    // console.log(`----received newDataObj`);
+    // console.log(newDataObj);
 
     const updated = updateData(data, uuid, newDataObj);
 
-    console.log("Updated Data:");
-    console.log(data);
+    // console.log("Updated Data:");
+    // console.log(data);
     return writeFile(this.datafile, JSON.stringify(data)); //JSON Stringify should contain updated data
 
 
@@ -244,11 +244,11 @@ class StoryService {
 
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
-        console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
-        console.log(`---assigning:`);
-        console.log(obj);
-        console.log(`----to:`);
-        console.log(newDataObj);
+        // console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
+        // console.log(`---assigning:`);
+        // console.log(obj);
+        // console.log(`----to:`);
+        // console.log(newDataObj);
         let updated = Object.assign(obj, newDataObj);
 
         return true; // Found and updated
@@ -284,7 +284,7 @@ class StoryService {
     function checkProperties(obj, uuid) {
       //console.log(`----going deeper - ${obj.uuid ? obj.uuid : 'No UUID found'}`)
       if (obj && obj['uuid'] === uuid) {
-        console.log(`data found for ${uuid}`);
+        // console.log(`data found for ${uuid}`);
         //console.log("Obj from UUID:", obj);
         return obj; // Successfully found the obj with the corresponding UUID and returning it
       }

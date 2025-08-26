@@ -42,7 +42,6 @@ app.locals.siteName = "Kyle's BYOA";
 
 // Ensure uploads folder exists
 const uploadDir = path.join(process.cwd(), 'static', 'uploads');
-console.log("---uploadDir: ", uploadDir);
 fs.mkdirSync(uploadDir, { recursive: true });
 
 //example of using cookieSession
@@ -55,6 +54,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static(path.join(process.cwd(), './static')));
+app.use('/vendor', express.static(path.join(process.cwd(), 'node_modules/ejs')));
+
+//Using EJS Template file for Client Side Rendering AND Server Side Rendering
+app.use('/templates', express.static(path.join(process.cwd(), 'views/pages/partials')));
 
 app.use(async (request, response, next) => {
     try {

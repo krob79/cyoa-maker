@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "data": {
+    "items": [
+      {
+        "name": "woodencane",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2025-08-26T19:27:00.521Z"
+        }
+      }
+    ],
+    "characters": [],
+    "locations": [],
+    "storyevents": []
+  }
+}

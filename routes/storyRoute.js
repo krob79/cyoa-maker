@@ -3,8 +3,7 @@ import { check, validationResult } from 'express-validator';
 
 const router = express.Router();
 
-import inventory from './inventory.js';
-import StoryService from '../services/StoryService.js';
+import inventory from '../services/inventory.js';
 
 const validations = [
     check('value')
@@ -88,7 +87,10 @@ export default (params) => {
                 }
                 //if type is event, parse the string value and dispatch any auto events
                 if (el.type == "event") {
-                    inventory.parseEventCommand(el.value);
+                    let evtType = el.value.split("_")[0];
+                    if (evtType == "auto") {
+                        inventory.parseEventCommand(el.value);
+                    }
                 }
                 return el;
             });
@@ -194,28 +196,6 @@ export default (params) => {
 
     });
 
-    // router.post('/', validations, async (request, response, next) => {
-    //     console.log("--- post /");
-    //     try {
-    //         const result = validationResult(request);
-    //         if (!result.isEmpty()) {
-    //             request.session.feedback = {
-    //                 errors: errors.array(),
-    //             }
-    //             return response.redirect('/');
-    //         }
-    //         //if we get this far without errors, we assume the request body is valid, so grab those values
-    //         const { name, email, title, message } = request.body;
-    //         //
-    //         await storyService.addEntry(uuid, name, email, title, message);
-    //         request.session.feedback = { message: 'Thank you for your feedback!' };
-    //         // return response.send(`Feedback posted`);
-    //         return response.redirect('/');
-    //     } catch (err) {
-    //         return next(err);
-    //     }
-    // });
-
     router.post('/api', validations, async (request, response, next) => {
         console.log("--- post /api");
         try {
@@ -286,8 +266,8 @@ export default (params) => {
                 }
                 return response.json({ errors: errors.array() });
             }
-            console.log("----page/api - PUT request - request body:");
-            console.log(request.body);
+            // console.log("----page/api - PUT request - request body:");
+            // console.log(request.body);
 
 
             const { uuid, newDataObj } = request.body;

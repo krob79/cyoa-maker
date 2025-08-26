@@ -1,6 +1,6 @@
 // routes/inventory.mjs
 import express from 'express';
-import inventory from './inventory.js';
+import inventory from '../services/inventory.js';
 const router = express.Router();
 
 export default (params) => {

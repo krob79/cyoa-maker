@@ -81,7 +81,6 @@ $(function feedback() {
             deepCopyArray = moveElement(deepCopyArray, from, to);
 
             let myNewDataObj = { elements: deepCopyArray };
-            console.log("----HERE's the newDataObj to be submitted");
             console.log(myNewDataObj);
 
             // XHR POST request

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_FILE = path.join(__dirname, 'data', 'inventory.json');
+const DATA_FILE = path.join(process.cwd(), 'data', 'inventory.json');
 const SAVE_DEBOUNCE_MS = 300; // batch writes
 
 // Map evt -> domain bucket

@@ -106,16 +106,14 @@
                 <div id="draggableList" class="list-group feedback-items">
                     <%if(pageListItems.length> 0){%>
                         <% pageListItems.forEach(function (item) {%>
-                            <div class="content-chunk">
-                                <div class="drag-handle">::</div>
-                                <%- include(`partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs});
-                                    %>
-                            </div>
-                            <%})%>
-                                <%} else {%>
-                                    <p><strong>No items yet listed</strong></p>
-                                    <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
-                                    <%}%>
+
+                            <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
+
+                                <%})%>
+                                    <%} else {%>
+                                        <p><strong>No items yet listed</strong></p>
+                                        <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
+                                        <%}%>
                 </div>
             </div>
         </aside>

@@ -18,7 +18,7 @@ export function initDragDrop() {
             handle: '.drag-handle',
             onEnd: (evt) => {
                 reorderElements({ from: evt.oldIndex, to: evt.newIndex });
-                console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`);
+                // console.log(`From: ${evt.oldIndex} to ${evt.newIndex}`);
             },
         });
     } catch (err) {
