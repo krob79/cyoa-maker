@@ -1,11 +1,51 @@
 import { findUuidInURL } from './dragdrop.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
+// import inventory from '../services/inventory.js';
 
 console.log("----render.js");
 
 let allPageUUIDs = [];
 // cache the template text so we fetch once
 let ENTRY_TPL_TEXT = null;
+
+function initializeUserEventLinks() {
+  let userEvts = Array.from(document.querySelectorAll('.userevent'));
+  userEvts.forEach((el) => {
+    console.log("--user event: ", el.textContent.trim());
+    el.addEventListener("click", (e) => {
+      let txt = el.textContent.trim();
+      let parent = e.target.parentNode.parentNode
+      console.log("---parent: ", parent);
+      parseInventoryString(e.target.dataset.event);
+      let textNode = document.createTextNode(txt);
+      parent.replaceChild(textNode, e.target.parentNode);
+      // e.target.removeEventListener("click");
+    });
+  })
+
+}
+
+initializeUserEventLinks();
+
+function parseInventoryString(str) {
+  $.ajax({
+    url: '/inventory/parse',
+    type: 'POST',
+    contentType: 'application/json; charset=UTF-8',
+    // Gather all data from the form and create a JSON object from it
+    data: JSON.stringify({ str }),
+    success: function (data) {
+      console.log("----event success!");
+      console.log("----new data: ", data);
+    },
+    complete: function () {
+      console.log("---event complete");
+    },
+  });
+
+}
+
+
 
 //for using the EJS template in CSR and SSR
 async function getEntryTemplate() {
@@ -130,20 +170,6 @@ export async function updateDisplay(data) {
     } else {
       console.log("-----ERROR: NO UUID FOUND IN URL!!!");
     }
-    // console.log(page);
-
-    // assembledHTML = '';
-    // render.push(assembledHTML);
-    // //rebuilding the elements and buttons
-    // $.each(page, function createHtml(key, item) {
-    //   assembledHTML = '';
-    //   assembledHTML += assembleEntry(item);
-    //   render.push(assembledHTML);
-    // });
-    // assembledHTML = '</div>';
-    // render.push(assembledHTML);
-    // // Update feedback-items with what the REST API returned
-    // $('.feedback-items').html(render.join('\n'));
 
     //new version using EJS template
     const html = await renderEntries(page);
@@ -164,6 +190,7 @@ export async function updateDisplay(data) {
 
   initializeDeleteButtons();
   initializeDeleteButtonFromModal();
+  initializeUserEventLinks();
 }
 
 function outputHtmlForElement(item) {
@@ -209,6 +236,7 @@ function outputHtmlForElement(item) {
   return html;
 }
 
+//only used if 
 function assembleEntry(item) {
   console.log("-----assemble NEW ENTRY!!!");
   const isPage = item.type === 'page';

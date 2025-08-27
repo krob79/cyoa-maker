@@ -134,12 +134,10 @@
                                                                                     <%= o %>
                                                                                         <%= v %></strong>
                                                                         <%}else{%>
-                                                                            <strong>User Event: <a class="pageLink"
-                                                                                    onclick="console.log(`<%=item.value%>`);"
-                                                                                    href="#">
-                                                                                    <%= p %>
-                                                                                        <%= o %>
-                                                                                            <%= v %>
+                                                                            <strong><a class="pageLink userevent"
+                                                                                    data-event="<%=item.value%>"
+                                                                                    href="javascript:void(0)">
+                                                                                    <%= item.title %>
                                                                                 </a></strong>
                                                                             <%}%>
                                                                                 <% } else if (item.type==='condition' )

@@ -190,6 +190,7 @@ export function initModals() {
                 }
 
                 case 'event': {
+                    createConditionEditLink();
                     const [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
                     const prop = document.getElementById('modaleventInput');
                     const oper = document.getElementById('eventComparisonModal');
@@ -342,11 +343,12 @@ export function initModals() {
                 uuid: formData.get('hiddeneventuuid'),
                 newDataObj: {
                     occurs: formData.get('eventType'),
+                    title: formData.get('modaleventInputLabel'),
                     property: formData.get('modaleventInput'),
                     operator: formData.get('eventComparisonModal'),
                     amount: formData.get('modaleventInput2'),
                     value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')}`,
-                    html: `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960"><path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"/></svg>  Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong>`,
+                    html: `<strong>  Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong>`,
                 },
             };
 
@@ -362,6 +364,7 @@ export function initModals() {
                             section: formData.get('section'),
                             type: 'event',
                             occurs: formData.get('eventType'),
+                            title: formData.get('modaleventInputLabel'),
                             property: formData.get('modaleventInput'),
                             operator: formData.get('eventComparisonModal'),
                             amount: formData.get('modaleventInput2'),

@@ -76,7 +76,7 @@ export default (params) => {
                 el.isVisible = true;
                 el.opacity = "1";
                 //checking if these elements are the type which would have conditions
-                if (el.type == "text" || el.type == "image" || el.type == "choice") {
+                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event") {
                     for (let i = 0; i < el.elements.length; i++) {
                         console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
                         if (!inventory.check(el.elements[i].value)) {

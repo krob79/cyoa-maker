@@ -54,6 +54,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static(path.join(process.cwd(), './static')));
+//this is used for providing a path in a script tag so that the EJS runtime can be used, but locally and not from a CDN
 app.use('/vendor', express.static(path.join(process.cwd(), 'node_modules/ejs')));
 
 //Using EJS Template file for Client Side Rendering AND Server Side Rendering

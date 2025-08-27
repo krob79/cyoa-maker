@@ -60,6 +60,9 @@ class StoryService {
       type: type,
       value: value,
       html: html
+    };
+    if (type == "event") {
+      newData.title = title;
     }
     console.log(`---addDataByUUID() - section: ${section} - uuid: ${uuid} - type: ${newData.type}`);
     console.log(newData);
