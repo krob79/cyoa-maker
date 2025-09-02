@@ -1,4 +1,5 @@
 import { findUuidInURL } from './dragdrop.js';
+import { alertItem } from './custommodal.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
 // import inventory from '../services/inventory.js';
 
@@ -8,26 +9,73 @@ let allPageUUIDs = [];
 // cache the template text so we fetch once
 let ENTRY_TPL_TEXT = null;
 
+//Gathers all User Events and adds event listeners
 function initializeUserEventLinks() {
   let userEvts = Array.from(document.querySelectorAll('.userevent'));
   userEvts.forEach((el) => {
     console.log("--user event: ", el.textContent.trim());
-    el.addEventListener("click", (e) => {
+    el.addEventListener("click", async (e) => {
       let txt = el.textContent.trim();
       let parent = e.target.parentNode.parentNode
-      console.log("---parent: ", parent);
-      parseInventoryString(e.target.dataset.event);
+      console.log("---UUID: ", e.target.dataset.uuid);
+      let response = await fetch(`/page/${e.target.dataset.uuid}/`);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log("----about to parse event: ", result.value)
+      parseInventoryString(result.value);
       let textNode = document.createTextNode(txt);
       parent.replaceChild(textNode, e.target.parentNode);
-      // e.target.removeEventListener("click");
+    });
+  })
+
+}
+
+function initializeChoiceLinks() {
+  let choiceLinks = Array.from(document.querySelectorAll('.choiceLink'));
+  choiceLinks.forEach((el) => {
+    el.addEventListener("click", async (e) => {
+      e.preventDefault();
+      let originalURL = el.getAttribute('href');
+      console.log("----originalURL: ", originalURL);
+      let response = await fetch(`/page/${e.target.dataset.uuid}/`);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      let result = await response.json();
+      //get the elements array of this choice - since there are now more than just conditions in here, we need to filter for events
+      let elements = result.elements;
+      let events = elements.filter(e => e.type == "event");
+      console.log("---filtered choice events: ", events);
+
+      console.log("---THIS IS A CHOICE LINK!!! ", e.target.dataset.uuid);
+      $.ajax({
+        url: `/page/${e.target.dataset.uuid}/event`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ events }),
+        success: function (data) {
+          console.log("---success queueing event!");
+        },
+        error(xhr) {
+          console.error('POST failed: ', xhr.responseText);
+        },
+        complete: function () {
+          window.location.href = originalURL;
+        },
+      });
     });
   })
 
 }
 
 initializeUserEventLinks();
+initializeChoiceLinks();
 
 function parseInventoryString(str) {
+  let splitStr = str.split("_");
+  let itemname = splitStr[1];
   $.ajax({
     url: '/inventory/parse',
     type: 'POST',
@@ -37,6 +85,7 @@ function parseInventoryString(str) {
     success: function (data) {
       console.log("----event success!");
       console.log("----new data: ", data);
+      alertItem(itemname.charAt(0).toUpperCase() + itemname.slice(1), "", itemname);
     },
     complete: function () {
       console.log("---event complete");
@@ -190,6 +239,7 @@ export async function updateDisplay(data) {
 
   initializeDeleteButtons();
   initializeDeleteButtonFromModal();
+  initializeChoiceLinks();
   initializeUserEventLinks();
 }
 

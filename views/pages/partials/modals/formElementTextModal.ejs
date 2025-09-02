@@ -4,21 +4,23 @@
     </div>
     <div class="modal-body">
         <form id="textFormModal" class="row g-3 was-validated" novalidate>
-            <input type="hidden" id="hiddentextuuid" name="uuid" value="">
-            <input type="hidden" id="section" name="section" value="elements">
-            <input type="hidden" id="textrequest" name="textrequest" value="">
-            <div class="col-md-12">
-                <label for="value" class="form-label">Text:</label>
-                <textarea type="text" class="form-control" id="modaltextInput" name="modaltextInput"
-                    placeholder="Enter your text" required></textarea>
-                <div class="valid-feedback">
-                    Looks good!
+            <div class="container">
+                <input type="hidden" id="hiddentextuuid" name="uuid" value="">
+                <input type="hidden" id="section" name="section" value="elements">
+                <input type="hidden" id="textrequest" name="textrequest" value="">
+                <div class="col-md-12">
+                    <label for="value" class="form-label">Text:</label>
+                    <textarea type="text" class="form-control" id="modaltextInput" name="modaltextInput"
+                        placeholder="Enter your text" required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <a id="modaltextConditions" href="">Review Conditions For This Text ></a>
                 </div>
-                <a id="modaltextConditions" href="">Review Conditions For This Text ></a>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary" type="submit">Update</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Update</button>
+                </div>
             </div>
 
         </form>

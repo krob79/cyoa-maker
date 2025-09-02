@@ -64,11 +64,29 @@ export default (params) => {
             if (!pages) {
                 allData[0].elements = [];
             }
+
+            const events = Array.isArray(request.session?.events) ? request.session.events : [];
+            console.log("---EVENT QUEUE: ", events);
+            //these should be user initiated events that are tied to a Choice, so they won't fire automatically
+            //therefore, we are replacing the "user" portion of the event string with "auto", then parsing so it fires
+            events.forEach((evt) => {
+                let newEvent = evt.value.replace(/user/, "auto");
+                inventory.parseEventCommand(newEvent);
+                console.log("--session evt found: ", evt);
+            });
+            delete request.session.events;
+
+
+            //need to collect all available UUIDs to check for broken links 
             const allPageUUIDs = pages.map(p => p.uuid);
 
             //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-            // let pageListItems = pageData.elements;
+
+
+            const errors = request.session.pageData ? request.session.pageData.errors : false;
+            const successMessage = request.session.pageData ? request.session.pageData.message : false;
+            request.session.pageData = {};
 
             let pageListItems = pageData.elements.map(el => {
                 // console.log(`---what type is this element? ${el.type}`);
@@ -78,10 +96,12 @@ export default (params) => {
                 //checking if these elements are the type which would have conditions
                 if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event") {
                     for (let i = 0; i < el.elements.length; i++) {
-                        console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
-                        if (!inventory.check(el.elements[i].value)) {
-                            el.isVisible = false;
-                            // el.opacity = "0.4";
+                        if (el.elements[i].type == "condition") {
+                            console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
+                            if (!inventory.check(el.elements[i].value)) {
+                                el.isVisible = false;
+                                // el.opacity = "0.4";
+                            }
                         }
                     }
                 }
@@ -95,9 +115,11 @@ export default (params) => {
                 return el;
             });
 
-            const errors = request.session.pageData ? request.session.pageData.errors : false;
-            const successMessage = request.session.pageData ? request.session.pageData.message : false;
-            request.session.pageData = {};
+
+
+            //{evtname:'modalevent', detail: {title:`New Item Added: ${item.title}`,desc:`${item.desc}`,image:`item-${item.id}.png`}}
+            // content.dispatchEvent(new CustomEvent({ evtname: 'modalevent', detail: { title: `New Item Added: ${'Some Stick'}`, desc: `${'It\'s just a crazy stick...'}`, image: `item-stick.png` } }));
+
 
             let listPartialToUse;
             //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
@@ -114,7 +136,7 @@ export default (params) => {
                     break;
             }
 
-            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
+            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
             return next(err);
         }
@@ -136,11 +158,11 @@ export default (params) => {
             if (!pages) {
                 allData[0].elements = [];
             }
+            //need to collect all available UUIDs to check for broken links 
             const allPageUUIDs = pages.map(p => p.uuid);
 
             //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-            // let pageListItems = pageData.elements;
 
             let pageListItems = pageData.elements.map(el => {
                 // console.log(`---what type is this element? ${el.type}`);
@@ -194,6 +216,14 @@ export default (params) => {
         const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
         return response.json(pageData);
 
+    });
+
+    router.post('/:uuid/event', async (request, response, next) => {
+        const { events } = request.body;
+        console.log("----at /event route: ", events);
+        request.session = request.session || {};
+        request.session.events = events;
+        return res.json({ ok: true });
     });
 
     router.post('/api', validations, async (request, response, next) => {

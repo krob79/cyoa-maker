@@ -44,10 +44,11 @@ app.locals.siteName = "Kyle's BYOA";
 const uploadDir = path.join(process.cwd(), 'static', 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 
-//example of using cookieSession
+//example of middleware using cookieSession
 app.use(cookieSession({
-    name: 'session',
-    keys: ['kjwe87234', 'kjwnwj982u'],
+    name: 'cookiesession',            // cookie name in browser
+    keys: [process.env.SESSION_KEY || 'dev-key'],
+    maxAge: 10 * 60 * 1000   //10 minutes
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));

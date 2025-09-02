@@ -26,7 +26,7 @@
                 <!-- If the element is of type "choice" and contains a reference to a UUID that exists, then display it or indicate that this is a broken link -->
                 <% if (item.type=='choice' ){ %>
                     <% if (allPageUUIDs.includes(item.value.split("||")[1])){%>
-                        <strong><a href="/page/<%=item.value.split('||')[1]%>/edit">
+                        <strong><a class="choicelink" href="/page/<%=item.value.split('||')[1]%>/edit">
                                 <%=item.value.split('||')[0]%>
                             </a></strong>
                         <%}else{%>

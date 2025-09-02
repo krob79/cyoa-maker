@@ -73,25 +73,36 @@
                                                 d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
                                         </svg>
                                     </button>
-                                    <%}%>
+                                    <% if(pageData.type=="choice" ){%>
+                                        <button type="button" class="btn btn-secondary newElement"
+                                            data-bs-toggle="modal" data-bs-request="POST" data-bs-elementtype="event"
+                                            data-bs-storyuuid="<%=story.uuid%>"
+                                            data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
+                                            data-bs-target="#eventUpdateModal">+<svg xmlns="http://www.w3.org/2000/svg"
+                                                width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
+                                                <path
+                                                    d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
+                                            </svg></button>
+                                        <%}%>
+                                            <%}%>
 
-                                        <div class="feedback-status">
-                                            <% if(locals.errors){%>
-                                                <div class="alert alert-danger">
-                                                    <ul>
-                                                        <% errors.forEach(function (error){%>
-                                                            <li>
-                                                                <%= error.msg %>
-                                                            </li>
-                                                            <%})%>
-                                                    </ul>
+                                                <div class="feedback-status">
+                                                    <% if(locals.errors){%>
+                                                        <div class="alert alert-danger">
+                                                            <ul>
+                                                                <% errors.forEach(function (error){%>
+                                                                    <li>
+                                                                        <%= error.msg %>
+                                                                    </li>
+                                                                    <%})%>
+                                                            </ul>
+                                                        </div>
+                                                        <%}else if(locals.successMessage) {%>
+                                                            <div class="alert alert-success">
+                                                                <%= successMessage %>
+                                                            </div>
+                                                            <%}%>
                                                 </div>
-                                                <%}else if(locals.successMessage) {%>
-                                                    <div class="alert alert-success">
-                                                        <%= successMessage %>
-                                                    </div>
-                                                    <%}%>
-                                        </div>
             </div>
         </div>
         <aside class="col-md-9">
@@ -103,7 +114,15 @@
                                 Editing Condition of <%= pageData.type %> element
                                     <%}%>
                 </h1>
+                <div id="eventList">
+                    <% events.forEach((evt)=>{%>
+                        <div class="feedback-item">
+                            <p>Event Found: <%= evt.value %>
+                            </p>
+                        </div>
+                        <%})%>
 
+                </div>
                 <div id="draggableList" class="list-group feedback-items">
                     <%if(pageListItems.length> 0){%>
                         <% pageListItems.forEach(function (item) {%>

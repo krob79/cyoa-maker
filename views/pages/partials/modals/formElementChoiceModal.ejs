@@ -3,8 +3,9 @@
         <h5 class="modal-title element-modal-title" id="modalchoiceLabel">Form Title</h5>
     </div>
     <div class="modal-body">
-        <div class="container-fluid">
-            <form id="choiceFormModal" class="row g-3 mb-3 was-validated" novalidate>
+
+        <form id="choiceFormModal" class="row g-3 mb-3 was-validated" novalidate>
+            <div class="container-fluid">
                 <input type="hidden" name="hiddenstoryuuid" id="hiddenstoryuuid" value="<%=uuid %>">
                 <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
                 <input type="hidden" name="section" value="elements">
@@ -19,7 +20,7 @@
                         <input type="text" class="form-control" name="modalchoiceInput" id="modalchoiceInput"
                             aria-describedby="basic-addon3 basic-addon4">
                     </div>
-                    <div class="col-md-6 input-group">
+                    <div class="col input-group">
                         <label class="input-group-text" for="inputGroupSelect01">Link to Page:</label>
                         <select class="form-select" id="choiceDestinationModal"
                             onchange="changeChoiceDestinationModal()">
@@ -31,23 +32,24 @@
                                 <%}%>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <a id="modalchoiceConditions" href="">Review Conditions For This Choice ></a>
-                    </div>
+
                     <div class="valid-feedback">
                         Looks good!
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 modal-footer">
+                    <div class="col">
+                        <a id="modalchoiceConditions" href="">Review Conditions For This Choice ></a>
+                    </div>
+                    <div class="col modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button class="btn btn-primary" type="submit">Update</button>
                     </div>
                 </div>
 
+            </div>
+        </form>
 
-            </form>
-        </div>
 
     </div>
 

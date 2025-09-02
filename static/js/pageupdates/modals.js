@@ -115,6 +115,7 @@ export function initModals() {
             const button = event.relatedTarget;
             if (!button) return;
 
+            const el_title = button.dataset.bsElementtitle;
             const el_type = button.dataset.bsElementtype;
             const el_value = button.dataset.bsElementvalue;
             const modalInput = document.getElementById(`modal${el_type}Input`);
@@ -130,9 +131,12 @@ export function initModals() {
             // helper for the "Set Conditions" link
             function createConditionEditLink() {
                 const conditionsLink = document.getElementById(`modal${el_type}Conditions`);
-                if (conditionsLink && uuidinput?.value) {
+                if (conditionsLink && uuidinput?.value && btn_request == 'PUT') {
+                    conditionsLink.style.display = "block";
                     conditionsLink.setAttribute('href', `/page/${uuidinput.value}/edit`);
                     conditionsLink.textContent = `Set Conditions for this ${el_type} >`;
+                } else {
+                    conditionsLink.style.display = "none";
                 }
             }
 
@@ -192,9 +196,11 @@ export function initModals() {
                 case 'event': {
                     createConditionEditLink();
                     const [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
+                    const label = document.getElementById('modaleventInputLabel');
                     const prop = document.getElementById('modaleventInput');
                     const oper = document.getElementById('eventComparisonModal');
                     const amt = document.getElementById('modaleventInput2');
+                    if (label) label.value = el_title;
                     if (prop) prop.value = p;
                     if (oper) oper.value = o;
                     if (amt) amt.value = v;

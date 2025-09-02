@@ -1,0 +1,32 @@
+<div data-uuid="<%=item.uuid %>" class="feedback-item item-list media-list">
+    <div class="editButtons">
+        <button type="button" data-bs-uuid="<%=item.uuid %>" data-bs-elementType="<%=item.type %>"
+            class="btn item-delete-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 -960 960 960">
+                <path
+                    d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120zm400-600H280v520h400zM360-280h80v-360h-80zm160 0h80v-360h-80zM280-720v520z" />
+            </svg></button>
+        <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT"
+            data-bs-elementType="<%=item.type %>" data-bs-elementuuid="<%=item.uuid %>"
+            data-bs-elementvalue="<%=item.value %>" data-bs-target="#<%=item.type %>UpdateModal"><svg
+                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960">
+                <path
+                    d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120zm160-240v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5-5.5 29.5T897-728L530-360zm481-424-56-56zM440-440h56l232-232-28-28-29-28-231 231zm260-260-29-28zl28 28z" />
+            </svg></button>
+    </div>
+    <div class="feedback-item <%=item.type %>">
+        <div class="feedback-info media-body">
+            <div class="feedback-head">
+                <div class="feedback-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        fill="currentColor" viewBox="0 -960 960 960">
+                        <path
+                            d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
+                    </svg>
+                    Event:</div>
+            </div>
+            <div class="feedback-message">
+                <%=item.value %>
+            </div>
+        </div>
+    </div>
+</div>

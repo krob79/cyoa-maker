@@ -1,31 +1,35 @@
 console.log("---loading modal.js!");
 
-var content = document.querySelector('#container');
+const content = document.querySelector('#undumcontainer');
+content.addEventListener("click", () => {
+    console.log("clicked on modal");
+})
+
 content.addEventListener('modalevent', function (e) {
 
     //{desc:Description here, }
     let isItem = false;
 
     let modalDiv = document.createElement('div');
-    modalDiv.classList.add('modal');
+    modalDiv.classList.add('custommodal');
     modalDiv.setAttribute('id', 'myModal');
 
     let modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
+    modalContent.classList.add('custommodal-content');
 
     let modalButtonSpace = document.createElement('div');
-    modalButtonSpace.classList.add('modal-btn-space');
+    modalButtonSpace.classList.add('custommodal-btn-space');
 
     let modalClose = document.createElement('span');
-    modalClose.classList.add('modal-btn');
-    modalClose.innerHTML = `OK!`;
+    modalClose.classList.add('custommodal-btn');
+    modalClose.innerHTML = `OK`;
 
     //title is optional
     if (e.detail.title) {
         let modalTitleDiv = document.createElement('div');
-        modalTitleDiv.classList.add('modal-title-div');
+        modalTitleDiv.classList.add('custommodal-title-div');
         let modalTitle = document.createElement('span');
-        modalTitle.classList.add('modal-title');
+        modalTitle.classList.add('custommodal-title');
         modalTitle.innerHTML = e.detail.title;
         modalTitleDiv.appendChild(modalTitle);
         modalDiv.appendChild(modalTitleDiv);
@@ -38,19 +42,19 @@ content.addEventListener('modalevent', function (e) {
         let modalImage = document.createElement('img');
         modalImage.setAttribute('src', `/uploads/${e.detail.image}`);
         if (e.detail.action == 'look') {
-            modalImage.classList.add('modal-image-look');
+            modalImage.classList.add('custommodal-image-look');
         } else {
-            modalImage.classList.add('modal-image-take');
+            modalImage.classList.add('custommodal-image-take');
         }
 
 
-        modalImageDiv.classList.add('modal-image-div');
+        modalImageDiv.classList.add('custommodal-image-div');
         modalImageDiv.appendChild(modalImage);
         modalContent.appendChild(modalImageDiv);
     }
 
     let modalText = document.createElement('div');
-    modalText.classList.add('modal-text');
+    modalText.classList.add('custommodal-text');
     modalText.innerHTML = e.detail.desc;
 
     //example: {evtname:'promptevent', detail:{promptType:'input', action:'create', promptText:'Who the heck are you, anyway?', processNode:'1112', cancelNode:'1113', value:'gameplayer.name'}}
@@ -73,8 +77,8 @@ content.addEventListener('modalevent', function (e) {
         modalContent.appendChild(promptlabel);
         modalContent.appendChild(prompt);
 
-        let modalSubmit = document.createElement('span');
-        modalSubmit.classList.add('modal-btn');
+        let modalSubmit = document.createElement('div');
+        modalSubmit.classList.add('custommodal-btn');
         modalSubmit.innerHTML = `Submit`;
         modalSubmit.onclick = function () {
             console.log(`---submitting input from button ${e.detail.prompt.objString} `);
@@ -94,9 +98,10 @@ content.addEventListener('modalevent', function (e) {
         modalButtonSpace.appendChild(modalSubmit);
     }
 
+    //option where you can examine item before taking it
     if (e.detail.action == 'look') {
         let modalTakeBtn = document.createElement('span');
-        modalTakeBtn.classList.add('modal-btn');
+        modalTakeBtn.classList.add('custommodal-btn');
         modalTakeBtn.innerHTML = `Take It`;
         modalTakeBtn.onclick = function () {
             //console.log(`---submitting input from button ${e.detail.prompt.objString} `);
@@ -131,6 +136,7 @@ content.addEventListener('modalevent', function (e) {
     modalClose.onclick = function () {
         console.log("---closing modal from button");
         //not sure if this code is what needs to be here...but it seems to work for now
+
         if (e.detail.prompt) {
             choiceDispatchEvent(1);
             removePrompt();
@@ -151,21 +157,6 @@ content.addEventListener('modalevent', function (e) {
         }
     }
 
-
-    //    <div id="myModal" class="modal">
-    //
-    //      <!-- Modal content -->
-    //      <div class="modal-content">
-    //        <span class="modal-close">&times;</span>
-    //        <p>Some text in the Modal..</p>
-    //      </div>
-    //
-    //    </div>
-    //    party.confetti(modalContent, {
-    //  // returns a random number from min to max
-    //        count: party.variation.range(80, 100)
-    //    });
-
     setTimeout(function () {
         content.appendChild(modalDiv);
         if (e.detail.confetti || isItem) {
@@ -182,4 +173,6 @@ content.addEventListener('modalevent', function (e) {
 });
 
 // console.log("---firing event!");
-// content.dispatchEvent(new CustomEvent('modalevent', { detail: { title: `New Item Added: ${'Some New Item'}`, desc: `${'Its kind of a cool item.'}`, image: `item-porchstick.png` } }));
+export function alertItem(title, desc, img) {
+    content.dispatchEvent(new CustomEvent('modalevent', { detail: { title: `New Item: ${title}`, desc: `${desc}`, image: `item-${img}.png` } }));
+}

@@ -1,11 +1,11 @@
 /*Styles for modal
 /* The Modal (background) */
-.modal {
+.custommodal {
     display: block;
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 20;
     /* Sit on top */
     padding-top: 100px;
     /* Location of the box */
@@ -24,15 +24,16 @@
     transition: 1s;
 }
 
-.modal-title-div {
+.custommodal-title-div {
     /*    background:red;*/
     overflow: hidden;
     position: relative;
     top: 14px;
+    z-index: 21;
     text-align: center;
 }
 
-.modal-image-div {
+.custommodal-image-div {
     /*    width: 200px;*/
     /*  height: 200px;*/
     display: flex;
@@ -61,7 +62,7 @@
     }
 }
 
-.modal-image-take {
+.custommodal-image-take {
     width: 13%;
     min-width: 80px;
     display: block;
@@ -69,13 +70,13 @@
     animation: neon3 2s infinite ease-in-out alternate;
 }
 
-.modal-image-look {
+.custommodal-image-look {
     width: 30%;
     min-width: 80px;
     display: block;
 }
 
-.modal-title {
+.custommodal-title {
     padding: 5px 10px;
     border: 1px solid darkgoldenrod;
     background-color: #fc6;
@@ -86,12 +87,12 @@
     text-shadow: 7 7 black;
 }
 
-.modal-text {
+.custommodal-text {
     margin-top: 17px;
 }
 
 /* Modal Content */
-.modal-content {
+.custommodal-content {
     text-align: center;
     margin: auto;
     padding: 20px;
@@ -102,13 +103,13 @@
     transition: 2s width;
 }
 
-.modal-btn-space {
+.custommodal-btn-space {
     position: relative;
     top: 30px;
 }
 
 /* The Close Button */
-.modal-btn {
+.custommodal-btn {
     margin-right: 2%;
     font-size: 16px;
     line-height: 20px;
@@ -122,8 +123,8 @@
     border: 2px solid #600;
 }
 
-.modal-btn:hover,
-.modal-btn:focus {
+.custommodal-btn:hover,
+.custommodal-btn:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;

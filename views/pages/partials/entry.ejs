@@ -27,8 +27,8 @@
 
                             <!-- Edit -->
                             <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT"
-                                data-bs-elementtype="<%= item.type %>" data-bs-elementuuid="<%= item.uuid %>"
-                                data-bs-elementvalue="<%= item.value || '' %>"
+                                data-bs-elementtype="<%= item.type %>" data-bs-elementtitle="<%= item.title %>"
+                                data-bs-elementuuid="<%= item.uuid %>" data-bs-elementvalue="<%= item.value || '' %>"
                                 data-bs-target="#<%= item.type %>UpdateModal">
                                 <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24"
                                     viewBox="0 -960 960 960">
@@ -55,7 +55,7 @@
                                         </svg> Condition:
                                         <% } %>
                         </div>
-                        <!-- If this is a "page", display the count of text, images, and choices -->
+                        <!-- If this is a "page", display the tiny icons, plus count of text, images, and choices -->
                         <% if (item.type==='page' && item.elements) { %>
                             <% const t=item.elements.filter(el=> el.type === 'text').length; %>
                                 <% const i=item.elements.filter(el=> el.type === 'image').length; %>
@@ -117,7 +117,8 @@
                                         <% const parts=String(item.value||'').split('||'); %>
                                             <% const label=parts[0] || '' ; const dest=parts[1] || '' ; %>
                                                 <% if (dest) { %>
-                                                    <strong><a class="pageLink" href="/page/<%= dest %>/edit">
+                                                    <strong><a class="pageLink choiceLink" data-uuid="<%= item.uuid %>"
+                                                            href="/page/<%= dest %>/edit">
                                                             <%= label %>
                                                         </a></strong>
                                                     <% } else { %>
@@ -135,7 +136,7 @@
                                                                                         <%= v %></strong>
                                                                         <%}else{%>
                                                                             <strong><a class="pageLink userevent"
-                                                                                    data-event="<%=item.value%>"
+                                                                                    data-uuid="<%=item.uuid%>"
                                                                                     href="javascript:void(0)">
                                                                                     <%= item.title %>
                                                                                 </a></strong>
