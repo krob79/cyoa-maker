@@ -16,13 +16,9 @@ import OpenAI from 'openai';
 const app = express();
 const port = 3000;
 
-
-
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-
-
 
 app.set('trust proxy', 1); //makes express trust cookies if passed through reverse proxy
 app.set('view engine', 'ejs'); //allows for parsing of EJS templating engine 

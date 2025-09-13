@@ -6,7 +6,7 @@ body {
   font-family: 'Palatino', sans-serif;
 }
 
-h1,
+
 h2,
 h3,
 h4,
@@ -16,17 +16,15 @@ h6 {
   color: #C1343F;
 }
 
-h1 {
-  font-size: 2em;
-}
+
 
 h2 {
   font-size: 1.8em;
 }
 
-a {
+/* a {
   color: #DD4F53;
-}
+} */
 
 header .jumbotron {
   height: 0vh;
@@ -52,6 +50,15 @@ header .navbar-brand {
   display: none;
 }
 
+.featherImage {
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent), linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  /* For cross-browser compatibility */
+  mask-composite: intersect;
+  /* For WebKit browsers */
+  -webkit-mask-composite: destination-in;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent), linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+
+}
 
 
 .maincontent {
@@ -81,8 +88,57 @@ p.pageText {
   line-height: 1.6em;
 }
 
+.userevent {
+  color: #900;
+  display: block;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  /* background-color: #4a69bd; */
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  border: 1px solid #900;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.usereventdone {
+  color: #474544;
+  display: block;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  /* background-color: #4a69bd; */
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  border: 1px solid #474544;
+  font-size: 1em;
+}
+
+.choices {
+  color: #900;
+  display: block;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  /* background-color: #4a69bd; */
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  border: 1px solid #900;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.choices a:hover,
+.choices button:hover {
+  background-color: #3b53a0;
+}
+
 .pageImage {
-  max-width: 90%;
+  max-width: 95%;
 }
 
 /* .pageLink {} */
@@ -178,7 +234,7 @@ p.pageText {
 
 .feedback-message {
   font-weight: 100;
-  font-size: .9em;
+  font-size: 18px;
   line-height: 120%;
   margin-top: 5px;
 }

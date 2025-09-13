@@ -55,6 +55,7 @@ class StoryService {
     const data = (await this.getData()) || [];
 
     let newData = {
+      parent: uuid,
       title: value,
       uuid: crypto.randomUUID(),
       type: type,
@@ -119,6 +120,7 @@ class StoryService {
     const data = (await this.getData()) || [];
 
     let newData = {
+      parent: uuid,
       title: value,
       uuid: crypto.randomUUID(),
       type: "page",
@@ -315,6 +317,70 @@ class StoryService {
       }
       return null; // The UUID was not found or the property could not be updated
     }
+  }
+
+  async getConditionsEventsList() {
+    console.log(`---getConditionsEventsList() - gathering all events and conditions`);
+
+    const obj = (await this.getData()) || [];
+    // console.log("---initial obj: ");
+    console.log(obj);
+
+    const conditions = [];
+    const events = [];
+
+
+    let results = checkProperties(obj);
+
+    return ({ "conditions": conditions, "events": events });
+
+    function checkProperties(obj) {
+      console.log(`----checking - ${obj.type}`)
+      if (obj && obj.type == 'condition') {
+        console.log(`found condition! `, obj.value);
+        const m = obj.value.match(/^(.+?)(<=|>=|==|=|!=|<|>)(.+)$/);
+        if (!m) throw new Error(`Invalid condition: ${obj.value}`);
+
+        const rawName = m[1].trim();
+        const op = m[2].trim();
+        let rawValue = m[3].trim();
+
+        conditions.push({ "name": rawName, "obj": obj });
+      } else if (obj && obj.type == 'event') {
+        console.log(`found event! `, obj.value);
+        let split = obj.value.split('_');
+        let eType = split[0];
+        let eProperty = split[1];
+        let eOperator = split[2];
+        let eAmount = split[3];
+        events.push({ "name": eProperty, "obj": obj });
+      }
+
+      // Iterate over the object's values to find the nested objects or arrays.
+      if (typeof obj === 'object' && obj !== null) {
+        //go through all the object keys
+        for (let key in obj) {
+          // console.log(`--key: ${key}`);
+          if (obj.hasOwnProperty(key)) {
+            const val = obj[key];
+            // console.log(`--key: ${key} - value: ${obj[key]}`);
+            let result = null;
+
+            if (Array.isArray(val)) {
+              for (let item of val) {
+                result = checkProperties(item);
+                if (result) return result;
+              }
+            } else if (typeof val === 'object') {
+              result = checkProperties(val);
+              if (result) return result;
+            }
+          }
+        }
+      }
+      // console.log("conditions: ", conditions); // The UUID was not found or the property could not be updated
+    }
+    // console.log("---done: ", conditions);
   }
 
   //

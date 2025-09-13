@@ -1,7 +1,9 @@
 import { findUuidInURL } from './dragdrop.js';
 import { alertItem } from './custommodal.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
-// import inventory from '../services/inventory.js';
+
+import { elementSchemas } from '../forms/elementSchemas.js';
+import { renderForm } from '../forms/formRenderer.js';
 
 console.log("----render.js");
 
@@ -23,14 +25,31 @@ function initializeUserEventLinks() {
         throw new Error(`Response status: ${response.status}`);
       }
       const result = await response.json();
-      console.log("----about to parse event: ", result.value)
+      console.log("----about to parse event: ", result.value);
+
       parseInventoryString(result.value);
+      const newParagraph = document.createElement("p");
+      newParagraph.classList.add('usereventdone');
       let textNode = document.createTextNode(txt);
-      parent.replaceChild(textNode, e.target.parentNode);
+      newParagraph.appendChild(textNode);
+      parent.replaceChild(newParagraph, e.target.parentNode);
+    });
+  })
+}
+
+function initializeNewElementButtons() {
+  let btns = Array.from(document.querySelectorAll('.universalForm'));
+  let form = document.getElementById("universalFormModal");
+  btns.forEach((el) => {
+
+    el.addEventListener("click", async (e) => {
+      renderForm(elementSchemas.condition, form);
     });
   })
 
 }
+
+initializeNewElementButtons();
 
 function initializeChoiceLinks() {
   let choiceLinks = Array.from(document.querySelectorAll('.choiceLink'));

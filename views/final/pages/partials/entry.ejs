@@ -130,30 +130,15 @@
                                                                 <% const [eType='' , p='' , o='' , v=''
                                                                     ]=String(item.value||'').split('_'); %>
                                                                     <% if(eType=='auto' ){%>
-                                                                        <strong><svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="20" height="20"
-                                                                                fill="currentColor"
-                                                                                viewBox="0 -960 960 960">
-                                                                                <path
-                                                                                    d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340">
-                                                                                </path>
-                                                                            </svg> Event (<%= eType %>):
+                                                                        <strong><!--(svg)--> Custom <%= eType %> event:
                                                                                 <%= p %>
                                                                                     <%= o %>
                                                                                         <%= v %></strong>
                                                                         <%}else{%>
                                                                             <strong><a class="pageLink userevent"
                                                                                     data-uuid="<%=item.uuid%>"
-                                                                                    href="javascript:void(0)"><svg
-                                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="20" height="20"
-                                                                                        fill="currentColor"
-                                                                                        viewBox="0 -960 960 960">
-                                                                                        <path
-                                                                                            d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340">
-                                                                                        </path>
-                                                                                    </svg>
-                                                                                    Event (user): <%= item.title %>
+                                                                                    href="javascript:void(0)">
+                                                                                    <%= item.title %>
                                                                                 </a></strong>
                                                                             <%}%>
                                                                                 <% } else if (item.type==='condition' )

@@ -1,0 +1,45 @@
+<div id="container" class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="maincontent feedback">
+                <h2>
+                    Conditons
+                </h2>
+                <div id="eventList">
+                    <% pageData.conditions.forEach((evt)=>{%>
+                        <div class="feedback-item">
+                            <p>
+                                <%= evt.name %> <a href='/page/<%=evt.obj.uuid%>/edit'>
+                                        <%=evt.obj.value%>
+                                    </a>
+                            </p>
+                        </div>
+                        <%})%>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="maincontent feedback">
+                <h2>
+                    Events
+                </h2>
+                <div id="eventList">
+                    <% pageData.events.forEach((evt)=>{%>
+                        <div class="feedback-item">
+                            <p>
+                                <%= evt.name %> <a href='/page/<%=evt.obj.uuid%>/edit'>
+                                        <%=evt.obj.value%>
+                                    </a>
+                            </p>
+                        </div>
+                        <%})%>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
