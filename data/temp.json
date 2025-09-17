@@ -397,6 +397,43 @@
             },
             {
                 "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "title": "Take The Wooden Cane",
+                "uuid": "c2201a08-7b02-4739-a1e4-aad26618252d",
+                "type": "page",
+                "value": "Take The Wooden Cane",
+                "html": "",
+                "elements": [
+                    {
+                        "parent": "c2201a08-7b02-4739-a1e4-aad26618252d",
+                        "title": "You got the cane! It seems nice and sturdy!",
+                        "uuid": "42aaf266-d36d-4737-9d98-8aefe04fcd4d",
+                        "type": "text",
+                        "value": "You got the cane! It seems nice and sturdy!",
+                        "html": "<p class=\"pageText\">You got the cane! It seems nice and sturdy!</p>",
+                        "elements": []
+                    },
+                    {
+                        "parent": "c2201a08-7b02-4739-a1e4-aad26618252d",
+                        "title": "Back to Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "uuid": "a43f998d-1815-4113-a64c-6ba423143b65",
+                        "type": "choice",
+                        "value": "Back to Front Porch||53406bdc-03fb-4899-b4a3-8f6cabd24183",
+                        "html": "<a class=\"pageLink\" href=\"/page/53406bdc-03fb-4899-b4a3-8f6cabd24183/edit\">Back to Front Porch</a>",
+                        "elements": []
+                    },
+                    {
+                        "parent": "c2201a08-7b02-4739-a1e4-aad26618252d",
+                        "title": "auto_woodencane_=_1",
+                        "uuid": "a26a0730-c580-4574-a5e0-03e91eae2fb8",
+                        "type": "event",
+                        "value": "auto_woodencane_=_1",
+                        "html": "<strong><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\"\nheight=\"24\" fill=\"currentColor\" viewBox=\"0 -960 960 960\">\n<path\nd=\"M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340\"/>\n</svg>Custom auto event: woodencane=1 </strong>",
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
                 "title": "Hanging Out With Gramps",
                 "uuid": "bfe500bb-e7f4-44cc-bd8c-8431cd863e0e",
                 "type": "page",

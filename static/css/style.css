@@ -51,6 +51,21 @@ header .navbar-brand {
   opacity: 0.4;
 }
 
+.feedback-item.highlighted {
+  animation: 1s infinite alternate border-pulse;
+  background-color: lightgoldenrodyellow;
+}
+
+@keyframes border-pulse {
+  from {
+    border: 1px solid rgba(255, 0, 0, 1);
+  }
+
+  to {
+    border: 1px solid rgba(255, 0, 0, 0.2);
+  }
+}
+
 .content-chunk {
   display: flex;
   align-items: center;
@@ -198,6 +213,13 @@ p.pageText {
 .feedback-item {
   border-bottom: 1px solid gray;
   padding: 8px 8px;
+  width: 100%;
+}
+
+.event-item {
+  font-size: .8em;
+  border-bottom: 1px solid rgb(205, 202, 202);
+  padding: 4px 4px;
   width: 100%;
 }
 

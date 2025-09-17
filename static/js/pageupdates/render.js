@@ -1,4 +1,4 @@
-import { findUuidInURL } from './dragdrop.js';
+import { findUuidInURL } from './utils.js';
 import { alertItem } from './custommodal.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
 
@@ -15,7 +15,7 @@ let ENTRY_TPL_TEXT = null;
 function initializeUserEventLinks() {
   let userEvts = Array.from(document.querySelectorAll('.userevent'));
   userEvts.forEach((el) => {
-    console.log("--user event: ", el.textContent.trim());
+    // console.log("--user event: ", el.textContent.trim());
     el.addEventListener("click", async (e) => {
       let txt = el.textContent.trim();
       let parent = e.target.parentNode.parentNode
@@ -66,7 +66,7 @@ function initializeChoiceLinks() {
       //get the elements array of this choice - since there are now more than just conditions in here, we need to filter for events
       let elements = result.elements;
       let events = elements.filter(e => e.type == "event");
-      console.log("---filtered choice events: ", events);
+      // console.log("---filtered choice events: ", events);
 
       console.log("---THIS IS A CHOICE LINK!!! ", e.target.dataset.uuid);
       $.ajax({
@@ -113,8 +113,6 @@ function parseInventoryString(str) {
 
 }
 
-
-
 //for using the EJS template in CSR and SSR
 async function getEntryTemplate() {
   if (!ENTRY_TPL_TEXT) {
@@ -124,6 +122,7 @@ async function getEntryTemplate() {
   }
   return ENTRY_TPL_TEXT;
 }
+
 //for using the EJS template in CSR and SSR
 //keep assembleEntry function as a fallback in case the loading of EJS entry doesn't work
 async function renderEntries(items) {
@@ -172,7 +171,10 @@ export async function reorderElements({ from, to }) {
       })
 
     //Make deep copy of the array so that ALL nested elements are swapped as well
+
     let deepCopyArray = structuredClone(elements);
+    // console.log("---DEEP COPY ARRAY:");
+    // console.log(deepCopyArray);
     //swap the elements in the array
     deepCopyArray = moveElement(deepCopyArray, from, to);
 
@@ -230,8 +232,8 @@ export async function updateDisplay(data) {
       await fetch(`/page/${uuidInURL}`)
         .then(response => response.json())
         .then(data => {
-          // console.log("-----testfetch: ");
-          // console.log(data);
+          // console.log("-----update displays testfetch: ");
+          // console.log(data.elements);
           page = data.elements;
         })
 

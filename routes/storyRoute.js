@@ -53,6 +53,14 @@ export default (params) => {
         response.setHeader('Pragma', 'no-cache');
         response.setHeader('Expires', '0');
 
+        const query = request.query.q;
+
+        if (query) {
+            console.log("---query: ", query);
+        } else {
+            console.log("---no query found");
+        }
+
         try {
             //get the entire list of data
             const allData = await storyService.getList();
@@ -65,6 +73,7 @@ export default (params) => {
                 allData[0].elements = [];
             }
 
+            //if there's anything that gets put in this events array, it came from the session, and is therefore from a choice link
             const events = Array.isArray(request.session?.events) ? request.session.events : [];
             console.log("---EVENT QUEUE: ", events);
             //these should be user initiated events that are tied to a Choice, so they won't fire automatically
@@ -74,6 +83,7 @@ export default (params) => {
                 inventory.parseEventCommand(newEvent);
                 console.log("--session evt found: ", evt);
             });
+            //clear the session after we've found all the events and processed them, because the session should only store the events until the next page
             delete request.session.events;
 
 
@@ -89,10 +99,15 @@ export default (params) => {
             request.session.pageData = {};
 
             let pageListItems = pageData.elements.map(el => {
-                // console.log(`---what type is this element? ${el.type}`);
                 //default true value, because there may be no conditions applied
+                el.highlighted = false;
                 el.isVisible = true;
                 el.opacity = "1";
+                // console.log(`---compare ${typeof el.uuid} with ${typeof query}`);
+                if (el.uuid === query) {
+                    // console.log("---found query!");
+                    el.highlighted = true;
+                }
                 //checking if these elements are the type which would have conditions
                 if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event") {
                     for (let i = 0; i < el.elements.length; i++) {
@@ -100,7 +115,6 @@ export default (params) => {
                             // console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
                             if (!inventory.check(el.elements[i].value)) {
                                 el.isVisible = false;
-                                // el.opacity = "0.4";
                             }
                         }
                     }
@@ -114,12 +128,6 @@ export default (params) => {
                 }
                 return el;
             });
-
-
-
-            //{evtname:'modalevent', detail: {title:`New Item Added: ${item.title}`,desc:`${item.desc}`,image:`item-${item.id}.png`}}
-            // content.dispatchEvent(new CustomEvent({ evtname: 'modalevent', detail: { title: `New Item Added: ${'Some Stick'}`, desc: `${'It\'s just a crazy stick...'}`, image: `item-stick.png` } }));
-
 
             let listPartialToUse;
             //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
@@ -136,7 +144,7 @@ export default (params) => {
                     break;
             }
 
-            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
+            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage, query });
         } catch (err) {
             return next(err);
         }
@@ -248,6 +256,61 @@ export default (params) => {
         console.log("---checking all events");
         const pageData = await storyService.getConditionsEventsList();
         const listPartialToUse = "elementPartial";
+
+        pageData.events.sort((a, b) => {
+            const categoryA = a.name.toUpperCase();
+            const categoryB = b.name.toUpperCase();
+
+            if (categoryA < categoryB) {
+                return -1;
+            }
+            if (categoryA > categoryB) {
+                return 1;
+            }
+            return 0; // Categories are equal
+        });
+
+        pageData.conditions.sort((a, b) => {
+            const categoryA = a.name.toUpperCase();
+            const categoryB = b.name.toUpperCase();
+
+            if (categoryA < categoryB) {
+                return -1;
+            }
+            if (categoryA > categoryB) {
+                return 1;
+            }
+            return 0; // Categories are equal
+        });
+
+
+        let eventArr = separateArrays([...pageData.events]);
+        let conditionArr = separateArrays([...pageData.conditions]);
+
+        function separateArrays(arr) {
+            console.log("separating: ", arr);
+            let currName = arr[0].name;
+            let currArr = [];
+            let finalArr = [];
+
+            arr.forEach((obj) => {
+
+                if (obj.name == currName) {
+                    console.log(`---checking: ${obj.name} with ${currName}`);
+                    currArr.push(obj);
+                } else {
+                    finalArr.push([...currArr]);
+                    currArr = [];
+                    currName = obj.name;
+                }
+            });
+            return finalArr;
+        }
+
+        console.log(eventArr);
+        console.log(conditionArr);
+
+
         return response.render('layout', { pageTitle: "Events and Conditions", template: 'eventList', pageData, listPartialToUse });
     });
 
@@ -329,8 +392,8 @@ export default (params) => {
                 }
                 return response.json({ errors: errors.array() });
             }
-            // console.log("----page/api - PUT request - request body:");
-            // console.log(request.body);
+            console.log("----page/api - PUT request - request body:");
+            console.log(request.body);
 
 
             const { uuid, newDataObj } = request.body;

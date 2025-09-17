@@ -3,16 +3,14 @@
         <div class="col-md-6">
             <div class="maincontent feedback">
                 <h2>
-                    Conditons
+                    Conditions
                 </h2>
                 <div id="eventList">
                     <% pageData.conditions.forEach((evt)=>{%>
-                        <div class="feedback-item">
-                            <p>
-                                <%= evt.name %> <a href='/page/<%=evt.obj.uuid%>/edit'>
-                                        <%=evt.obj.value%>
-                                    </a>
-                            </p>
+                        <div class="event-item">
+                            "<%=evt.obj.value%>" at page "<a href='/page/<%=evt.pageUUID%>/edit?q=<%=evt.obj.parent%>'>
+                                    <%=evt.pageTitle%>
+                                </a>"
                         </div>
                         <%})%>
 
@@ -27,12 +25,10 @@
                 </h2>
                 <div id="eventList">
                     <% pageData.events.forEach((evt)=>{%>
-                        <div class="feedback-item">
-                            <p>
-                                <%= evt.name %> <a href='/page/<%=evt.obj.uuid%>/edit'>
-                                        <%=evt.obj.value%>
-                                    </a>
-                            </p>
+                        <div class="event-item">
+                            "<%=evt.obj.value%>" at page "<a href='/page/<%=evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
+                                    <%=evt.pageTitle%>
+                                </a>"
                         </div>
                         <%})%>
 

@@ -2,7 +2,8 @@
     <div class="content-chunk">
         <div class="drag-handle">::</div>
 
-        <div data-uuid="<%= item.uuid %>" class="feedback-item item-list media-list">
+        <div data-uuid="<%= item.uuid %>"
+            class="feedback-item <%= item.highlighted ? 'highlighted' : '' %> item-list media-list">
             <div class="editButtons">
                 <% if (item.type==='page' ) { %>
                     <!-- Page delete opens confirm modal -->

@@ -233,7 +233,7 @@ class StoryService {
   async updateDataByUUID(uuid, newDataObj) {
     const data = (await this.getData()) || [];
 
-    console.log(`-----calling updateDataByUUID()`);
+    // console.log(`-----calling updateDataByUUID()`);
     // console.log(`----received newDataObj`);
     // console.log(newDataObj);
 
@@ -326,8 +326,13 @@ class StoryService {
     // console.log("---initial obj: ");
     console.log(obj);
 
-    const conditions = [];
-    const events = [];
+    let conditions = [];
+    let events = [];
+    let current = []; //temp array
+    let currentPageID;
+    let currentPageTitle;
+
+
 
 
     let results = checkProperties(obj);
@@ -335,9 +340,7 @@ class StoryService {
     return ({ "conditions": conditions, "events": events });
 
     function checkProperties(obj) {
-      console.log(`----checking - ${obj.type}`)
       if (obj && obj.type == 'condition') {
-        console.log(`found condition! `, obj.value);
         const m = obj.value.match(/^(.+?)(<=|>=|==|=|!=|<|>)(.+)$/);
         if (!m) throw new Error(`Invalid condition: ${obj.value}`);
 
@@ -345,15 +348,17 @@ class StoryService {
         const op = m[2].trim();
         let rawValue = m[3].trim();
 
-        conditions.push({ "name": rawName, "obj": obj });
+        conditions.push({ "name": rawName, "obj": obj, "pageUUID": currentPageID, "pageTitle": currentPageTitle });
       } else if (obj && obj.type == 'event') {
-        console.log(`found event! `, obj.value);
         let split = obj.value.split('_');
         let eType = split[0];
         let eProperty = split[1];
         let eOperator = split[2];
         let eAmount = split[3];
-        events.push({ "name": eProperty, "obj": obj });
+        events.push({ "name": eProperty, "obj": obj, "pageUUID": currentPageID, "pageTitle": currentPageTitle });
+      } else if (obj && obj.type == "page") {
+        currentPageID = obj.uuid;
+        currentPageTitle = obj.title;
       }
 
       // Iterate over the object's values to find the nested objects or arrays.

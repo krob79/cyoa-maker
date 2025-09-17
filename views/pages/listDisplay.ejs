@@ -12,7 +12,6 @@
                             <path
                                 d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" />
                         </svg></button>
-                    <hr>
                     <%}%>
                         <!-- If the data type you're currently viewing is of type "page", then the list should show page elements that have a type of "text", "image", or "choice". The "New Text/Image/Choice" buttons should be visible to create more of these within the same page  -->
                         <% if(pageData.type=="page" ) {%>
@@ -54,15 +53,7 @@
                                     <path
                                         d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
                                 </svg></button>
-                            <button type="button" class="btn btn-secondary newElement universalForm"
-                                data-bs-toggle="modal" data-bs-request="POST" data-bs-elementtype="image"
-                                data-bs-storyuuid="<%=story.uuid%>" data-bs-elementuuid="<%=pageData.uuid %>"
-                                data-bs-elementvalue="" data-bs-target="#universalUpdateModal">U</button>
-                            <hr>
-                            <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
-                            <a href="/page/<%=pageData.uuid%>/graph/">View Graph</a><br />
-                            <hr>
-                            <a href="/page/<%=pageData.parent%>/edit/"> &lt; Back To Parent</a>
+
                             <%}%>
                                 <!-- If the data type you're currently viewing is of type "text", "image", or "choice", then the list should show elements from one text/image/choice element that have a type of "condition". The "New Condition" button should be visible to create more of these conditions for a single text/image/choice element  -->
                                 <% if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ||
@@ -90,27 +81,38 @@
                                                     d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
                                             </svg></button>
                                         <%}%>
-                                            <hr>
-                                            <a href="/page/<%=pageData.parent%>/edit/"> &lt; Back To Parent</a>
-                                            <%}%>
 
-                                                <div class="feedback-status">
-                                                    <% if(locals.errors){%>
-                                                        <div class="alert alert-danger">
-                                                            <ul>
-                                                                <% errors.forEach(function (error){%>
-                                                                    <li>
-                                                                        <%= error.msg %>
-                                                                    </li>
-                                                                    <%})%>
-                                                            </ul>
-                                                        </div>
-                                                        <%}else if(locals.successMessage) {%>
-                                                            <div class="alert alert-success">
-                                                                <%= successMessage %>
+                                            <%}%>
+                                                <hr>
+                                                <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
+                                                <a href="/page/<%=pageData.uuid%>/graph/">View Graph</a><br />
+                                                <hr>
+                                                <% if(query){%>
+                                                    <a href="/page/<%=pageData.parent%>/edit?q=<%=pageData.uuid%>">&lt;
+                                                        View Parent</a>
+                                                    <%}else{%>
+                                                        <a href="/page/<%=pageData.parent%>/edit">&lt;
+                                                            View Parent</a>
+                                                        <%}%>
+
+
+                                                            <div class="feedback-status">
+                                                                <% if(locals.errors){%>
+                                                                    <div class="alert alert-danger">
+                                                                        <ul>
+                                                                            <% errors.forEach(function (error){%>
+                                                                                <li>
+                                                                                    <%= error.msg %>
+                                                                                </li>
+                                                                                <%})%>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <%}else if(locals.successMessage) {%>
+                                                                        <div class="alert alert-success">
+                                                                            <%= successMessage %>
+                                                                        </div>
+                                                                        <%}%>
                                                             </div>
-                                                            <%}%>
-                                                </div>
 
             </div>
         </div>
@@ -121,7 +123,9 @@
                         <%= pageData.value %>
                             <%}else if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ){%>
                                 Editing Condition of <%= pageData.type %> element
-                                    <%}%>
+                                    <%}else{%>
+                                        Editing <%= pageData.type %>
+                                            <%}%>
                 </h1>
                 <div id="eventList">
                     <% events.forEach((evt)=>{%>

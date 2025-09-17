@@ -256,11 +256,11 @@ class Inventory extends EventEmitter {
         let eProperty = split[1];
         let eOperator = split[2];
         let eAmount = split[3];
-        console.log(`----found event - ${eType} / ${eProperty} / ${eOperator} / ${eAmount}`);
+        // console.log(`----found event - ${eType} / ${eProperty} / ${eOperator} / ${eAmount}`);
         // if (eType == "auto") {
         switch (eOperator) {
             case "+":
-                console.log(`---increasing amount of ${eProperty} by ${eAmount}`);
+                // console.log(`---increasing amount of ${eProperty} by ${eAmount}`);
                 this.dispatchEvent({ evt: 'itemevent', name: eProperty, amount: eAmount });
                 break;
             case "=":

@@ -1,4 +1,4 @@
-import { findUuidInURL } from '/js/pageupdates/dragdrop.js'
+import { findUuidInURL } from '/js/pageupdates/utils.js'
 
 export function pageModeToggle() {
     let currentURL = window.location.href;
