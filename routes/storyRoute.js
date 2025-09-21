@@ -257,61 +257,52 @@ export default (params) => {
         const pageData = await storyService.getConditionsEventsList();
         const listPartialToUse = "elementPartial";
 
-        pageData.events.sort((a, b) => {
-            const categoryA = a.name.toUpperCase();
-            const categoryB = b.name.toUpperCase();
-
-            if (categoryA < categoryB) {
-                return -1;
-            }
-            if (categoryA > categoryB) {
-                return 1;
-            }
-            return 0; // Categories are equal
-        });
-
-        pageData.conditions.sort((a, b) => {
-            const categoryA = a.name.toUpperCase();
-            const categoryB = b.name.toUpperCase();
-
-            if (categoryA < categoryB) {
-                return -1;
-            }
-            if (categoryA > categoryB) {
-                return 1;
-            }
-            return 0; // Categories are equal
-        });
+        sortArray(pageData.conditions);
+        sortArray(pageData.events);
 
 
-        let eventArr = separateArrays([...pageData.events]);
-        let conditionArr = separateArrays([...pageData.conditions]);
+        let eventObj = separateArray([...pageData.events]);
+        let conditionObj = separateArray([...pageData.conditions]);
 
-        function separateArrays(arr) {
-            console.log("separating: ", arr);
-            let currName = arr[0].name;
-            let currArr = [];
-            let finalArr = [];
+        let filteredEventObj = Object.fromEntries(
+            Object.entries(eventObj).filter(([key]) => !conditionObj.hasOwnProperty(key))
+        );
+        // console.log(eventObj);
+        // console.log(conditionObj);
 
-            arr.forEach((obj) => {
+        function sortArray(arr) {
+            arr.sort((a, b) => {
+                const categoryA = a.name.toUpperCase();
+                const categoryB = b.name.toUpperCase();
 
-                if (obj.name == currName) {
-                    console.log(`---checking: ${obj.name} with ${currName}`);
-                    currArr.push(obj);
-                } else {
-                    finalArr.push([...currArr]);
-                    currArr = [];
-                    currName = obj.name;
+                if (categoryA < categoryB) {
+                    return -1;
                 }
-            });
-            return finalArr;
+                if (categoryA > categoryB) {
+                    return 1;
+                }
+                return 0; // Categories are equal
+            })
         }
 
-        console.log(eventArr);
-        console.log(conditionArr);
+        function separateArray(arr) {
+            // console.log(arr);
+            const seperatedArr = arr.reduce((acc, currentItem) => {
+                const name = currentItem.name;
+                if (!acc[name]) {
+                    acc[name] = []; //initialize empty array if acc[name] doesn't exist
+                }
+                acc[name].push(currentItem);
+                return acc;
+            }, {});
+
+            return seperatedArr;
+        }
 
 
-        return response.render('layout', { pageTitle: "Events and Conditions", template: 'eventList', pageData, listPartialToUse });
+
+
+        return response.render('layout', { pageTitle: "Conditions and Events", template: 'eventList', pageData, eventObj, conditionObj, filteredEventObj, listPartialToUse });
     });
 
     router.post('/:uuid/event', async (request, response, next) => {

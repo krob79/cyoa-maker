@@ -85,7 +85,8 @@
                                             <%}%>
                                                 <hr>
                                                 <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
-                                                <a href="/page/<%=pageData.uuid%>/graph/">View Graph</a><br />
+                                                <a href="/page/<%=pageData.uuid%>/graph/">Graph</a><br />
+                                                <a href="/page/<%=pageData.uuid%>/allevents/">Event List</a><br />
                                                 <hr>
                                                 <% if(query){%>
                                                     <a href="/page/<%=pageData.parent%>/edit?q=<%=pageData.uuid%>">&lt;
@@ -94,8 +95,6 @@
                                                         <a href="/page/<%=pageData.parent%>/edit">&lt;
                                                             View Parent</a>
                                                         <%}%>
-
-
                                                             <div class="feedback-status">
                                                                 <% if(locals.errors){%>
                                                                     <div class="alert alert-danger">

@@ -42,7 +42,7 @@ export function initializeDeleteButtons() {
 export function initializeDeleteButtonFromModal() {
     //code for button inside the Delete Modal that actually starts the delete process
     const deletePageFromModalBtn = document.getElementById('deletePageFromModalBtn');
-    deletePageFromModalBtn.addEventListener('click', function (evt) {
+    deletePageFromModalBtn?.addEventListener('click', function (evt) {
         console.log("---close button ", deletePageFromModalBtn.dataset.bsUuid);
 
         $.ajax({

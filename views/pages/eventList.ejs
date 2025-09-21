@@ -1,41 +1,134 @@
 <div id="container" class="container mt-4">
     <div class="row">
         <div class="col-md-6">
-            <div class="maincontent feedback">
-                <h2>
-                    Conditions
-                </h2>
-                <div id="eventList">
-                    <% pageData.conditions.forEach((evt)=>{%>
-                        <div class="event-item">
-                            "<%=evt.obj.value%>" at page "<a href='/page/<%=evt.pageUUID%>/edit?q=<%=evt.obj.parent%>'>
-                                    <%=evt.pageTitle%>
-                                </a>"
-                        </div>
-                        <%})%>
-
-                </div>
-
-            </div>
+            <h2>
+                Conditions
+            </h2>
         </div>
         <div class="col-md-6">
-            <div class="maincontent feedback">
-                <h2>
-                    Events
-                </h2>
-                <div id="eventList">
-                    <% pageData.events.forEach((evt)=>{%>
-                        <div class="event-item">
-                            "<%=evt.obj.value%>" at page "<a href='/page/<%=evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
-                                    <%=evt.pageTitle%>
-                                </a>"
-                        </div>
-                        <%})%>
-
-                </div>
-
-            </div>
+            <h2>
+                Events
+            </h2>
         </div>
     </div>
+    <div id="eventList">
+        <% Object.keys(conditionObj).forEach((key)=>{%>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="event-item">
+                        <p>
+                            <%= key %>
+                                <ul>
+                                    <% conditionObj[key].forEach((evt)=>{ %>
+                                        <li>
+                                            <%= evt.obj.value %> at "<a
+                                                    href='/page/<%= evt.pageUUID%>/edit?q=<%=evt.obj.parent%>'>
+                                                    <%= evt.pageTitle %>
+                                                </a>"
+                                        </li>
+                                        <% })%>
+                                </ul>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="event-item">
+                        <% if (eventObj.hasOwnProperty(key)){ %>
+                            <p>
+                                <%= key %>
+                                    <ul>
+                                        <% eventObj[key].forEach((evt)=>{ %>
+                                            <li>
+                                                <%= evt.obj.value %> at "<a
+                                                        href='/page/<%= evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
+                                                        <%= evt.pageTitle %>
+                                                    </a>"
+                                            </li>
+                                            <% })%>
+                                    </ul>
+                            </p>
+                            <%}else{%>
+                                <p>
+                                    <%= key %>
+                                        <ul>
+                                            <strong>No events detected that use '<%= key %>'.</strong>
+                                        </ul>
+
+                                </p>
+                                <%}%>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <%})%>
+                <% Object.keys(filteredEventObj).forEach((key)=>{%>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="event-item">
+                                <p>
+                                    <%= key %>
+                                        <ul>
+                                            <strong>No conditions have yet been created that use '<%= key %>''.</strong>
+                                        </ul>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="event-item">
+
+                                <p>
+                                    <%= key %>
+                                        <ul>
+                                            <% filteredEventObj[key].forEach((evt)=>{ %>
+                                                <li>
+                                                    <%= evt.obj.value %> at "<a
+                                                            href='/page/<%= evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
+                                                            <%= evt.pageTitle %>
+                                                        </a>"
+                                                </li>
+                                                <% })%>
+                                        </ul>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <%})%>
+
+    </div>
+
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- <div class="col-md-6">
+        <div class="maincontent feedback">
+            <h2>
+                Events
+            </h2>
+            <div id="eventList">
+                <% Object.keys(eventObj).forEach((key)=>{%>
+                    <div class="event-item">
+                        <p>
+                            <%= key %>
+                                <ul>
+                                    <% eventObj[key].forEach((evt)=>{ %>
+                                        <li>
+                                            <%= evt.obj.value %> at "<a
+                                                    href='/page/<%= evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
+                                                    <%= evt.pageTitle %>
+                                                </a>"
+                                        </li>
+                                        <% })%>
+                                </ul>
+                        </p>
+                    </div>
+                    <%})%>
+
+
+            </div>
+
+        </div>
+    </div> -->
+</div>
 
 </div>

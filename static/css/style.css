@@ -132,7 +132,7 @@ p.pageText {
 
 .editButtons {
   /* width: 100%; */
-  gap: 15px;
+  gap: 5px;
   /* flex-direction: column; */
   position: absolute;
   z-index: 10;
@@ -218,7 +218,7 @@ p.pageText {
 
 .event-item {
   font-size: .8em;
-  border-bottom: 1px solid rgb(205, 202, 202);
+  /* border-bottom: 1px solid rgb(205, 202, 202); */
   padding: 4px 4px;
   width: 100%;
 }

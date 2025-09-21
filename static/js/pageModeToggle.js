@@ -11,4 +11,4 @@ export function pageModeToggle() {
 }
 
 const link = document.getElementById("navModeLink");
-link.addEventListener('click', pageModeToggle);
+link?.addEventListener('click', pageModeToggle);
