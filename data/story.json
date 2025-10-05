@@ -1,1 +1,119 @@
-[{"title":"Story Title","uuid":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"story","value":"Story Title","elements":[{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Start Page","uuid":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"page","value":"Start Page","newline":false,"elements":[{"uuid":"07cc5faa-80ce-4ebb-825d-d7ef2ed9d905","title":"Here&#x27;s some more","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"text","value":"You are looking out into an area that seems cool. Lots of stuff here.","newline":false,"elements":[]},{"uuid":"9cf3c20b-6993-4bef-80c5-f18c1f568ad0","title":"I like this stuff!","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"text","value":"I like this stuff!","newline":false,"elements":[]},{"uuid":"e93b6bbd-57ed-469d-a030-4e0613295db9","title":"user_placeholderEvent_+_0","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"choice","value":"Over in the corner is a thing you can take.||Event","newline":true,"elements":[{"parent":"e93b6bbd-57ed-469d-a030-4e0613295db9","title":"Placeholder User Event","uuid":"339f434f-feb0-4e1b-b14d-c7814f9ffba9","type":"event","value":"user_placeholderEvent_+_0","elements":[]}]},{"parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","title":"Here&#x27;s some text","uuid":"99d56fe8-36f2-47dc-80b2-b3354087dac2","type":"text","value":"Then there's some more things in a different place. Wow, that is really cool!","newline":true,"elements":[]},{"uuid":"3ec07e22-d6b0-4944-ab33-19db374904f8","title":"The One And Only Link||6e7d1545-cd86-470b-b74b-866eb9064b28","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"choice","value":"The One And Only Link||Event","newline":false,"elements":[{"uuid":"9ffca3e8-c31e-40e6-970d-795b77ce3a29","title":"null_apple_=_1","parent":"3ec07e22-d6b0-4944-ab33-19db374904f8","type":"event","value":"null_apple_=_1","elements":[]}]}]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Test Link to Break","uuid":"11530819-3421-4d4f-b4db-32990266b5cf","type":"page","value":"Test Link to Break","elements":[]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"The One And Only Link","uuid":"6e7d1545-cd86-470b-b74b-866eb9064b28","type":"page","value":"The One And Only Link","elements":[]}]}]
+[
+    {
+        "title": "Story Title",
+        "uuid": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "story",
+        "value": "Story Title",
+        "elements": [
+            {
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "title": "Start Page",
+                "uuid": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+                "type": "page",
+                "value": "Start Page",
+                "newline": false,
+                "elements": [
+                    {
+                        "uuid": "07cc5faa-80ce-4ebb-825d-d7ef2ed9d905",
+                        "title": "Here&#x27;s some more",
+                        "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+                        "type": "text",
+                        "value": "Here's some more stuff",
+                        "newline": true,
+                        "elements": []
+                    },
+                    {
+                        "uuid": "e93b6bbd-57ed-469d-a030-4e0613295db9",
+                        "title": "user_placeholderEvent_+_0",
+                        "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+                        "type": "choice",
+                        "value": "Do Stuff||Event",
+                        "newline": true,
+                        "elements": [
+                            {
+                                "parent": "e93b6bbd-57ed-469d-a030-4e0613295db9",
+                                "title": "Placeholder User Event",
+                                "uuid": "339f434f-feb0-4e1b-b14d-c7814f9ffba9",
+                                "type": "event",
+                                "value": "user_placeholderEvent_+_0",
+                                "elements": []
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c8cf7e90-6d88-48ac-9d06-0c4874e02f91",
+                        "title": "Test Link to Break||11530819-3421-4d4f-b4db-32990266b5cf",
+                        "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+                        "type": "choice",
+                        "value": "Test Link to Break||11530819-3421-4d4f-b4db-32990266b5cf",
+                        "newline": false,
+                        "elements": [
+                            {
+                                "parent": "c8cf7e90-6d88-48ac-9d06-0c4874e02f91",
+                                "title": "",
+                                "uuid": "53e54733-9c8a-4d55-aa3e-38fca746bf51",
+                                "type": "event",
+                                "value": "null_poop_+_0 ",
+                                "elements": [],
+                                "occurs": "",
+                                "property": "poop",
+                                "operator": "+",
+                                "amount": "0",
+                                "html": "< strong > Custom null event: poop+0 </strong > "
+                            }
+                        ]
+                    },
+                    {
+                        "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+                        "title": "Here&#x27;s some text",
+                        "uuid": "99d56fe8-36f2-47dc-80b2-b3354087dac2",
+                        "type": "text",
+                        "value": "Here's some text - suck it",
+                        "newline": false,
+                        "elements": []
+                    }
+                ]
+            },
+            {
+                "uuid": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+                "title": "AAAAAAAAA",
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "type": "page",
+                "value": "AAAAAAAAA",
+                "elements": []
+            },
+            {
+                "uuid": "312db3f3-fdd1-4d4a-a1c5-edc5cd2ef37f",
+                "title": "BBBBBBBB",
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "type": "page",
+                "value": "BBBBBBBB",
+                "elements": []
+            },
+            {
+                "uuid": "d301d324-f1bb-4063-9e52-0c6c1eb8c969",
+                "title": "CCCCCCCCC",
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "type": "page",
+                "value": "CCCCCCCCC",
+                "elements": []
+            },
+            {
+                "uuid": "c5ba3ceb-d033-4bce-971a-4c862ec4e066",
+                "title": "DDDDDDDDD",
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "type": "page",
+                "value": "DDDDDDDDD",
+                "elements": []
+            },
+            {
+                "uuid": "5f8ba7b3-0c6f-477b-8a78-c1faad0fa826",
+                "title": "EEEEEEEEEEE",
+                "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+                "type": "page",
+                "value": "EEEEEEEEEEE",
+                "elements": []
+            }
+        ]
+    }
+]

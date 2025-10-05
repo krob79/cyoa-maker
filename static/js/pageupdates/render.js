@@ -277,10 +277,12 @@ export async function updateDisplay(data) {
   }
 
   initializeDeleteButtons();
-  initializeDeleteButtonFromModal();
+
   initializeChoiceLinks();
   initializeUserEventLinks();
 }
+
+
 
 function outputHtmlForElement(item) {
   let html = "";
