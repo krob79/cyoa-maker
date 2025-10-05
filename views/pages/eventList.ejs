@@ -40,7 +40,7 @@
                                         <% eventObj[key].forEach((evt)=>{ %>
                                             <li>
                                                 <%= evt.obj.value %> at "<a
-                                                        href='/page/<%= evt.pageUUID%>/edit?q=<%=evt.obj.uuid%>'>
+                                                        href='/page/<%= evt.obj.parent%>/edit?q=<%=evt.obj.uuid%>'>
                                                         <%= evt.pageTitle %>
                                                     </a>"
                                             </li>
@@ -51,7 +51,8 @@
                                 <p>
                                     <%= key %>
                                         <ul>
-                                            <strong>No events detected that use '<%= key %>'.</strong>
+                                            <strong>No events have yet been created that set the value of '<%= key %>
+                                                    '.</strong>
                                         </ul>
 
                                 </p>
@@ -68,7 +69,8 @@
                                 <p>
                                     <%= key %>
                                         <ul>
-                                            <strong>No conditions have yet been created that use '<%= key %>''.</strong>
+                                            <strong>No conditions have yet been created that compare the value of '<%=
+                                                    key %>''.</strong>
                                         </ul>
                                 </p>
                             </div>

@@ -1,4 +1,4 @@
-console.log("---loading modal.js!");
+// console.log("---loading modal.js!");
 
 const content = document.querySelector('#undumcontainer');
 content.addEventListener("click", () => {
@@ -16,6 +16,9 @@ content.addEventListener('modalevent', function (e) {
 
     let modalContent = document.createElement('div');
     modalContent.classList.add('custommodal-content');
+
+    let modalImageDiv = document.createElement('div');
+    modalContent.appendChild(modalImageDiv);
 
     let modalButtonSpace = document.createElement('div');
     modalButtonSpace.classList.add('custommodal-btn-space');
@@ -35,22 +38,39 @@ content.addEventListener('modalevent', function (e) {
         modalDiv.appendChild(modalTitleDiv);
     }
 
-    //image is optional - but indicates an item or something to investigate
+    const modalImage = new Image();
     if (e.detail.image) {
+        try {
+            modalImage.src = `/uploads/${e.detail.image}`;
+        } catch (error) {
+            console.log("------WTF");
+        }
+
+    }
+
+    //image is optional - but indicates an item or something to investigate
+    modalImage.onload = () => {
+        // if (e.detail.image) {
+        console.log("-----image source is: ", e.detail.image);
+
         isItem = true;
-        let modalImageDiv = document.createElement('div');
-        let modalImage = document.createElement('img');
-        modalImage.setAttribute('src', `/uploads/${e.detail.image}`);
+
+        // let modalImage = document.createElement('img');
+
+        // modalImage.setAttribute('src', `/uploads/${e.detail.image}`);
         if (e.detail.action == 'look') {
             modalImage.classList.add('custommodal-image-look');
         } else {
             modalImage.classList.add('custommodal-image-take');
         }
 
-
         modalImageDiv.classList.add('custommodal-image-div');
         modalImageDiv.appendChild(modalImage);
-        modalContent.appendChild(modalImageDiv);
+
+    }
+
+    modalImage.onerror = () => {
+        console.log("-------COULD NOT FIND IMAGE FOR MODAL");
     }
 
     let modalText = document.createElement('div');
@@ -171,6 +191,24 @@ content.addEventListener('modalevent', function (e) {
     }, 1000);
 
 });
+
+function createImageElement(src, parentElement) {
+    const img = new Image(); // Create a new Image object
+
+    img.onload = () => {
+        // Image loaded successfully, append it to the DOM
+        parentElement.appendChild(img);
+        console.log(`Image loaded: ${src}`);
+    };
+
+    img.onerror = () => {
+        // Image failed to load (e.g., 404 Not Found)
+        console.error(`Image failed to load: ${src}`);
+        // You can optionally display a placeholder image or handle the error in another way
+    };
+
+    img.src = src; // Set the src attribute to start loading the image
+}
 
 // console.log("---firing event!");
 export function alertItem(title, desc, img) {

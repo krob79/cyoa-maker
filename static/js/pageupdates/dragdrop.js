@@ -1,7 +1,7 @@
 // dragdrop.js
 import { reorderElements } from './render.js';
 
-console.log("----dragdrop.js");
+// console.log("----dragdrop.js");
 
 export function initDragDrop() {
     const el = document.getElementById('draggableList');

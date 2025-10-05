@@ -1,8 +1,9 @@
-console.log("----deletehandlers.js");
+// console.log("----deletehandlers.js");
 
 import { updateDisplay } from './render.js'; // your renderer rebinds buttons & refreshes DOM
 
 export function initializeDeleteButtons() {
+    // console.log('*****initializeDeleteButtons');
     const deleteBtns = document.querySelectorAll('.item-delete-btn');
     deleteBtns.forEach(dBtn => {
         //delete buttons for pages should trigger a confirmation modal before deleting anything
@@ -40,6 +41,7 @@ export function initializeDeleteButtons() {
 }
 
 export function initializeDeleteButtonFromModal() {
+    // console.log('*****initializeDeleteButtonFromModal');
     //code for button inside the Delete Modal that actually starts the delete process
     const deletePageFromModalBtn = document.getElementById('deletePageFromModalBtn');
     deletePageFromModalBtn?.addEventListener('click', function (evt) {

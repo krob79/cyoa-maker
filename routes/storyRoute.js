@@ -315,10 +315,15 @@ export default (params) => {
 
     router.post('/api', validations, async (request, response, next) => {
         console.log("--- post /api");
+
+        console.log("--- request body:");
+        console.log(request.body);
+
         try {
+            if (!request.body) {
+                return response.status(400).json({ error: 'Missing JSON body' });
+            }
             const errors = validationResult(request);
-
-
             //console.log(request.session);
             if (!errors.isEmpty()) {
                 request.session.feedback = {
@@ -327,12 +332,11 @@ export default (params) => {
                 return response.redirect('/page'); //Shouldn't this redirect to the page where you currently are?
             }
 
-            const { uuid, title, section, type, value, html } = request.body;
+            const { uuid, section, type, value, newline } = request.body;
 
-            const thisData = await storyService.getDataByUUID({ uuid });
-            // console.log(`----reading in thisData...`);
-            // console.log(thisData);
-            const hasSection = Object.hasOwn(thisData, section);
+            if (!uuid || !section || !type || typeof value !== 'string') {
+                return response.status(400).json({ error: 'Missing required fields', got: request.body });
+            }
 
             /*
             TO DO: Figure out if there is a simpler way and perhaps just give all of the FormData to this service and have 
@@ -340,12 +344,14 @@ export default (params) => {
             shoehorning data into certain slots? We were trying to make all data objects structured the same for ease of use,
             but it might have made things more complicated instead? Ex: Choices and their values and having to split text
             */
-            await storyService.addDataByUUID({ uuid, title, section, type, value, html });
+            //await storyService.addDataByUUID({ uuid, title, section, type, value, newline });
+            await storyService.addDataByUUID(request.body);
 
             const pageData = await storyService.getList();
             return response.json({ pageData, successMessage: 'Entry Successfully Added!' });
 
         } catch (err) {
+            console.error('POST /page/api failed:', err);
             next(err);
         }
 
@@ -376,25 +382,30 @@ export default (params) => {
     //update text, image, or condition from JSON file
     router.put('/api', updateValidations, async (request, response, next) => {
         try {
+            if (!request.body) {
+                return response.status(400).json({ error: 'Missing JSON body' });
+            }
             const errors = validationResult(request);
+            console.log('VALIDATION ERRORS:', validationResult(request));
+            console.log('BODY RECEIVED:', request.body);
             if (!errors.isEmpty()) {
-                request.session.feedback = {
-                    errors: errors.array(),
-                }
-                return response.json({ errors: errors.array() });
+                return response.status(400).json({ errors: errors.array() });
             }
             console.log("----page/api - PUT request - request body:");
             console.log(request.body);
 
 
             const { uuid, newDataObj } = request.body;
+            if (!uuid || !newDataObj) {
+                return response.status(400).json({ error: 'Missing uuid or newDataObj', got: request.body });
+            }
 
-
-            let xyz = await storyService.updateDataByUUID(uuid, newDataObj);
+            await storyService.updateDataByUUID(uuid, newDataObj);
             const pageData = await storyService.getList();
             return response.json({ pageData, successMessage: 'Entry has been updated!' });
 
         } catch (err) {
+            console.error('PUT /page/api failed:', err);
             next(err);
         }
 
@@ -421,7 +432,6 @@ export default (params) => {
     router.delete('/:uuid', async (request, response, next) => {
         console.log('---attempting to delete:', request.params.uuid);
         try {
-
             const uuid = request.params.uuid;
 
             await storyService.removeDataByUUID(uuid);

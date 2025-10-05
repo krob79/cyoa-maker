@@ -4,37 +4,35 @@
         <!-- Display the appropriate HTML tag based on the type of element -->
         <div class="feedback-message">
             <% if (item.type==='text' ) { %>
-                <% console.log("---found text ", item.value); %>
-                    <p class=" pageText">
+                <p class=" pageText">
                     <%= item.value %>
-                        </p>
-                        <% } else if (item.type==='image' ) { %>
-                            <img class="pageImage featherImage" src="/uploads/<%= item.value %>">
-                            <% } else if (item.type==='choice' ) { %>
-                                <!-- If type choice, split the text value and isolate the UUID destination -->
-                                <% const parts=String(item.value||'').split('||'); %>
-                                    <% const label=parts[0] || '' ; const dest=parts[1] || '' ; %>
-                                        <% if (dest) { %>
-                                            <strong><a class="pageLink choiceLink choices" data-uuid="<%= item.uuid %>"
-                                                    href="/page/<%= dest %>/view">
-                                                    <%= label %>
-                                                </a></strong>
-                                            <% } else { %>
-                                                <a class="pageLink">
-                                                    <%= label %>
-                                                </a>
-                                                <% } %>
-                                                    <% } else if (item.type==='event' ) { %>
-                                                        <% const [eType='' , p='' , o='' , v=''
-                                                            ]=String(item.value||'').split('_'); %>
-                                                            <% if(eType=='user' ){%>
-                                                                <strong><a class="pageLink userevent"
-                                                                        data-uuid="<%=item.uuid%>"
-                                                                        href="javascript:void(0)">
-                                                                        <%= item.title %>
-                                                                    </a></strong>
-                                                                <%}%>
-                                                                    <% } %>
+                </p>
+                <% } else if (item.type==='image' ) { %>
+                    <img class="pageImage featherImage" src="/uploads/<%= item.value %>">
+                    <% } else if (item.type==='choice' ) { %>
+                        <!-- If type choice, split the text value and isolate the UUID destination -->
+                        <% const parts=String(item.value||'').split('||'); %>
+                            <% const label=parts[0] || '' ; const dest=parts[1] || '' ; %>
+                                <% if (dest) { %>
+                                    <strong><a class="pageLink choiceLink choices" data-uuid="<%= item.uuid %>"
+                                            href="/page/<%= dest %>/view">
+                                            <%= label %>
+                                        </a></strong>
+                                    <% } else { %>
+                                        <a class="pageLink">
+                                            <%= label %>
+                                        </a>
+                                        <% } %>
+                                            <% } else if (item.type==='event' ) { %>
+                                                <% const [eType='' , p='' , o='' , v=''
+                                                    ]=String(item.value||'').split('_'); %>
+                                                    <% if(eType=='user' ){%>
+                                                        <strong><a class="pageLink userevent" data-uuid="<%=item.uuid%>"
+                                                                href="javascript:void(0)">
+                                                                <%= item.title %>
+                                                            </a></strong>
+                                                        <%}%>
+                                                            <% } %>
         </div>
     </div>
 </div>

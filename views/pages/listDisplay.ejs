@@ -46,10 +46,11 @@
                                         d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z" />
                                 </svg></button>
                             <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal"
-                                data-bs-request="POST" data-bs-elementtype="event" data-bs-storyuuid="<%=story.uuid%>"
-                                data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
-                                data-bs-target="#eventUpdateModal">+<svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="currentColor" viewBox="0 -960 960 960">
+                                data-bs-request="POST" data-bs-elementtype="event" data-bs-elementsubtype="auto"
+                                data-bs-storyuuid="<%=story.uuid%>" data-bs-elementuuid="<%=pageData.uuid %>"
+                                data-bs-elementvalue="" data-bs-target="#eventUpdateModal">+<svg
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                    viewBox="0 -960 960 960">
                                     <path
                                         d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340" />
                                 </svg></button>
@@ -73,7 +74,7 @@
                                     <% if(pageData.type=="choice" ){%>
                                         <button type="button" class="btn btn-secondary newElement"
                                             data-bs-toggle="modal" data-bs-request="POST" data-bs-elementtype="event"
-                                            data-bs-storyuuid="<%=story.uuid%>"
+                                            data-bs-elementsubtype="user" data-bs-storyuuid="<%=story.uuid%>"
                                             data-bs-elementuuid="<%=pageData.uuid %>" data-bs-elementvalue=""
                                             data-bs-target="#eventUpdateModal">+<svg xmlns="http://www.w3.org/2000/svg"
                                                 width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
@@ -84,69 +85,80 @@
 
                                             <%}%>
                                                 <hr>
-                                                <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
-                                                <a href="/page/<%=pageData.uuid%>/graph/">Graph</a><br />
-                                                <a href="/page/<%=pageData.uuid%>/allevents/">Event List</a><br />
-                                                <hr>
-                                                <% if(query){%>
-                                                    <a href="/page/<%=pageData.parent%>/edit?q=<%=pageData.uuid%>">&lt;
-                                                        View Parent</a>
-                                                    <%}else{%>
-                                                        <a href="/page/<%=pageData.parent%>/edit">&lt;
-                                                            View Parent</a>
-                                                        <%}%>
-                                                            <div class="feedback-status">
-                                                                <% if(locals.errors){%>
-                                                                    <div class="alert alert-danger">
-                                                                        <ul>
-                                                                            <% errors.forEach(function (error){%>
-                                                                                <li>
-                                                                                    <%= error.msg %>
-                                                                                </li>
-                                                                                <%})%>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <%}else if(locals.successMessage) {%>
-                                                                        <div class="alert alert-success">
-                                                                            <%= successMessage %>
+                                                <% if(pageData.type=="page" ){%>
+                                                    <a href="/page/<%=pageData.uuid%>/view/">View Page</a><br />
+                                                    <%}%>
+                                                        <a href="/page/<%=pageData.uuid%>/graph/">Graph</a><br />
+                                                        <a href="/page/<%=pageData.uuid%>/allevents/">Event
+                                                            List</a><br />
+                                                        <hr>
+                                                        <% if(pageData.parent){%>
+                                                            <a
+                                                                href="/page/<%=pageData.parent%>/edit?q=<%=pageData.uuid%>">&lt;
+                                                                View Parent</a>
+                                                            <%}%>
+                                                                <div class="feedback-status">
+                                                                    <% if(locals.errors){%>
+                                                                        <div class="alert alert-danger">
+                                                                            <ul>
+                                                                                <% errors.forEach(function (error){%>
+                                                                                    <li>
+                                                                                        <%= error.msg %>
+                                                                                    </li>
+                                                                                    <%})%>
+                                                                            </ul>
                                                                         </div>
-                                                                        <%}%>
-                                                            </div>
+                                                                        <%}else if(locals.successMessage) {%>
+                                                                            <div class="alert alert-success">
+                                                                                <%= successMessage %>
+                                                                            </div>
+                                                                            <%}%>
+                                                                </div>
 
             </div>
         </div>
         <aside class="col-md-9">
             <div class="maincontent feedback">
-                <h1>
-                    <% if(pageData.type=="story" || pageData.type=="page" ){ %>
-                        <%= pageData.value %>
-                            <%}else if(pageData.type=="text" || pageData.type=="image" || pageData.type=="choice" ){%>
-                                Editing Condition of <%= pageData.type %> element
-                                    <%}else{%>
-                                        Editing <%= pageData.type %>
-                                            <%}%>
-                </h1>
-                <div id="eventList">
-                    <% events.forEach((evt)=>{%>
-                        <div class="feedback-item">
-                            <p>Event Found: <%= evt.value %>
-                            </p>
-                        </div>
-                        <%})%>
+                <% if(pageData.type=="story" || pageData.type=="page" ){ %>
+                    <h1
+                        onclick="let myModal = new bootstrap.Modal(document.querySelector('#pageUpdateModal')); myModal.show(); ">
+                        <%}else{%>
+                            <h1>
+                                <%}%>
+                                    <% if(pageData.type=="story" || pageData.type=="page" ){ %>
+                                        <%= pageData.value %>
+                                            <%}else if(pageData.type=="text" || pageData.type=="image" ||
+                                                pageData.type=="choice" ){%>
+                                                Editing Condition of <%= pageData.type %> element
+                                                    <%}else{%>
+                                                        Editing <%= pageData.type %>
+                                                            <%}%>
+                            </h1>
+                            <div id="eventList">
+                                <% events.forEach((evt)=>{%>
+                                    <div class="feedback-item">
+                                        <% let split=evt.value.split("_"); %>
+                                            <p class="linkEvent">
+                                                <%= split[1] %>
+                                                    <%=split[2]%>
+                                                        <%=split[3] %>
+                                            </p>
+                                    </div>
+                                    <%})%>
 
-                </div>
-                <div id="draggableList" class="list-group feedback-items">
-                    <%if(pageListItems.length> 0){%>
-                        <% pageListItems.forEach(function (item) {%>
+                            </div>
+                            <div id="draggableList" class="list-group feedback-items">
+                                <%if(pageListItems.length> 0){%>
+                                    <% pageListItems.forEach(function (item) {%>
 
-                            <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
+                                        <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
 
-                                <%})%>
-                                    <%} else {%>
-                                        <p><strong>No items yet listed</strong></p>
-                                        <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
-                                        <%}%>
-                </div>
+                                            <%})%>
+                                                <%} else {%>
+                                                    <p><strong>No items yet listed</strong></p>
+                                                    <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
+                                                    <%}%>
+                            </div>
             </div>
         </aside>
     </div>

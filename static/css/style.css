@@ -56,6 +56,10 @@ header .navbar-brand {
   background-color: lightgoldenrodyellow;
 }
 
+p.linkEvent {
+  background-color: lightgoldenrodyellow;
+}
+
 @keyframes border-pulse {
   from {
     border: 1px solid rgba(255, 0, 0, 1);

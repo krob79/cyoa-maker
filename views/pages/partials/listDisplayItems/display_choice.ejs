@@ -1,0 +1,18 @@
+<!-- If type choice, split the text value and isolate the UUID destination -->
+<% const parts=String(item.value||'').split('||'); %>
+    <% const label=parts[0] || '' ; const dest=parts[1] || '' ; %>
+        <% if (dest) { %>
+            <% if (dest=="Event" ){ %>
+                <strong><a class="pageLink userevent" data-uuid="<%= item.uuid %>" href="javascript:void(0)">
+                        <%= label %>
+                    </a></strong>
+                <%}else{%>
+                    <strong><a class="pageLink choiceLink" data-uuid="<%= item.uuid %>" href="/page/<%= dest %>/edit">
+                            <%= label %>
+                        </a></strong>
+                    <%}%>
+                        <% } else { %>
+                            <a class="pageLink">
+                                <%= label %>
+                            </a>
+                            <% } %>

@@ -12,8 +12,8 @@
                 <input type="hidden" id="eventrequest" name="eventrequest" value="">
                 <div class="row">
                     <div class="col">
-                        When Page Loads, This Event Should Be Triggered:
-                        <div class="form-check-inline">
+                        <span id="eventMessage"></span>
+                        <!-- <div class="form-check-inline">
                             <input class="form-check-input" type="radio" name="eventType" id="eventType1" value="auto">
                             <label class="form-check-label" for="eventType1">
                                 Immediately
@@ -24,10 +24,10 @@
                             <label class="form-check-label" for="eventType2">
                                 From User Action
                             </label>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col">
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon3">Label:</span>
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                </div>
+                </div> -->
                 <div class="row justify-content-center">
                     <div class="col">
                         <div class="input-group">
@@ -49,9 +49,11 @@
                             Looks good!
                         </div>
                     </div>
+                </div>
+                <div class="row justify-content-center">
                     <div class="col">
                         <div class="input-group">
-                            <label class="input-group-text" for="inputGroupSelect01">Change:</label>
+                            <label class="input-group-text" for="inputGroupSelect01">Method of Change:</label>
                             <select class="form-select" id="eventComparisonModal" name="eventComparisonModal"
                                 onchange="changeeventComparisonModal()">
                                 <option value="-">decrease value by</option>
@@ -90,17 +92,17 @@
 </div>
 <%- include('formElementValidation', {}); %>
     <script>
-        const radioButtons = document.querySelectorAll('input[type="radio"]');
-        radioButtons[0].checked = true;
-        radioButtons.forEach(radioButton => {
-            radioButton.addEventListener('change', function () {
-                // This function will execute when the selection changes
-                if (this.checked) {
-                    console.log("Selected radio button value:", this.value);
-                    // You can perform other actions here based on the selected value
-                }
-            });
-        });
+        // const radioButtons = document.querySelectorAll('input[type="radio"]');
+        // radioButtons[0].checked = true;
+        // radioButtons.forEach(radioButton => {
+        //     radioButton.addEventListener('change', function () {
+        //         // This function will execute when the selection changes
+        //         if (this.checked) {
+        //             console.log("Selected radio button value:", this.value);
+        //             // You can perform other actions here based on the selected value
+        //         }
+        //     });
+        // });
 
         function changeeventComparisonModal(display = null) {
 

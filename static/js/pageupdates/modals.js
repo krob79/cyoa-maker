@@ -11,7 +11,7 @@ import { updateDisplay } from './render.js'; // your renderer rebinds buttons & 
  * Decode simple HTML entities in condition strings and split into [lhs, op, rhs]
  * Examples: "apple&gt;2" -> ["apple", ">", "2"]
  */
-console.log("----modals.js");
+// console.log("----modals.js");
 function parseConditionString(str = '') {
     const normalized = String(str)
         .replace(/&gt;/gi, '>')
@@ -26,7 +26,9 @@ function parseConditionString(str = '') {
 /**
  * Create a local copy of a selected image and return its path (server responds with JSON)
  */
+
 async function createLocalImgUploadPath(formData) {
+    //the '/upload' route should be in server.js 
     const res = await fetch('/upload', { method: 'POST', body: formData });
     if (!res.ok) {
         const err = await res.text();
@@ -110,6 +112,7 @@ export function initModals() {
     });
 
     // --- Element modals (text/image/choice/page/condition/event) ---
+    // code that fires when a modal is opened
     document.querySelectorAll('.elementModal').forEach((modal) => {
         modal.addEventListener('show.bs.modal', (event) => {
             const button = event.relatedTarget;
@@ -118,8 +121,20 @@ export function initModals() {
             const el_title = button.dataset.bsElementtitle;
             const el_type = button.dataset.bsElementtype;
             const el_value = button.dataset.bsElementvalue;
+            const el_subtype = button.dataset.bsElementsubtype;
+            const newline = button.dataset.bsNewline;
             const modalInput = document.getElementById(`modal${el_type}Input`);
             const modalTitle = document.getElementById(`modal${el_type}Label`);
+            const modalcheckbox = document.getElementById(`${el_type}newline`);
+
+            try {
+                console.log("---newline? ", newline);
+                modalcheckbox.checked = (newline === "true");
+            } catch (e) {
+                console.log("----no checkbox found");
+            }
+
+            console.log("-----------IS THIS STUPID THING CHECKED OR CHNAGING VALUES???", Boolean(newline));
 
             const requestField = document.getElementById(`${el_type}request`);
             if (requestField) requestField.value = button.dataset.bsRequest || 'PUT';
@@ -195,7 +210,17 @@ export function initModals() {
 
                 case 'event': {
                     createConditionEditLink();
-                    const [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
+                    let [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
+                    if (el_subtype) {
+                        console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
+                        eType = el_subtype;
+                        let evtMsg = document.getElementById("eventMessage");
+                        if (el_subtype == "auto") {
+                            evtMsg.textContent = "This event will be triggered immediately once the page loads.";
+                        } else {
+                            evtMsg.textContent = "This event will be triggered only from clicking this link."
+                        }
+                    }
                     const label = document.getElementById('modaleventInputLabel');
                     const prop = document.getElementById('modaleventInput');
                     const oper = document.getElementById('eventComparisonModal');
@@ -205,12 +230,12 @@ export function initModals() {
                     if (oper) oper.value = o;
                     if (amt) amt.value = v;
 
-                    const radios = /** @type {NodeListOf<HTMLInputElement>} */ (
-                        document.getElementsByName('eventType')
-                    );
-                    radios?.forEach((r) => {
-                        r.checked = r.value === eType;
-                    });
+                    // const radios = /** @type {NodeListOf<HTMLInputElement>} */ (
+                    //     document.getElementsByName('eventType')
+                    // );
+                    // radios?.forEach((r) => {
+                    //     r.checked = r.value === eType;
+                    // });
                     break;
                 }
             }
@@ -237,31 +262,44 @@ export function initModals() {
     if (textForm) {
         textForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const formData = new FormData(textForm);
-            const method = formData.get('textrequest') === 'POST' ? 'POST' : 'PUT';
+
+            const fd = new FormData(textForm);
+            const rawMethod = fd.get('textrequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+            // Normalize fields
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');                // only used on POST
+            const value = (fd.get('modaltextInput') || '').toString();
+            const newline = (() => {
+                const v = fd.get('textnewline');
+                // handle checkbox ("on"), "true", "1"
+                return v === 'on' || v === 'true' || v === '1';
+            })();
+
+            console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
+
+            // Build a single payload shape the server expects
+            const payload =
+                method === 'POST'
+                    ? { uuid, section, type: 'text', value, newline }
+                    : { uuid, newDataObj: { value, newline } };
+
+            console.log(`----checking payload:`, payload);
 
             $.ajax({
                 url: '/page/api',
                 type: method,
-                data:
-                    method === 'POST'
-                        ? {
-                            uuid: formData.get('uuid'),
-                            section: formData.get('section'),
-                            type: 'text',
-                            value: formData.get('modaltextInput'),
-                            html: `<p class="pageText">${formData.get('modaltextInput')}</p>`,
-                        }
-                        : {
-                            uuid: formData.get('uuid'),
-                            newDataObj: {
-                                value: formData.get('modaltextInput'),
-                                html: `<p class="pageText">${formData.get('modaltextInput')}</p>`,
-                            },
-                        },
+                data: JSON.stringify(payload),
+                contentType: 'application/json; charset=UTF-8',
+                processData: false,
                 success: function (data) {
+                    console.log("----success with text!!");
                     $('#myTextToast').toast?.('show');
                     updateDisplay(data);
+                },
+                error: function (xhr, status, err) {
+                    console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
                 },
                 complete: function () {
                     $('.elementModal').modal?.('hide');
@@ -282,34 +320,45 @@ export function initModals() {
     if (choiceForm) {
         choiceForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const formData = new FormData(choiceForm);
 
-            function runSecondRequest(destUUID) {
-                const method = formData.get('choicerequest') === 'POST' ? 'POST' : 'PUT';
+            const fd = new FormData(choiceForm);
+            const rawMethod = fd.get('choicerequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+            // Base fields
+            const uuid = fd.get('hiddenchoiceuuid');      // parent uuid to attach to
+            const storyUuid = fd.get('hiddenstoryuuid');
+            const section = fd.get('section');            // required on POST?
+            const label = (fd.get('modalchoiceInput') || '').toString();
+            const destination = fd.get('destinationModal');
+            const newline = (() => {
+                const v = fd.get('choicenewline');
+                return v === 'on' || v === 'true' || v === '1';
+            })();
+
+            function createOrUpdateChoice(destUUID) {
+                // Recompute the final "value" now that we know the true destination
+                const finalValue = `${label}||${destUUID}`;
+
                 const payload =
                     method === 'POST'
-                        ? {
-                            uuid: formData.get('hiddenchoiceuuid'),
-                            section: formData.get('section'),
-                            type: 'choice',
-                            value: `${formData.get('modalchoiceInput')}||${destUUID}`,
-                            html: `<a class="pageLink" href="/page/${destUUID}/edit">${formData.get('modalchoiceInput')}</a>`,
-                        }
-                        : {
-                            uuid: formData.get('hiddenchoiceuuid'),
-                            newDataObj: {
-                                value: `${formData.get('modalchoiceInput')}||${destUUID}`,
-                                html: `<a class="pageLink" href="/page/${destUUID}/edit">${formData.get('modalchoiceInput')}</a>`,
-                            },
-                        };
+                        ? { uuid, section, type: 'choice', value: finalValue, newline }
+                        : { uuid, newDataObj: { value: finalValue, newline } };
+
+                console.log('---payload:', payload);
 
                 $.ajax({
                     url: '/page/api',
                     type: method,
-                    data: payload,
+                    data: JSON.stringify(payload),                 // <-- send JSON
+                    contentType: 'application/json; charset=UTF-8',
+                    processData: false,
                     success: function (data) {
                         $('#myChoiceToast').toast?.('show');
                         updateDisplay(data);
+                    },
+                    error: function (xhr, status, err) {
+                        console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
                     },
                     complete: function () {
                         $('.elementModal').modal?.('hide');
@@ -317,23 +366,32 @@ export function initModals() {
                 });
             }
 
-            // If creating a new destination page first:
-            if (formData.get('destinationModal') === 'New') {
+            if (destination === 'New') {
+                // Create the destination page first, then submit the choice with the new UUID
+                const justLabel = label; // the "choice" label only
+                console.log('---modal: creating new page first');
                 $.ajax({
-                    url: `/page/newpage/${formData.get('hiddenstoryuuid')}`,
+                    url: `/page/newpage/${storyUuid}`,
                     type: 'POST',
-                    data: {
-                        uuid: formData.get('hiddenstoryuuid'),
-                        value: formData.get('modalchoiceInput'),
-                    },
+                    // This endpoint previously worked with urlencoded; keep it simple
+                    data: { uuid: storyUuid, value: justLabel },
                     success: function (data) {
+                        console.log('---modal: success creating new page');
                         $('#myPageToast').toast?.('show');
                         const newDest = data.newUUID;
-                        runSecondRequest(newDest);
+                        createOrUpdateChoice(newDest);              // <-- pass real UUID
+                    },
+                    error: function (xhr, status, err) {
+                        console.error('Create page error', status, err, xhr?.status, xhr?.responseText);
                     },
                 });
+            } else if (destination === 'Event') {
+                // Special sentinel your backend knows how to handle
+                createOrUpdateChoice('Event');
+                console.log('---creating a choice that triggers a placeholder event');
             } else {
-                runSecondRequest(formData.get('destinationModal'));
+                // Existing page UUID chosen in the dropdown
+                createOrUpdateChoice(destination);
             }
         });
     }
@@ -353,8 +411,8 @@ export function initModals() {
                     property: formData.get('modaleventInput'),
                     operator: formData.get('eventComparisonModal'),
                     amount: formData.get('modaleventInput2'),
-                    value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')}`,
-                    html: `<strong>  Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong>`,
+                    value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')} `,
+                    html: `< strong > Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong > `,
                 },
             };
 
@@ -397,7 +455,7 @@ export function initModals() {
             const formData = new FormData(conditionForm);
 
             const method = formData.get('conditionrequest') === 'POST' ? 'POST' : 'PUT';
-            const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')}`;
+            const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')} `;
 
             $.ajax({
                 url: '/page/api',

@@ -27,16 +27,12 @@
                         <select class="form-select" id="choiceDestinationModal"
                             onchange="changeChoiceDestinationModal()">
                             <option selected value="New">Create New Page</option>
-                            <option value="Event">No Page - Trigger Events Only</option>
                             <% for (let i=0; i < pages.length; i++){ %>
                                 <option value="<%= pages[i].uuid %>">
                                     <%=pages[i].title%>
                                 </option>
                                 <%}%>
                         </select>
-                    </div>
-                    <div class="col-md-12"><input type="checkbox" id="choicenewline" name="choicenewline"> <label
-                            for="choicenewline" class="form-label">Make this choice in-line with the text</label>
                     </div>
 
                     <div class="valid-feedback">

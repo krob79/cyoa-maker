@@ -5,7 +5,7 @@ import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './dele
 import { elementSchemas } from '../forms/elementSchemas.js';
 import { renderForm } from '../forms/formRenderer.js';
 
-console.log("----render.js");
+// console.log("----render.js");
 
 let allPageUUIDs = [];
 // cache the template text so we fetch once
@@ -13,22 +13,36 @@ let ENTRY_TPL_TEXT = null;
 
 //Gathers all User Events and adds event listeners
 function initializeUserEventLinks() {
+  // console.log('*****initializeUserEventLinks');
   let userEvts = Array.from(document.querySelectorAll('.userevent'));
   userEvts.forEach((el) => {
     // console.log("--user event: ", el.textContent.trim());
     el.addEventListener("click", async (e) => {
       let txt = el.textContent.trim();
+      //getting parent reference to use for replacing the link after click
       let parent = e.target.parentNode.parentNode
-      console.log("---UUID: ", e.target.dataset.uuid);
+      // console.log("---UUID: ", e.target.dataset.uuid);
+      console.log("---UUID: ", e.target);
       let response = await fetch(`/page/${e.target.dataset.uuid}/`);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
       const result = await response.json();
-      console.log("----about to parse event: ", result.value);
 
-      parseInventoryString(result.value);
-      const newParagraph = document.createElement("p");
+      //if the value includes "||Event", then it's not an automatic event, but a Choice link
+      //so we'll need to go one more level deep to get the actual event value
+      if (result.value.includes("||Event")) {
+        //get events from the choice's elements array
+        let evts = result.elements.filter(el => el.type == 'event');
+        //TO DO: Loop through the whole array and dispatch all events
+        //TO DO: Figure out how to handle things if there are multiple events for multiple items
+        parseInventoryString(evts[0].value);
+      } else {
+        console.log("----about to parse event: ", result.value);
+        parseInventoryString(result.value);
+      }
+      //replace link with text element that has the same text
+      const newParagraph = document.createElement("span");
       newParagraph.classList.add('usereventdone');
       let textNode = document.createTextNode(txt);
       newParagraph.appendChild(textNode);
@@ -69,6 +83,7 @@ function initializeChoiceLinks() {
       // console.log("---filtered choice events: ", events);
 
       console.log("---THIS IS A CHOICE LINK!!! ", e.target.dataset.uuid);
+      //this is the call that looks up the choice element, finds any events nested within and then triggers them
       $.ajax({
         url: `/page/${e.target.dataset.uuid}/event`,
         type: 'POST',
@@ -160,13 +175,14 @@ export async function reorderElements({ from, to }) {
   // console.log(`---calling reorderElements!! ${from} - ${to}`);
   let uuidInURL = findUuidInURL();
   let elements;
+  let newline;
   //grab uuid from URL and use that to load in and display data
   if (uuidInURL) {
     await fetch(`/page/${uuidInURL}`)
       .then(response => response.json())
       .then(data => {
-        // console.log("-----testfetch: ");
-        // console.log(data);
+        console.log("-----testfetch: ");
+        console.log(data);
         elements = data.elements;
       })
 
@@ -176,17 +192,19 @@ export async function reorderElements({ from, to }) {
     // console.log("---DEEP COPY ARRAY:");
     // console.log(deepCopyArray);
     //swap the elements in the array
+
     deepCopyArray = moveElement(deepCopyArray, from, to);
 
     let myNewDataObj = { elements: deepCopyArray };
-    // console.log("----HERE's the newDataObj to be submitted");
-    // console.log(myNewDataObj);
+    console.log("----HERE's the newDataObj to be submitted");
+    console.log(myNewDataObj);
 
     // XHR POST request
     $.ajax({
       url: '/page/api',
       type: 'PUT',
       contentType: 'application/json; charset=UTF-8',
+      processData: false,
       // Gather all data from the form and create a JSON object from it
       data: JSON.stringify({
         uuid: uuidInURL,
@@ -280,7 +298,9 @@ function outputHtmlForElement(item) {
     case "choice":
       //TO DO - Make better form validation for entering choices
       splitText = item.value.split("||");
-      if (verifyUUID(splitText[1])) {
+      if (splitText[1] == "Event") {
+        html = `<strong><a class="pageLink userevent" data-uuid="${item.uuid}" href="javascript:void(0)">${splitText[0]}</a></strong>`;
+      } else if (verifyUUID(splitText[1])) {
         html = `<strong><a class="pageLink" href="/page/${splitText[1]}/edit">${splitText[0]}</a></strong>`;
       } else {
         html = `<a class="pageLink" href="#"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14" id="Broken-Link-1--Streamline-Flex" height="14" width="14">
@@ -298,7 +318,7 @@ function outputHtmlForElement(item) {
       splitText = item.value.split("_");
       html = `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
 <path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
-</svg> Custom ${splitText[0]} event: ${splitText[1]}${splitText[2]}${splitText[3]}</strong>`;
+</svg> Event: ${splitText[1]}${splitText[2]}${splitText[3]}</strong>`;
       break;
     case "condition":
       html = `<p>${item.value}</p>`;
@@ -307,9 +327,10 @@ function outputHtmlForElement(item) {
   return html;
 }
 
-//only used if 
+//only used if external entry.ejs file can't be loaded
+//so...is there a point to this if it basically does what I'm trying to avoid doing, which is have two separate block of code that build the same list items?
 function assembleEntry(item) {
-  console.log("-----assemble NEW ENTRY!!!");
+  // console.log("-----assemble NEW ENTRY!!!");
   const isPage = item.type === 'page';
 
   // DELETE button: type='page' uses the confirmation modal; other types delete immediately
@@ -340,6 +361,7 @@ function assembleEntry(item) {
             class="btn editElement"
             data-bs-toggle="modal"
             data-bs-request="PUT"
+            data-bs-newline="${item.newline}"
             data-bs-elementtype="${item.type}"
             data-bs-elementuuid="${item.uuid}"
             data-bs-elementvalue="${item.value || ''}"
@@ -394,18 +416,30 @@ function assembleEntry(item) {
       : ``);
 
   // Optional nested-elements link (present in element entry when it has children):contentReference[oaicite:2]{index=2}
-  const nestedLinkHTML = !isPage && item.elements && item.elements.length > 0
-    ? `
-      <div class="feedback-message">
-        <p><a class="pageLink" href="/page/${item.uuid}/edit">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+  const nestedLinkHTML = () => {
+
+    let startHTML = `<div class="feedback-message"><p><a class="pageLink" href="/page/${item.uuid}/edit">`;
+    let endHTML = '</a></p></div>';
+    let combinedHTML = "";
+    let conditionCount = item.elements.filter(el => el.type == 'condition').length;
+    let eventCount = item.elements.filter(el => el.type == 'event').length;
+    // console.log(`----nestedlinkHTML - isPage? ${isPage} c: ${conditionCount}  e: ${eventCount}`);
+    combinedHTML += `${startHTML}`;
+    if (!isPage && conditionCount > 0) {
+      combinedHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                fill="currentColor" class="bi bi-question-diamond" viewBox="0 0 16 16">
             <path d="M6.95.435c.58-.58 1.52-.58 2.1 0l6.515 6.516c.58.58.58 1.519 0 2.098L9.05 15.565c-.58.58-1.519.58-2.098 0L.435 9.05a1.48 1.48 0 0 1 0-2.098zm1.4.7a.495.495 0 0 0-.7 0L1.134 7.65a.495.495 0 0 0 0 .7l6.516 6.516a.495.495 0 0 0 .7 0l6.516-6.516a.495.495 0 0 0 0-.7L8.35 1.134z"/>
             <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/>
-          </svg>: ${item.elements.length}
-        </a></p>
-      </div>`
-    : '';
+          </svg>: ${conditionCount} `;
+    }
+    if (!isPage && eventCount > 0) {
+      combinedHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 -960 960 960">
+                <path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
+              </svg>: ${eventCount}`;
+    }
+    combinedHTML += `${endHTML}`;
+    return combinedHTML;
+  };
 
   // Outer wrapper (class differences: visibility flag only used for non-pages):contentReference[oaicite:3]{index=3}
   const visibilityClass = !isPage && item.isVisible === false ? 'edit-hidden' : '';
@@ -433,7 +467,7 @@ function assembleEntry(item) {
             </div>
           </div>
 
-          ${nestedLinkHTML}
+          ${nestedLinkHTML()}
         </div>
       </div>
     </div>

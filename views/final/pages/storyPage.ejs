@@ -11,8 +11,7 @@
                             <%if(item.type=="text" || item.type=="image" || item.type=="choice" || (item.type=="event"
                                 && item.value.split("_")[0]=="user" )){%>
 
-                                <%- include(`./partials/${listPartialToUse}`, {item: item, allPageUUIDs: allPageUUIDs});
-                                    %>
+                                <%- include(`./partials/entry`, {item: item, allPageUUIDs: allPageUUIDs}); %>
                                     <%}%>
 
                                         <%})%>

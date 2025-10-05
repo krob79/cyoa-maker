@@ -1,4 +1,4 @@
-console.log("----utils.js");
+// console.log("----utils.js");
 export function findUuidInURL() {
     // console.log("----finding UUID in URL:");
     const currentUrl = window.location.href;
