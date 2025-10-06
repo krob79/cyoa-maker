@@ -134,8 +134,6 @@ export function initModals() {
                 console.log("----no checkbox found");
             }
 
-            console.log("-----------IS THIS STUPID THING CHECKED OR CHNAGING VALUES???", Boolean(newline));
-
             const requestField = document.getElementById(`${el_type}request`);
             if (requestField) requestField.value = button.dataset.bsRequest || 'PUT';
             const btn_request = button.dataset.bsRequest || 'PUT';
@@ -214,6 +212,7 @@ export function initModals() {
                     if (el_subtype) {
                         console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
                         eType = el_subtype;
+                        document.getElementById('modaleventType').value = el_subtype;
                         let evtMsg = document.getElementById("eventMessage");
                         if (el_subtype == "auto") {
                             evtMsg.textContent = "This event will be triggered immediately once the page loads.";
@@ -221,21 +220,15 @@ export function initModals() {
                             evtMsg.textContent = "This event will be triggered only from clicking this link."
                         }
                     }
-                    const label = document.getElementById('modaleventInputLabel');
+
                     const prop = document.getElementById('modaleventInput');
                     const oper = document.getElementById('eventComparisonModal');
                     const amt = document.getElementById('modaleventInput2');
-                    if (label) label.value = el_title;
+
                     if (prop) prop.value = p;
                     if (oper) oper.value = o;
                     if (amt) amt.value = v;
 
-                    // const radios = /** @type {NodeListOf<HTMLInputElement>} */ (
-                    //     document.getElementsByName('eventType')
-                    // );
-                    // radios?.forEach((r) => {
-                    //     r.checked = r.value === eType;
-                    // });
                     break;
                 }
             }
@@ -403,16 +396,22 @@ export function initModals() {
             e.preventDefault();
             const formData = new FormData(eventForm);
 
+            const uuid = formData.get('hiddeneventuuid');
+            const evttype = formData.get('modaleventType');
+            const property = formData.get('modaleventInput');
+            const operator = formData.get('eventComparisonModal');
+            const amount = formData.get('modaleventInput2');
+            const value = `${evttype}_${property}_${operator}_${amount}`;
+
             const assembledData = {
-                uuid: formData.get('hiddeneventuuid'),
+                uuid,
                 newDataObj: {
-                    occurs: formData.get('eventType'),
-                    title: formData.get('modaleventInputLabel'),
-                    property: formData.get('modaleventInput'),
-                    operator: formData.get('eventComparisonModal'),
-                    amount: formData.get('modaleventInput2'),
-                    value: `${formData.get('eventType')}_${formData.get('modaleventInput')}_${formData.get('eventComparisonModal')}_${formData.get('modaleventInput2')} `,
-                    html: `< strong > Custom ${formData.get('eventType')} event: ${formData.get('modaleventInput')}${formData.get('eventComparisonModal')}${formData.get('modaleventInput2')} </strong > `,
+                    evttype,
+                    title: "event",
+                    property,
+                    operator,
+                    amount,
+                    value,
                 },
             };
 
@@ -427,13 +426,12 @@ export function initModals() {
                             uuid: formData.get('hiddeneventuuid'),
                             section: formData.get('section'),
                             type: 'event',
-                            occurs: formData.get('eventType'),
-                            title: formData.get('modaleventInputLabel'),
-                            property: formData.get('modaleventInput'),
-                            operator: formData.get('eventComparisonModal'),
-                            amount: formData.get('modaleventInput2'),
-                            value: assembledData.newDataObj.value,
-                            html: assembledData.newDataObj.html,
+                            evttype,
+                            title: "",
+                            property,
+                            operator,
+                            amount,
+                            value,
                         }
                         : { ...assembledData },
                 success: function (data) {
