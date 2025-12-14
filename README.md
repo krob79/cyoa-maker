@@ -11,3 +11,6 @@ Get the following functionality built:
 Phase 2 - Dynamic Pages 
 Get the following functionality built:
 - Create / Delete Conditions for Every page element (Text, Image, Choice)
+-- These conditions can check the value of any property - if evaluation is true, page element is visible on screen
+- Create / Delete Events
+-- These events actually change the value (or state) of any property - can be auto events or user initiated
