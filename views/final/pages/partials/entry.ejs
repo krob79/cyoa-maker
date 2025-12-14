@@ -12,5 +12,8 @@
                                         <%- include('./listDisplayItems/display_event', {item: item}) %>
                                             <% } else if (item.type==='condition' ) { %>
                                                 <%- include('./listDisplayItems/display_condition', {item: item}) %>
-                                                    <% } %>
+                                                    <% } else if (item.type==='dynamic' ) { %>
+                                                        <%- include('./listDisplayItems/display_dynamic', {item:
+                                                            item})%>
+                                                            <% } %>
 </span>

@@ -134,31 +134,32 @@
                                                         Editing <%= pageData.type %>
                                                             <%}%>
                             </h1>
-                            <div id="eventList">
-                                <% events.forEach((evt)=>{%>
-                                    <div class="feedback-item">
-                                        <% let split=evt.value.split("_"); %>
-                                            <p class="linkEvent">
-                                                <%= split[1] %>
-                                                    <%=split[2]%>
-                                                        <%=split[3] %>
-                                            </p>
-                                    </div>
-                                    <%})%>
+                            <% // For displaying any events that are dispatched from Choice Links%>
+                                <div id="eventList">
+                                    <% events.forEach((evt)=>{%>
+                                        <div class="feedback-item">
+                                            <% let split=evt.value.split("_"); %>
+                                                <p class="linkEvent">
+                                                    <%= split[1] %>
+                                                        <%=split[2]%>
+                                                            <%=split[3] %>
+                                                </p>
+                                        </div>
+                                        <%})%>
 
-                            </div>
-                            <div id="draggableList" class="list-group feedback-items">
-                                <%if(pageListItems.length> 0){%>
-                                    <% pageListItems.forEach(function (item) {%>
+                                </div>
+                                <div id="draggableList" class="list-group feedback-items">
+                                    <%if(pageListItems.length> 0){%>
+                                        <% pageListItems.forEach(function (item) {%>
 
-                                        <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
+                                            <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
 
-                                            <%})%>
-                                                <%} else {%>
-                                                    <p><strong>No items yet listed</strong></p>
-                                                    <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
-                                                    <%}%>
-                            </div>
+                                                <%})%>
+                                                    <%} else {%>
+                                                        <p><strong>No items yet listed</strong></p>
+                                                        <p><a href="javascript:history.go(-1)">&lt; Go Back</a></p>
+                                                        <%}%>
+                                </div>
             </div>
         </aside>
     </div>

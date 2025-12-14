@@ -54,7 +54,7 @@ class StoryService {
     console.log("----ADDDING DATA BY UUID");
     const data = (await this.getData()) || [];
 
-    const { uuid, type, value, newline } = requestBody || {};
+    const { uuid, type, value, newline, hasEvents } = requestBody || {};
     const section = "elements";
 
 
@@ -66,19 +66,24 @@ class StoryService {
       type,                     // normalized lower-case
       value,
       newline,
-      elements: [],
+      hasEvents,
+      elements: requestBody.elements ?? [],
     }
 
     console.log('------addDataByUUID - newData:', newData);
 
     // 3) Special case for "choice" -> placeholder event
-    if (type === 'choice' && typeof value === 'string' && value.includes('Event')) {
+    //if (type === 'choice' && typeof value === 'string' && value.includes('Event')) {
+    if (type === 'choice' && hasEvents) {
+      const randuuid = crypto.randomUUID();
+      // Extract the first 5 characters
+      const shortId = randuuid.substring(0, 5);
       const newEvent = {
         parent: newData.uuid,
         title: 'Placeholder User Event',
-        uuid: crypto.randomUUID(),
+        uuid: randuuid,
         type: 'event',
-        value: 'user_placeholderEvent_+_0',
+        value: `user_placeholderEvent-${shortId}_+_0`,
         elements: [],
       };
       newData.elements.push(newEvent);
@@ -263,6 +268,8 @@ class StoryService {
     console.log(`----received newDataObj`);
     console.log(newDataObj);
 
+
+
     const updated = updateData(data, uuid, newDataObj);
 
     // console.log("Updated Data:");
@@ -279,6 +286,7 @@ class StoryService {
         // console.log(`---assigning:`);
         console.log(obj);
         //If this is a choice element, and the destination is "Event", we need to check if it contains any events
+        //TO DO: Figure out a better way to check for types that does not involve the service
         if (obj.type == "choice" && newData.value.split("||")[1] == "Event") {
           //if no events are found, we need to add a placeholder event to avoid accidentally creating broken links
           if (obj.elements.filter(el => el.type == 'event').length == 0) {
@@ -293,7 +301,10 @@ class StoryService {
               }
             );
           }
-
+        } else if (obj.type == "condition") {
+          if (!obj.booloperator) {
+            obj.booloperator = "AND";
+          }
         }
 
         let updated = Object.assign(obj, newDataObj);

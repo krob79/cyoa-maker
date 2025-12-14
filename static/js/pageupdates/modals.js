@@ -6,6 +6,28 @@
 import { updateDisplay } from './render.js'; // your renderer rebinds buttons & refreshes DOM
 
 // --- local utils kept here to remain standalone ---
+/**
+ * Get the current values on any element
+ * This is to help retrieve any information we need to display in the modals, rather than relying 
+ * on stuffing the information inside of the edit buttons that trigger the modals to open.
+ * 
+ */
+async function getCurrentDataOnElement(uuid) {
+    // console.log(`-------GETTING CURRENT DATA ON ELEMENT ${uuid}....`);
+    try {
+        const response = await fetch(`/page/${uuid}`);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ERROR! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('---FETCH ERROR: ', error);
+    }
+
+}
 
 /**
  * Decode simple HTML entities in condition strings and split into [lhs, op, rhs]
@@ -114,31 +136,51 @@ export function initModals() {
     // --- Element modals (text/image/choice/page/condition/event) ---
     // code that fires when a modal is opened
     document.querySelectorAll('.elementModal').forEach((modal) => {
-        modal.addEventListener('show.bs.modal', (event) => {
+        modal.addEventListener('show.bs.modal', async (event) => {
             const button = event.relatedTarget;
             if (!button) return;
 
+            let elData;
+
+            //pull existing data from element to use for various inputs in modal display
+            //want to eventually get all necessary data this way instead of using button.dataset for everything - not sustainable!
+            try {
+                // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
+                elData = await getCurrentDataOnElement(button.dataset.bsElementuuid);
+                console.log("---Here's some data about the events!!! ", elData);
+            } catch (e) {
+                console.log("----error: ", e);
+            }
+
+
             const el_title = button.dataset.bsElementtitle;
             const el_type = button.dataset.bsElementtype;
-            const el_value = button.dataset.bsElementvalue;
+            // const el_value = button.dataset.bsElementvalue;
+            // const newline = button.dataset.bsNewline;
+            // const el_title = elData.title;
+            // const el_type = elData.type;
+            const el_value = elData.value;
+            const newline = elData.newline;
             const el_subtype = button.dataset.bsElementsubtype;
-            const newline = button.dataset.bsNewline;
+
             const modalInput = document.getElementById(`modal${el_type}Input`);
             const modalTitle = document.getElementById(`modal${el_type}Label`);
-            const modalcheckbox = document.getElementById(`${el_type}newline`);
+            const modalnewlinecheckbox = document.getElementById(`${el_type}newline`);
+            const uuidinput = document.getElementById(`hidden${el_type}uuid`);
 
             try {
                 console.log("---newline? ", newline);
-                modalcheckbox.checked = (newline === "true");
+                modalnewlinecheckbox.checked = newline;
             } catch (e) {
-                console.log("----no checkbox found");
+                console.log("---error: No newline checkbox found");
             }
+
+
 
             const requestField = document.getElementById(`${el_type}request`);
             if (requestField) requestField.value = button.dataset.bsRequest || 'PUT';
             const btn_request = button.dataset.bsRequest || 'PUT';
 
-            const uuidinput = document.getElementById(`hidden${el_type}uuid`);
             if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
 
             // helper for the "Set Conditions" link
@@ -179,6 +221,11 @@ export function initModals() {
                     const dropdown = /** @type {HTMLSelectElement} */ (document.getElementById('choiceDestinationModal'));
                     const hiddendestination = /** @type {HTMLInputElement} */ (document.getElementById('destinationModal'));
                     const hiddenstoryuuid = /** @type {HTMLInputElement} */ (document.getElementById('hiddenstoryuuid'));
+                    const evtCheckbox = /** @type {HTMLInputElement} */ (document.getElementById('choicedispatchevent'));
+                    const evtIsChecked = elData.hasEvents;
+
+                    evtCheckbox.checked = evtIsChecked;
+                    console.log(`-----------EVENT CHKBOX  ${evtCheckbox.checked} - DISPATCH EVENT ${evtIsChecked}`);
                     if (hiddenstoryuuid) hiddenstoryuuid.value = button.dataset.bsStoryuuid || '';
                     if (modalInput) modalInput.value = label || '';
                     if (!dest) {
@@ -196,6 +243,7 @@ export function initModals() {
                     break;
 
                 case 'condition': {
+                    console.log("----condition before parsing..", el_value);
                     const [lhs, op, rhs] = parseConditionString(el_value);
                     const a = document.getElementById('modalconditionInput');
                     const o = document.getElementById('conditionComparisonModal');
@@ -328,15 +376,25 @@ export function initModals() {
                 const v = fd.get('choicenewline');
                 return v === 'on' || v === 'true' || v === '1';
             })();
+            const eventCheckbox = (() => {
+                const z = fd.get('choicedispatchevent');
+                return z === 'on' || z === 'true' || z === '1';
+            })();
+            let newElements = [];
+
+            //special feature needed for event checkbox - if the box is checked, and no events currently exist
+            //we need to create an event and push it to the elements array
+            console.log(`--------EVENT CHECKBOX CHECKED? ${eventCheckbox}`);
 
             function createOrUpdateChoice(destUUID) {
                 // Recompute the final "value" now that we know the true destination
+
                 const finalValue = `${label}||${destUUID}`;
 
                 const payload =
                     method === 'POST'
-                        ? { uuid, section, type: 'choice', value: finalValue, newline }
-                        : { uuid, newDataObj: { value: finalValue, newline } };
+                        ? { uuid, section, type: 'choice', value: finalValue, newline, hasEvents: eventCheckbox }
+                        : { uuid, newDataObj: { value: finalValue, newline, hasEvents: eventCheckbox } };
 
                 console.log('---payload:', payload);
 
@@ -363,6 +421,8 @@ export function initModals() {
                 // Create the destination page first, then submit the choice with the new UUID
                 const justLabel = label; // the "choice" label only
                 console.log('---modal: creating new page first');
+                console.log(`-----CHOICE DISPATCH EVENT CHECKBOX: ${eventCheckbox}`);
+
                 $.ajax({
                     url: `/page/newpage/${storyUuid}`,
                     type: 'POST',
@@ -379,7 +439,6 @@ export function initModals() {
                     },
                 });
             } else if (destination === 'Event') {
-                // Special sentinel your backend knows how to handle
                 createOrUpdateChoice('Event');
                 console.log('---creating a choice that triggers a placeholder event');
             } else {

@@ -46,9 +46,7 @@
                         <div class="feedback-title">
                             <% if (item.type==='page' ) { %>
                                 <%= item.value %>
-                                    <% } else if (item.type==='condition' ) { %>
-                                        <%- include('./listDisplayItems/display_conditionHead', {item: item}) %>
-                                            <% } %>
+                                    <% } %>
                         </div>
                         <!-- If this is a "page", display the tiny icons, plus count of text, images, and choices -->
                         <% if (item.type==='page' && item.elements) { %>
@@ -71,7 +69,10 @@
                                                                 <% } else if (item.type==='condition' ) { %>
                                                                     <%- include('./listDisplayItems/display_condition',
                                                                         {item: item}) %>
-                                                                        <% } %>
+                                                                        <% } else if (item.type==='dynamic' ) { %>
+                                                                            <%- include('./listDisplayItems/display_dynamic',
+                                                                                {item: item}) %>
+                                                                                <%}%>
                     </div>
                 </div>
 

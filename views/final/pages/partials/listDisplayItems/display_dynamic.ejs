@@ -1,0 +1,10 @@
+<% if(item.newline){ %>
+    <p></p>
+    <span class="pageText new-line">
+        <%= item.dynamic %>
+    </span>
+    <%}else{%>
+        <span class="pageText">
+            <%= item.dynamic %>
+        </span>
+        <%}%>

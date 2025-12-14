@@ -8,8 +8,8 @@
                 <p>
                     <%if(pageListItems.length> 0){%>
                         <% pageListItems.forEach(function (item) {%>
-                            <%if(item.type=="text" || item.type=="image" || item.type=="choice" || (item.type=="event"
-                                && item.value.split("_")[0]=="user" )){%>
+                            <%if(item.type=="text" || item.type=="image" || item.type=="choice" || item.type=="dynamic"
+                                ){%>
 
                                 <%- include(`./partials/entry`, {item: item, allPageUUIDs: allPageUUIDs}); %>
                                     <%}%>

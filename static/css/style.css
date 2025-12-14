@@ -70,6 +70,25 @@ p.linkEvent {
   }
 }
 
+.condition-display {
+  padding: 5px;
+  border: 1px solid red;
+  border-radius: 10px;
+}
+
+.condition-bool-operator {
+  color: red;
+  font-size: 0.3em;
+  border-left: 1px solid red;
+  padding-left: 25px;
+  margin-left: 25px;
+}
+
+.condition-bool-operator-and {
+  color: red;
+  border-left: 1px solid red;
+}
+
 .content-chunk {
   display: flex;
   align-items: center;
@@ -215,9 +234,11 @@ p.pageText {
 }
 
 .feedback-item {
-  border-bottom: 1px solid gray;
-  padding: 8px 8px;
-  width: 100%;
+  padding-top: 0px;
+  padding-left: 8px;
+
+  /* padding: 8px 8px; */
+  width: 95%;
 }
 
 .event-item {
@@ -236,9 +257,9 @@ p.pageText {
   font-weight: 400;
 }
 
-.feedback-item:last-of-type {
+/* .feedback-item:last-of-type {
   border-bottom: none;
-}
+} */
 
 
 /**  pixgrid **/

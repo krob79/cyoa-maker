@@ -194,7 +194,9 @@ class Inventory extends EventEmitter {
 
         // name (group1), operator (group2), value (group3)
         const m = s.match(/^(.+?)(<=|>=|==|=|!=|<|>)(.+)$/);
-        if (!m) throw new Error(`Invalid condition: ${expr}`);
+        if (!m) {
+            throw Error(`Invalid condition: ${expr}`);
+        }
 
         const rawName = m[1].trim();
         const op = m[2].trim();
@@ -213,6 +215,31 @@ class Inventory extends EventEmitter {
         const value = numeric ? Number(rawValue) : rawValue;
 
         return { name: rawName, op, value, numeric };
+    }
+
+    grabValue(name) {
+        console.log("---grabbing value from ", name);
+        const found = this._findByName(name, { caseInsensitive: true });
+
+        console.log("---found: ", found);
+
+        let result = found?.entry?.amount;
+        if (!result) {
+            console.log("---no result");
+            result = found?.entry?.meta?.value ?? ''
+        }
+        console.log("---grabValue result: ", result, " ", typeof result);
+
+        return found?.entry?.amount ?? 0;
+
+        // if (returnValueOnly) {
+        //     console.log("---NO COMPARISON NEEDED - RETURN VALUE ONLY!!!");
+        //     if (numeric) {
+        //         return found?.entry?.amount ?? 0;
+        //     } else {
+        //         return String(found?.entry?.meta?.value ?? '') === String(value);
+        //     }
+        // }
     }
 
     /**

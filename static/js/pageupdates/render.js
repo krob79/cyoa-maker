@@ -29,7 +29,7 @@ function initializeUserEventLinks() {
       }
       const result = await response.json();
 
-      //if the value includes "||Event", then it's not an automatic event, but a Choice link
+      //if the value includes "||Event", there's no destination, just an event
       //so we'll need to go one more level deep to get the actual event value
       if (result.value.includes("||Event")) {
         //get events from the choice's elements array
@@ -72,33 +72,41 @@ function initializeChoiceLinks() {
       e.preventDefault();
       let originalURL = el.getAttribute('href');
       console.log("----originalURL: ", originalURL);
+      //using fetch to get information about this choice element
       let response = await fetch(`/page/${e.target.dataset.uuid}/`);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-      let result = await response.json();
-      //get the elements array of this choice - since there are now more than just conditions in here, we need to filter for events
-      let elements = result.elements;
+      let choiceElement = await response.json();
+      //get the elements array within this choice link - since there are now more than just conditions in here, we need to filter for events
+      let elements = choiceElement.elements;
+      let dispatchEventsOnClick = choiceElement.hasEvents;
       let events = elements.filter(e => e.type == "event");
       // console.log("---filtered choice events: ", events);
 
       console.log("---THIS IS A CHOICE LINK!!! ", e.target.dataset.uuid);
       //this is the call that looks up the choice element, finds any events nested within and then triggers them
-      $.ajax({
-        url: `/page/${e.target.dataset.uuid}/event`,
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ events }),
-        success: function (data) {
-          console.log("---success queueing event!");
-        },
-        error(xhr) {
-          console.error('POST failed: ', xhr.responseText);
-        },
-        complete: function () {
-          window.location.href = originalURL;
-        },
-      });
+      if (dispatchEventsOnClick) {
+        console.log("----events have been turned on for this choice link!");
+        $.ajax({
+          url: `/page/${e.target.dataset.uuid}/event`,
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ events }),
+          success: function (data) {
+            console.log("---success queueing event!");
+          },
+          error(xhr) {
+            console.error('POST failed: ', xhr.responseText);
+          },
+          complete: function () {
+            window.location.href = originalURL;
+          },
+        });
+      } else {
+        console.log("----events have been turned OFF for this choice link!");
+        window.location.href = originalURL;
+      }
     });
   })
 
@@ -435,9 +443,15 @@ function assembleEntry(item) {
           </svg>: ${conditionCount} `;
     }
     if (!isPage && eventCount > 0) {
-      combinedHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 -960 960 960">
+      if (item.type == "choice" && !item.hasEvents) {
+        combinedHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#666666" viewBox="0 -960 960 960">
+                <path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
+              </svg><span style="color: #666666">: ${eventCount}</span>`;
+      } else {
+        combinedHTML += `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 -960 960 960">
                 <path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
               </svg>: ${eventCount}`;
+      }
     }
     combinedHTML += `${endHTML}`;
     return combinedHTML;

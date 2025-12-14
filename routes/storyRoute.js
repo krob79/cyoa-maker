@@ -74,6 +74,7 @@ export default (params) => {
             }
 
             //if there's anything that gets put in this events array, it came from the session, and is therefore from a choice link
+            //sessions are the key to carrying an event from a choice over to the next page
             const events = Array.isArray(request.session?.events) ? request.session.events : [];
             console.log("---EVENT QUEUE: ", events);
             //these should be user initiated events that are tied to a Choice, so they won't fire automatically
@@ -109,7 +110,7 @@ export default (params) => {
                     el.highlighted = true;
                 }
                 //checking if these elements are the type which would have conditions
-                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event") {
+                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
                     for (let i = 0; i < el.elements.length; i++) {
                         if (el.elements[i].type == "condition") {
                             // console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
@@ -117,6 +118,10 @@ export default (params) => {
                                 el.isVisible = false;
                             }
                         }
+                    }
+                    if (el.type == "dynamic") {
+                        console.log("----dynamic element found!");
+                        el.dynamic = inventory.grabValue(el.value);
                     }
                 }
                 //if type is event, parse the string value and dispatch any auto events
@@ -196,7 +201,7 @@ export default (params) => {
                 el.isVisible = true;
                 el.opacity = "1";
                 //checking if these elements are the type which would have conditions
-                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event") {
+                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
                     for (let i = 0; i < el.elements.length; i++) {
                         if (el.elements[i].type == "condition") {
                             // console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
@@ -205,6 +210,11 @@ export default (params) => {
                                 // el.opacity = "0.4";
                             }
                         }
+                    }
+
+                    if (el.type == "dynamic") {
+                        console.log("----dynamic element found!");
+                        el.dynamic = inventory.grabValue(el.value);
                     }
                 }
                 //if type is event, parse the string value and dispatch any auto events
@@ -253,16 +263,25 @@ export default (params) => {
     });
 
     router.get('/:uuid/allevents', async (request, response, next) => {
+        /*
+        This route will display all conditions and events created by the user property name, sorting by name.
+        For each property created by the user, a list of conditions that use that property will display in one column, 
+        followed by a list events that also use the same property in a second column.
+        The list prioritizes conditions at the top of the list, even if there are no corresponding events.
+        After all conditions have been displayed, any remaining events that have no conditions paired with them will display.
+        */
         console.log("---checking all events");
         const pageData = await storyService.getConditionsEventsList();
         const listPartialToUse = "elementPartial";
 
+        //sort both arrays by property names
         sortArray(pageData.conditions);
         sortArray(pageData.events);
 
-
+        //sort each property into its own nested array, returning an array of arrays
         let eventObj = separateArray([...pageData.events]);
         let conditionObj = separateArray([...pageData.conditions]);
+
 
         let filteredEventObj = Object.fromEntries(
             Object.entries(eventObj).filter(([key]) => !conditionObj.hasOwnProperty(key))
@@ -285,6 +304,7 @@ export default (params) => {
             })
         }
 
+
         function separateArray(arr) {
             // console.log(arr);
             const seperatedArr = arr.reduce((acc, currentItem) => {
@@ -299,12 +319,10 @@ export default (params) => {
             return seperatedArr;
         }
 
-
-
-
         return response.render('layout', { pageTitle: "Conditions and Events", template: 'eventList', pageData, eventObj, conditionObj, filteredEventObj, listPartialToUse });
     });
 
+    //this is called by choice links that contain events, because the session has to store the event data during the page transition
     router.post('/:uuid/event', async (request, response, next) => {
         const { events } = request.body;
         console.log("----at /event route: ", events);
@@ -386,7 +404,7 @@ export default (params) => {
                 return response.status(400).json({ error: 'Missing JSON body' });
             }
             const errors = validationResult(request);
-            console.log('VALIDATION ERRORS:', validationResult(request));
+            console.log('VALIDATION ERRORS ON UPDATE:', validationResult(request));
             console.log('BODY RECEIVED:', request.body);
             if (!errors.isEmpty()) {
                 return response.status(400).json({ errors: errors.array() });
