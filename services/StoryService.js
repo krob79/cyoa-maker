@@ -268,6 +268,29 @@ class StoryService {
     console.log(`----received newDataObj`);
     console.log(newDataObj);
 
+    // if (type === 'choice' && hasEvents) {
+    //   const randuuid = crypto.randomUUID();
+    //   // Extract the first 5 characters
+    //   const shortId = randuuid.substring(0, 5);
+    //   const newEvent = {
+    //     parent: newData.uuid,
+    //     title: 'Placeholder User Event',
+    //     uuid: randuuid,
+    //     type: 'event',
+    //     value: `user_placeholderEvent-${shortId}_+_0`,
+    //     elements: [],
+    //   };
+    //   newData.elements.push(newEvent);
+    //   // Consider a clearer title; keeping your existing behavior for now:
+    //   newData.title = newEvent.value; // TODO: revisit
+    // }
+
+    // // If the element itself is an event, you referenced undefined vars previously;
+    // // use `type` / `value` that we normalized above.
+    // if (type === 'event') {
+    //   newData.title = value;
+    // }
+
 
 
     const updated = updateData(data, uuid, newDataObj);
@@ -282,26 +305,37 @@ class StoryService {
 
       // If the current object matches the uuid, modify it
       if (obj.uuid === uuid) {
-        console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
+        //console.log(`----matched the uuid of ${obj.uuid} and ${uuid}"`);
         // console.log(`---assigning:`);
-        console.log(obj);
+        //console.log(obj);
         //If this is a choice element, and the destination is "Event", we need to check if it contains any events
         //TO DO: Figure out a better way to check for types that does not involve the service
-        if (obj.type == "choice" && newData.value.split("||")[1] == "Event") {
-          //if no events are found, we need to add a placeholder event to avoid accidentally creating broken links
-          if (obj.elements.filter(el => el.type == 'event').length == 0) {
-            obj.elements.push(
-              {
-                "parent": obj.uuid,
-                "title": "Placeholder User Event",
-                "uuid": crypto.randomUUID(),
-                "type": "event",
-                "value": "user_placeholderEvent_+_0",
-                "elements": []
-              }
-            );
+        //if (obj.type == "choice" && newData.value.split("||")[1] == "Event") {
+        if (obj.type == "choice") {
+          if (newDataObj.hasEvents) {
+            console.log("---SERVICE CHECKING CHOICE AND HASEVENTS - TRUE");
+            //if no events are found, we need to add a placeholder event to avoid accidentally creating broken links
+            if (obj.elements.filter(el => el.type == 'event').length == 0) {
+
+              const randuuid = crypto.randomUUID();
+              const shortId = randuuid.substring(0, 5);
+              obj.elements.push(
+                {
+                  "parent": obj.uuid,
+                  "title": "Placeholder User Event",
+                  "uuid": randuuid,
+                  "type": "event",
+                  "value": `user_placeholderEvent-${shortId}_+_0`,
+                  "elements": []
+                }
+              );
+            }
+          } else {
+            console.log("---SERVICE CHECKING CHOICE AND HASEVENTS - FALSE");
           }
-        } else if (obj.type == "condition") {
+        }
+
+        if (obj.type == "condition") {
           if (!obj.booloperator) {
             obj.booloperator = "AND";
           }
