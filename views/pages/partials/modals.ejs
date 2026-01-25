@@ -4,6 +4,12 @@
         <%- include('./modals/formElementTextModal', {uuid:pageData.uuid}); %>
     </div>
 </div>
+<div class="modal fade elementModal" id="dynamicUpdateModal" tabindex="-1" aria-labelledby="dynamicUpdateLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <%- include('./modals/formElementDynamicModal', {uuid:pageData.uuid}); %>
+    </div>
+</div>
 <div class="modal fade elementModal" id="imageUpdateModal" tabindex="-1" aria-labelledby="elementUpdateLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">

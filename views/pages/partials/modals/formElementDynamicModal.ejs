@@ -1,0 +1,33 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title element-modal-title" id="modaldynamicLabel">Form Title</h5>
+    </div>
+    <div class="modal-body">
+        <form id="dynamicFormModal" class="row g-3 was-validated" novalidate>
+            <div class="container">
+                <input type="hidden" id="hiddendynamicuuid" name="uuid" value="">
+                <input type="hidden" id="section" name="section" value="elements">
+                <input type="hidden" id="dynamicrequest" name="dynamicrequest" value="">
+                <div class="col-md-12">
+                    <label for="value" class="form-label">Text:</label>
+                    <textarea type="text" class="form-control" id="modaldynamicInput" name="modaldynamicInput"
+                        placeholder="Enter the name of the dynamic property:" required></textarea>
+                    <input type="checkbox" id="dynamicnewline" name="dynamicnewline"> <label for="dynamicnewline"
+                        class="form-label">Start a
+                        new line with this text</label>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <a id="modaldynamicConditions" href="">Review Conditions For This Text ></a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Update</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+<%- include('formElementValidation', {}); %>

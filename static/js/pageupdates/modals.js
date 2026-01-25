@@ -147,7 +147,7 @@ export function initModals() {
             try {
                 // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
                 elData = await getCurrentDataOnElement(button.dataset.bsElementuuid);
-                console.log("---Here's some data about the events!!! ", elData);
+                console.log("---Here's some data about the element!!! ", elData);
             } catch (e) {
                 console.log("----error: ", e);
             }
@@ -198,7 +198,14 @@ export function initModals() {
             switch (el_type) {
                 case 'text':
                     createConditionEditLink();
-                    if (modalInput) modalInput.value = el_value || '';
+                    // if (modalInput) modalInput.value = el_value || '';
+                    modalInput.value = btn_request === 'POST' ? `` : el_value;
+                    break;
+
+                case 'dynamic':
+                    createConditionEditLink();
+                    // if (modalInput) modalInput.value = el_value || '';
+                    modalInput.value = btn_request === 'POST' ? `` : el_value;
                     break;
 
                 case 'image': {
@@ -218,6 +225,7 @@ export function initModals() {
                 case 'choice': {
                     createConditionEditLink();
                     const [label, dest] = String(el_value || '').split('||');
+                    modalInput.value = label;
                     const dropdown = /** @type {HTMLSelectElement} */ (document.getElementById('choiceDestinationModal'));
                     const hiddendestination = /** @type {HTMLInputElement} */ (document.getElementById('destinationModal'));
                     const hiddenstoryuuid = /** @type {HTMLInputElement} */ (document.getElementById('hiddenstoryuuid'));
@@ -227,7 +235,8 @@ export function initModals() {
                     evtCheckbox.checked = evtIsChecked;
                     console.log(`-----------EVENT CHKBOX  ${evtCheckbox.checked} - DISPATCH EVENT ${evtIsChecked}`);
                     if (hiddenstoryuuid) hiddenstoryuuid.value = button.dataset.bsStoryuuid || '';
-                    if (modalInput) modalInput.value = label || '';
+                    //if (modalInput) modalInput.value = label || '';
+
                     if (!dest) {
                         if (dropdown) dropdown.value = 'New';
                         if (hiddendestination) hiddendestination.value = 'New';
@@ -239,11 +248,15 @@ export function initModals() {
                 }
 
                 case 'page':
-                    if (modalInput) modalInput.value = el_value || '';
+                    // if (modalInput) modalInput.value = el_value || '';
+                    modalInput.value = btn_request === 'POST' ? `` : el_value;
                     break;
 
                 case 'condition': {
                     console.log("----condition before parsing..", el_value);
+                    const and_radio = document.querySelector('input[name="conditionAndOrGroup"]').value;
+                    document.querySelector('input[name="conditionAndOrGroup"][value="or"]').checked = (elData.booloperator === "or");
+                    console.log("------CONDITION AND/OR: ", elData.booloperator);
                     const [lhs, op, rhs] = parseConditionString(el_value);
                     const a = document.getElementById('modalconditionInput');
                     const o = document.getElementById('conditionComparisonModal');
@@ -336,6 +349,57 @@ export function initModals() {
                 processData: false,
                 success: function (data) {
                     console.log("----success with text!!");
+                    $('#myTextToast').toast?.('show');
+                    updateDisplay(data);
+                },
+                error: function (xhr, status, err) {
+                    console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
+                },
+                complete: function () {
+                    $('.elementModal').modal?.('hide');
+                },
+            });
+        });
+    }
+
+    // --- DYNAMIC ---
+    const dynamicForm = document.getElementById('dynamicFormModal');
+    if (dynamicForm) {
+        dynamicForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fd = new FormData(dynamicForm);
+            const rawMethod = fd.get('dynamicrequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+            // Normalize fields
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');                // only used on POST
+            const value = (fd.get('modaldynamicInput') || '').toString();
+            const newline = (() => {
+                const v = fd.get('dynamicnewline');
+                // handle checkbox ("on"), "true", "1"
+                return v === 'on' || v === 'true' || v === '1';
+            })();
+
+            console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
+
+            // Build a single payload shape the server expects
+            const payload =
+                method === 'POST'
+                    ? { uuid, section, type: 'dynamic', value, newline }
+                    : { uuid, newDataObj: { value, newline } };
+
+            console.log(`----checking payload:`, payload);
+
+            $.ajax({
+                url: '/page/api',
+                type: method,
+                data: JSON.stringify(payload),
+                contentType: 'application/json; charset=UTF-8',
+                processData: false,
+                success: function (data) {
+                    console.log("----success with dynamic!!");
                     $('#myTextToast').toast?.('show');
                     updateDisplay(data);
                 },
@@ -513,6 +577,8 @@ export function initModals() {
 
             const method = formData.get('conditionrequest') === 'POST' ? 'POST' : 'PUT';
             const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')} `;
+            const and_or = formData.get('conditionAndOrGroup');
+            console.log("------SUBMIT CONDITION AND/OR: ", and_or);
 
             $.ajax({
                 url: '/page/api',
@@ -524,10 +590,11 @@ export function initModals() {
                             section: formData.get('section'),
                             type: 'condition',
                             value,
+                            booloperator: "and"
                         }
                         : {
                             uuid: formData.get('hiddenconditionuuid'),
-                            newDataObj: { value },
+                            newDataObj: { value, booloperator: and_or },
                         },
                 success: function (data) {
                     $('#myConditionToast').toast?.('show');

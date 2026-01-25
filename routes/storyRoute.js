@@ -34,6 +34,49 @@ const idValidation = [
 export default (params) => {
     const { storyService } = params;
 
+    const resolveGroups = (conditionsArray) => {
+        console.log("---resolve groups");
+        //establish condition groups
+        let allGroups = [];
+        let group = [];
+        let allGroupsPass = false;
+        let groupPass = true;
+
+        for (let x = 0; x < conditionsArray.length; x++) {
+            // if the booloperator says "and" or nothing, add it to the same array or "group" of conditions
+            //edge case here - if the very first condition in the whole list happens to be "or", add it to the current group like it was "and"
+            //because it's still the beginning of a new group
+            if (conditionsArray[x].booloperator == "and" || conditionsArray[x].booloperator == "" || x < 1) {
+                group.push(conditionsArray[x]);
+            } else {
+                allGroups.push(group);
+                group = [];
+                group.push(conditionsArray[x]);
+            }
+        }
+        if (group.length > 0) {
+            allGroups.push(group);
+        }
+
+        for (let i = 0; i < allGroups.length; i++) {
+            groupPass = true;
+            for (let j = 0; j < allGroups[i].length; j++) {
+                if (!inventory.check(allGroups[i][j].value)) {
+                    groupPass = false;
+                }
+                console.log(`----checking ${allGroups[i][j].value}: ${inventory.check(allGroups[i][j].value)}`);
+            }
+            console.log(`--------GROUP ${i} PASS: ${groupPass}`);
+            if (groupPass == true) {
+                allGroupsPass = true;
+                break;
+            }
+        }
+        console.log("------FINAL CONDITION OUTCOME: " + allGroupsPass);
+        return allGroupsPass;
+
+    }
+
     router.get('/', async (request, response, next) => {
         return response.redirect('/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit');
 
@@ -99,6 +142,8 @@ export default (params) => {
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
 
+            let currGroupIndex = 0;
+
             let pageListItems = pageData.elements.map(el => {
                 //default true value, because there may be no conditions applied
                 el.highlighted = false;
@@ -111,18 +156,32 @@ export default (params) => {
                 }
                 //checking if these elements are the type which would have conditions
                 if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
-                    for (let i = 0; i < el.elements.length; i++) {
-                        if (el.elements[i].type == "condition") {
-                            // console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
-                            if (!inventory.check(el.elements[i].value)) {
-                                el.isVisible = false;
-                            }
-                        }
+
+                    //filter all conditions
+                    let conditions = el.elements.filter((e) => {
+                        return e.type == "condition";
+                    })
+                    if (conditions.length > 0) {
+                        console.log(`---CONDITIONS FOUND ON ${el.type}`);
+                        //console.log(conditions);
+                        el.isVisible = resolveGroups(conditions);
                     }
+
                     if (el.type == "dynamic") {
                         console.log("----dynamic element found!");
                         el.dynamic = inventory.grabValue(el.value);
                     }
+                }
+
+                if (el.type == "condition") {
+                    if (el.booloperator == "or") {
+                        currGroupIndex++;
+                        console.log("adding to group index");
+                    }
+                    el["groupName"] = `g${currGroupIndex}`;
+
+                    console.log(`----CONDITION: ${el.title} BOOL:${el.booloperator} GROUP: ${el.groupName}`);
+
                 }
                 //if type is event, parse the string value and dispatch any auto events
                 if (el.type == "event") {
@@ -202,14 +261,15 @@ export default (params) => {
                 el.opacity = "1";
                 //checking if these elements are the type which would have conditions
                 if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
-                    for (let i = 0; i < el.elements.length; i++) {
-                        if (el.elements[i].type == "condition") {
-                            // console.log(`---Checking condition ${el.elements[i].value}...${inventory.check(el.elements[i].value)}`);
-                            if (!inventory.check(el.elements[i].value)) {
-                                el.isVisible = false;
-                                // el.opacity = "0.4";
-                            }
-                        }
+
+                    //filter all conditions
+                    let conditions = el.elements.filter((e) => {
+                        return e.type == "condition";
+                    })
+                    if (conditions.length > 0) {
+                        console.log(`---CONDITIONS FOUND ON ${el.type}`);
+                        //console.log(conditions);
+                        el.isVisible = resolveGroups(conditions);
                     }
 
                     if (el.type == "dynamic") {

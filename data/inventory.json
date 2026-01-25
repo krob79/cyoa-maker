@@ -123,7 +123,7 @@
       },
       {
         "name": "apples",
-        "amount": 14,
+        "amount": 30,
         "meta": {
           "createdAt": "2025-10-08T18:42:57.789Z"
         }
@@ -196,6 +196,55 @@
         "amount": 0,
         "meta": {
           "createdAt": "2025-12-29T22:44:44.771Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-e3ce9",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2025-12-30T17:40:38.801Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-b073b",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-01-10T21:17:17.638Z"
+        }
+      },
+      {
+        "name": "c1",
+        "amount": 20,
+        "meta": {
+          "createdAt": "2026-01-19T21:56:04.929Z"
+        }
+      },
+      {
+        "name": "c2",
+        "amount": 5,
+        "meta": {
+          "createdAt": "2026-01-19T21:56:04.929Z"
+        }
+      },
+      {
+        "name": "c3",
+        "amount": 69,
+        "meta": {
+          "createdAt": "2026-01-19T21:56:04.929Z"
+        }
+      },
+      {
+        "name": "yourface",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-01-19T22:11:47.062Z"
+        }
+      },
+      {
+        "name": "newProp",
+        "amount": 1000,
+        "meta": {
+          "createdAt": "2026-01-25T03:47:36.923Z"
         }
       }
     ],

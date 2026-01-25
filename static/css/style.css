@@ -72,21 +72,41 @@ p.linkEvent {
 
 .condition-display {
   padding: 5px;
-  border: 1px solid red;
   border-radius: 10px;
 }
+
+.condition-group-1 {
+  border: 1px solid red;
+  background-color: pink;
+}
+
+.condition-group-2 {
+  border: 1px solid red;
+  background-color: pink;
+}
+
 
 .condition-bool-operator {
   color: red;
   font-size: 0.3em;
   border-left: 1px solid red;
-  padding-left: 25px;
+  padding-left: 5px;
   margin-left: 25px;
 }
 
 .condition-bool-operator-and {
+  color: green;
+  font-size: 0.3em;
+  padding-left: 5px;
+  margin-left: 25px;
+}
+
+.condition-bool-operator-or {
+  border-top: 1px solid lightgrey;
   color: red;
-  border-left: 1px solid red;
+  font-size: 0.3em;
+  padding-left: 5px;
+  margin-left: 25px;
 }
 
 .content-chunk {

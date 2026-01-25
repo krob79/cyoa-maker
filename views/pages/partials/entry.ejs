@@ -27,9 +27,11 @@
                         <% } %>
 
                             <!-- Edit -->
-                            <button type="button" class="btn editElement" data-bs-toggle="modal" data-bs-request="PUT"
-                                data-bs-elementtype="<%= item.type %>" data-bs-elementtitle="<%= item.title %>"
-                                data-bs-elementuuid="<%= item.uuid %>" data-bs-elementvalue="<%= item.value || '' %>"
+                            <button type="button" class="btn editElement"
+                                data-bs-elementsubtype="<%= item.value.split('_')[0] %>" data-bs-toggle="modal"
+                                data-bs-request="PUT" data-bs-elementtype="<%= item.type %>"
+                                data-bs-elementtitle="<%= item.title %>" data-bs-elementuuid="<%= item.uuid %>"
+                                data-bs-elementvalue="<%= item.value || '' %>"
                                 data-bs-newline="<%= item.newline || false %>"
                                 data-bs-target="#<%= item.type %>UpdateModal">
                                 <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24"
