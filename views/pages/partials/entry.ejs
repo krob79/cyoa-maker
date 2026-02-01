@@ -28,17 +28,18 @@
 
                             <!-- Edit -->
                             <button type="button" class="btn editElement"
-                                data-bs-elementsubtype="<%= item.value.split('_')[0] %>" data-bs-toggle="modal"
+                                data-bs-elementsubtype="<%= (item.value.split('_')[0] == " user" ? "user" : "auto" ) %>"
+                                data-bs-toggle="modal"
                                 data-bs-request="PUT" data-bs-elementtype="<%= item.type %>"
-                                data-bs-elementtitle="<%= item.title %>" data-bs-elementuuid="<%= item.uuid %>"
-                                data-bs-elementvalue="<%= item.value || '' %>"
-                                data-bs-newline="<%= item.newline || false %>"
-                                data-bs-target="#<%= item.type %>UpdateModal">
-                                <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24"
-                                    viewBox="0 -960 960 960">
-                                    <path
-                                        d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120zm160-240v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5-5.5 29.5T897-728L530-360zm481-424-56-56zM440-440h56l232-232-28-28-29-28-231 231zm260-260-29-28zl28 28z" />
-                                </svg>
+                                    data-bs-elementtitle="<%= item.title %>" data-bs-elementuuid="<%= item.uuid %>"
+                                            data-bs-elementvalue="<%= item.value || '' %>"
+                                                data-bs-newline="<%= item.newline || false %>"
+                                                    data-bs-target="#<%= item.type %>UpdateModal">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" name="editIcon"
+                                                            width="24" height="24" viewBox="0 -960 960 960">
+                                                            <path
+                                                                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120zm160-240v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5-5.5 29.5T897-728L530-360zm481-424-56-56zM440-440h56l232-232-28-28-29-28-231 231zm260-260-29-28zl28 28z" />
+                                                        </svg>
                             </button>
             </div>
             <div

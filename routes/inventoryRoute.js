@@ -30,6 +30,15 @@ export default (params) => {
         res.json({ ok: true, base64: b64 });
     });
 
+    router.get('/', (req, res) => {
+        //console.log(req.query.property);
+        let query = req.query.property;
+        const result = inventory.grabValue(query);
+        console.log(`------ATTEMPTING INVENTORY CHECK THROUGH FETCH -'${query}':${result}`);
+        res.json({ ok: true, result });
+    });
+
+    //haven't really tested this too much - not sure how big the base64 data string would be
     router.post('/import', (req, res, next) => {
         try {
             const { base64, mode } = req.body; // mode: 'merge' | 'replace'

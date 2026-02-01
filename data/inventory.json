@@ -228,7 +228,7 @@
       },
       {
         "name": "c3",
-        "amount": 69,
+        "amount": 68,
         "meta": {
           "createdAt": "2026-01-19T21:56:04.929Z"
         }
@@ -242,9 +242,16 @@
       },
       {
         "name": "newProp",
-        "amount": 1000,
+        "amount": 6969,
         "meta": {
           "createdAt": "2026-01-25T03:47:36.923Z"
+        }
+      },
+      {
+        "name": "newProp2",
+        "amount": 420420,
+        "meta": {
+          "createdAt": "2026-01-25T18:24:55.648Z"
         }
       }
     ],

@@ -342,8 +342,8 @@ class StoryService {
         }
 
         let updated = Object.assign(obj, newDataObj);
-        console.log(`----to:`);
-        console.log(updated);
+        //console.log(`----to:`);
+        //console.log(updated);
 
         return true; // Found and updated
       }
@@ -422,11 +422,14 @@ class StoryService {
     let currentPageTitle;
 
 
-
-
     let results = checkProperties(obj);
 
-    return ({ "conditions": conditions, "events": events });
+    let fullList = { "conditions": conditions, "events": events };
+
+    console.log(`---Full list of Conditions and Events:`);
+    // console.log(fullList);
+
+    return fullList;
 
     function checkProperties(obj) {
       if (obj && obj.type == 'condition') {

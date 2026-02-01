@@ -35,7 +35,7 @@ export default (params) => {
     const { storyService } = params;
 
     const resolveGroups = (conditionsArray) => {
-        console.log("---resolve groups");
+        // console.log("---resolve groups");
         //establish condition groups
         let allGroups = [];
         let group = [];
@@ -64,15 +64,15 @@ export default (params) => {
                 if (!inventory.check(allGroups[i][j].value)) {
                     groupPass = false;
                 }
-                console.log(`----checking ${allGroups[i][j].value}: ${inventory.check(allGroups[i][j].value)}`);
+                // console.log(`----checking ${allGroups[i][j].value}: ${inventory.check(allGroups[i][j].value)}`);
             }
-            console.log(`--------GROUP ${i} PASS: ${groupPass}`);
+            // console.log(`--------GROUP ${i} PASS: ${groupPass}`);
             if (groupPass == true) {
                 allGroupsPass = true;
                 break;
             }
         }
-        console.log("------FINAL CONDITION OUTCOME: " + allGroupsPass);
+        // console.log("------FINAL CONDITION OUTCOME: " + allGroupsPass);
         return allGroupsPass;
 
     }
@@ -100,8 +100,6 @@ export default (params) => {
 
         if (query) {
             console.log("---query: ", query);
-        } else {
-            console.log("---no query found");
         }
 
         try {
@@ -162,7 +160,7 @@ export default (params) => {
                         return e.type == "condition";
                     })
                     if (conditions.length > 0) {
-                        console.log(`---CONDITIONS FOUND ON ${el.type}`);
+                        // console.log(`---CONDITIONS FOUND ON ${el.type}`);
                         //console.log(conditions);
                         el.isVisible = resolveGroups(conditions);
                     }
@@ -176,11 +174,11 @@ export default (params) => {
                 if (el.type == "condition") {
                     if (el.booloperator == "or") {
                         currGroupIndex++;
-                        console.log("adding to group index");
+                        // console.log("adding to group index");
                     }
                     el["groupName"] = `g${currGroupIndex}`;
 
-                    console.log(`----CONDITION: ${el.title} BOOL:${el.booloperator} GROUP: ${el.groupName}`);
+                    // console.log(`----CONDITION: ${el.title} BOOL:${el.booloperator} GROUP: ${el.groupName}`);
 
                 }
                 //if type is event, parse the string value and dispatch any auto events
@@ -331,8 +329,11 @@ export default (params) => {
         After all conditions have been displayed, any remaining events that have no conditions paired with them will display.
         */
         console.log("---checking all events");
+        let testProp = "rubberduck";
+        console.log(`-------checking for the existence of ${testProp} - ${inventory.hasAny(testProp)}`);
         const pageData = await storyService.getConditionsEventsList();
         const listPartialToUse = "elementPartial";
+
 
         //sort both arrays by property names
         sortArray(pageData.conditions);

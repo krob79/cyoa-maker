@@ -218,17 +218,17 @@ class Inventory extends EventEmitter {
     }
 
     grabValue(name) {
-        console.log("---grabbing value from ", name);
+        //console.log("---grabbing value from ", name);
         const found = this._findByName(name, { caseInsensitive: true });
 
-        console.log("---found: ", found);
+        //console.log("---found: ", found);
 
         let result = found?.entry?.amount;
         if (!result) {
-            console.log("---no result");
+            console.log(`---no result found for '${name}' from inventory`);
             result = found?.entry?.meta?.value ?? ''
         }
-        console.log("---grabValue result: ", result, " ", typeof result);
+        //console.log("---grabValue result: ", result, " ", typeof result);
 
         return found?.entry?.amount ?? 0;
 
@@ -248,6 +248,7 @@ class Inventory extends EventEmitter {
      * - String RHS: compare against entry.meta.value (missing entry => false).
      */
     check(expr, { caseInsensitive = true } = {}) {
+        console.log(`-----CHECKING ${expr}`);
         const { name, op, value, numeric } = this._parseCondition(expr);
 
         // Find the entry by name across all domains
@@ -275,6 +276,11 @@ class Inventory extends EventEmitter {
                 default: return false; // e.g., '>' on strings is not supported
             }
         }
+    }
+
+    /** Check if an entry exists anywhere in the inventory (case-insensitive by default). */
+    hasAny(name, { caseInsensitive = true } = {}) {
+        return Boolean(this._findByName(name, { caseInsensitive })?.entry);
     }
 
     parseEventCommand(str) {
@@ -319,6 +325,15 @@ class Inventory extends EventEmitter {
                 this._scheduleSave();
             }
             return total;
+        }
+
+        // ✅ Option A: dedicated hard-delete event
+        // Usage:
+        //   { evt: 'remove', name: 'apple' }                 -> removeAny('apple')
+        //   { evt: 'remove', name: 'apple', domain: 'items' } -> remove('items','apple')
+        if (evt.evt === 'remove' && evt.name) {
+            if (evt.domain) return this.remove(evt.domain, evt.name);
+            return this.removeAny(evt.name);
         }
 
         // Optional: a dedicated meta-set event
@@ -378,6 +393,47 @@ class Inventory extends EventEmitter {
 
         this.emit('imported', { mode });
         this._scheduleSave();
+    }
+
+    /** Hard-delete an entry from a specific domain bucket. Returns true if removed. */
+    remove(domain, name, { emitEvent = true } = {}) {
+        if (!domain || !name) return false;
+
+        const bucket = this.data.get(domain);
+        if (!bucket) return false;
+
+        // Handle case-insensitive issues by deleting the *stored* key if needed
+        let keyToDelete = name;
+        if (!bucket.has(keyToDelete)) {
+            const needle = String(name).toLowerCase();
+            for (const [k, v] of bucket.entries()) {
+                if (String(v?.name ?? k).toLowerCase() === needle) {
+                    keyToDelete = k; // this is the actual Map key
+                    break;
+                }
+            }
+        }
+
+        const existed = bucket.delete(keyToDelete);
+        if (!existed) return false;
+
+        if (emitEvent) {
+            this.emit('removed', { domain, name: keyToDelete });
+            // Optional: keep existing listeners happy if they only watch "changed"
+            this.emit('changed', { domain, name: keyToDelete, delta: null, total: 0, op: 'remove' });
+        }
+
+        this._scheduleSave();
+        return true;
+    }
+
+    /** Hard-delete by name across all domains (case-insensitive by default). */
+    removeAny(name, { caseInsensitive = true, emitEvent = true } = {}) {
+        const found = this._findByName(name, { caseInsensitive });
+        if (!found?.domain || !found?.entry) return false;
+
+        // Use the stored name so we delete the correct Map key/casing
+        return this.remove(found.domain, found.entry.name, { emitEvent });
     }
 }
 

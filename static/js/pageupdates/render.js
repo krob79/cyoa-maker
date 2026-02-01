@@ -115,6 +115,7 @@ function initializeChoiceLinks() {
 initializeUserEventLinks();
 initializeChoiceLinks();
 
+//sends a command to update inventory
 function parseInventoryString(str) {
   let splitStr = str.split("_");
   let itemname = splitStr[1];
@@ -135,6 +136,24 @@ function parseInventoryString(str) {
   });
 
 }
+
+//fetch request to retrieve value of inventory item
+const getInventoryValue = async (propertyName) => {
+  console.log(`----calling getInventoryValue: ${propertyName}`);
+
+  try {
+    const response = await fetch(`/inventory/?property=${propertyName}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data.result);
+    return data;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+  }
+
+};
 
 //for using the EJS template in CSR and SSR
 async function getEntryTemplate() {
@@ -189,8 +208,8 @@ export async function reorderElements({ from, to }) {
     await fetch(`/page/${uuidInURL}`)
       .then(response => response.json())
       .then(data => {
-        console.log("-----testfetch: ");
-        console.log(data);
+        //console.log("-----testfetch: ");
+        //console.log(data);
         elements = data.elements;
       })
 
@@ -303,7 +322,9 @@ function outputHtmlForElement(item) {
       html = `<p class='pageText'>${item.value}</p>`;
       break;
     case "dynamic":
-      html = `<p class='pageText'>${item.value}: ${item.dynamic}</p>`;
+      // let something = getInventoryValue(item.value); //doesn't work - loops through too fast before fetch can finish
+      // console.log("----dynamic: ", something.result);
+      html = `<p class='pageText'><strong>{ ${item.value} }</strong></p>`;
       break;
     case "image":
       html = `<img class="pageImage" src="/uploads/${item.value}">`;
@@ -329,9 +350,9 @@ function outputHtmlForElement(item) {
       break;
     case "event":
       splitText = item.value.split("_");
-      html = `<strong><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
+      html = `<strong><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 -960 960 960">
 <path d="M480-280q17 0 28.5-11.5T520-320t-11.5-28.5T480-360t-28.5 11.5T440-320t11.5 28.5T480-280m-40-160h80v-240h-80zm40 412L346-160H160v-186L28-480l132-134v-186h186l134-132 134 132h186v186l132 134-132 134v186H614zm0-112 100-100h140v-140l100-100-100-100v-140H580L480-820 380-720H240v140L140-480l100 100v140h140zm0-340"></path>
-</svg> Event: ${splitText[1]}${splitText[2]}${splitText[3]}</strong>`;
+</svg> Event ${splitText[0] == "auto" ? "(auto)" : "(user)"}:</strong> ${splitText[1]} ${splitText[2]} ${splitText[3]}`;
       break;
     case "condition":
       html = `<div class="condition-bool-operator-${item.booloperator}"></div><div class="condition-display">
