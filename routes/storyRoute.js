@@ -329,8 +329,10 @@ export default (params) => {
         After all conditions have been displayed, any remaining events that have no conditions paired with them will display.
         */
         console.log("---checking all events");
-        let testProp = "rubberduck";
+        let testProp = "woodencane";
+        let removeProp = "banana";
         console.log(`-------checking for the existence of ${testProp} - ${inventory.hasAny(testProp)}`);
+        inventory.removeAny(removeProp);
         const pageData = await storyService.getConditionsEventsList();
         const listPartialToUse = "elementPartial";
 
@@ -364,7 +366,6 @@ export default (params) => {
                 return 0; // Categories are equal
             })
         }
-
 
         function separateArray(arr) {
             // console.log(arr);

@@ -248,7 +248,7 @@ class Inventory extends EventEmitter {
      * - String RHS: compare against entry.meta.value (missing entry => false).
      */
     check(expr, { caseInsensitive = true } = {}) {
-        console.log(`-----CHECKING ${expr}`);
+
         const { name, op, value, numeric } = this._parseCondition(expr);
 
         // Find the entry by name across all domains
@@ -257,13 +257,31 @@ class Inventory extends EventEmitter {
         if (numeric) {
             const amount = found?.entry?.amount ?? 0;
             switch (op) {
-                case '>': return amount > value;
-                case '>=': return amount >= value;
-                case '<': return amount < value;
-                case '<=': return amount <= value;
+                case '>':
+                    console.log(`-----CHECKING ${expr} ${amount > value} - ${amount}`);
+                    return amount > value;
+                    break;
+                case '>=':
+                    console.log(`-----CHECKING ${expr} ${amount >= value} - ${amount}`);
+                    return amount >= value;
+                    break;
+                case '<':
+                    console.log(`-----CHECKING ${expr} ${amount < value} - ${amount}`);
+                    return amount < value;
+                    break;
+                case '<=':
+                    console.log(`-----CHECKING ${expr} ${amount <= value} - ${amount}`);
+                    return amount <= value;
+                    break;
                 case '=':
-                case '==': return amount === value;
-                case '!=': return amount !== value;
+                case '==':
+                    console.log(`-----CHECKING ${expr} ${amount === value} - ${amount}`);
+                    return amount === value;
+                    break;
+                case '!=':
+                    console.log(`-----CHECKING ${expr} ${amount !== value} - ${amount}`);
+                    return amount !== value;
+                    break;
                 default: return false;
             }
         } else {

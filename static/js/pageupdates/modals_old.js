@@ -119,167 +119,6 @@ async function submitImage(e) {
     });
 }
 
-function getCheckboxValue(fd, fieldName) {
-    const v = fd.get(fieldName);
-    return v === 'on' || v === 'true' || v === '1';
-}
-
-function getMethod(fd, requestField) {
-    return fd.get(requestField) === 'PUT' ? 'PUT' : 'POST';
-}
-
-
-function submitJsonToPageApi({
-    method,
-    payload,
-    toastId
-}) {
-    $.ajax({
-        url: '/page/api',
-        type: method,
-        data: JSON.stringify(payload),
-        contentType: 'application/json; charset=UTF-8',
-        processData: false,
-        success: function (data) {
-            console.log("----success with submitJsonToPageApi!!");
-            if (toastId) $(toastId).toast?.('show');
-            updateDisplay(data);
-        },
-        error: function (xhr, status, err) {
-            console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
-        },
-        complete: function () {
-            $('.elementModal').modal?.('hide');
-        },
-    });
-}
-
-function bindConfiguredForm(config) {
-    const form = document.getElementById(config.formId);
-    if (!form) return;
-
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const fd = new FormData(form);
-        const { method, payload } = config.buildPayload(fd);
-
-        submitJsonToPageApi({
-            method,
-            payload,
-            toastId: typeof config.toastId === 'function' ? config.toastId(method) : config.toastId,
-            modalSelector: config.modalSelector || '.elementModal',
-        });
-    });
-}
-
-const modalConfigs = {
-    text: {
-        formId: 'textFormModal',
-        toastId: '#myTextToast',
-        buildPayload(fd) {
-            const method = getMethod(fd, 'textrequest');
-            const uuid = fd.get('uuid');
-            const section = fd.get('section');
-            const value = (fd.get('modaltextInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'textnewline');
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? { uuid, section, type: 'text', value, newline }
-                        : { uuid, newDataObj: { value, newline } },
-            };
-        },
-    },
-
-    dynamic: {
-        formId: 'dynamicFormModal',
-        toastId: '#myTextToast',
-        buildPayload(fd) {
-            const method = getMethod(fd, 'dynamicrequest');
-            const uuid = fd.get('uuid');
-            const section = fd.get('section');
-            const value = (fd.get('modaldynamicInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'dynamicnewline');
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? { uuid, section, type: 'dynamic', value, newline }
-                        : { uuid, newDataObj: { value, newline } },
-            };
-        },
-    },
-
-    condition: {
-        formId: 'conditionFormModal',
-        toastId: '#myConditionToast',
-        buildPayload(fd) {
-            const method = getMethod(fd, 'conditionrequest');
-            const value = `${fd.get('modalconditionInput')}${fd.get('conditionComparisonModal')}${fd.get('modalconditionInput2')}`;
-            const booloperator = fd.get('conditionAndOrGroup');
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? {
-                            uuid: fd.get('hiddenconditionuuid'),
-                            section: fd.get('section'),
-                            type: 'condition',
-                            value,
-                            booloperator: 'and',
-                        }
-                        : {
-                            uuid: fd.get('hiddenconditionuuid'),
-                            newDataObj: { value, booloperator },
-                        },
-            };
-        },
-    },
-
-    page: {
-        formId: 'pageFormModal',
-        toastId(method) {
-            return method === 'POST' ? '#myPageToast' : null;
-        },
-        buildPayload(fd) {
-            const method = getMethod(fd, 'pagerequest');
-            const value = (fd.get('modalpageInput') || '').toString();
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? {
-                            uuid: fd.get('uuid'),
-                            section: fd.get('section'),
-                            type: 'page',
-                            value,
-                        }
-                        : {
-                            uuid: fd.get('uuid'),
-                            newDataObj: {
-                                title: value,
-                                value,
-                            },
-                        },
-            };
-        },
-    },
-};
-
-bindConfiguredForm(modalConfigs.text);
-bindConfiguredForm(modalConfigs.dynamic);
-bindConfiguredForm(modalConfigs.condition);
-bindConfiguredForm(modalConfigs.page);
-
-//eventually everything at once
-//Object.values(modalConfigs).forEach(bindConfiguredForm);
-
 /**
  * Wire up all modal open/close events and form submissions.
  */
@@ -472,6 +311,107 @@ export function initModals() {
         $(this).removeData('bs.modal');
     });
 
+    // --- TEXT ---
+    const textForm = document.getElementById('textFormModal');
+    if (textForm) {
+        textForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fd = new FormData(textForm);
+            const rawMethod = fd.get('textrequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+            // Normalize fields
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');                // only used on POST
+            const value = (fd.get('modaltextInput') || '').toString();
+            const newline = (() => {
+                const v = fd.get('textnewline');
+                // handle checkbox ("on"), "true", "1"
+                return v === 'on' || v === 'true' || v === '1';
+            })();
+
+            console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
+
+            // Build a single payload shape the server expects
+            const payload =
+                method === 'POST'
+                    ? { uuid, section, type: 'text', value, newline }
+                    : { uuid, newDataObj: { value, newline } };
+
+            console.log(`----checking payload:`, payload);
+
+            $.ajax({
+                url: '/page/api',
+                type: method,
+                data: JSON.stringify(payload),
+                contentType: 'application/json; charset=UTF-8',
+                processData: false,
+                success: function (data) {
+                    console.log("----success with text!!");
+                    $('#myTextToast').toast?.('show');
+                    updateDisplay(data);
+                },
+                error: function (xhr, status, err) {
+                    console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
+                },
+                complete: function () {
+                    $('.elementModal').modal?.('hide');
+                },
+            });
+        });
+    }
+
+    // --- DYNAMIC ---
+    const dynamicForm = document.getElementById('dynamicFormModal');
+    if (dynamicForm) {
+        dynamicForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const fd = new FormData(dynamicForm);
+            const rawMethod = fd.get('dynamicrequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+            // Normalize fields
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');                // only used on POST
+            const value = (fd.get('modaldynamicInput') || '').toString();
+            const newline = (() => {
+                const v = fd.get('dynamicnewline');
+                // handle checkbox ("on"), "true", "1"
+                return v === 'on' || v === 'true' || v === '1';
+            })();
+
+            console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
+
+            // Build a single payload shape the server expects
+            const payload =
+                method === 'POST'
+                    ? { uuid, section, type: 'dynamic', value, newline }
+                    : { uuid, newDataObj: { value, newline } };
+
+            console.log(`----checking payload (method: ${method}):`, payload);
+
+            $.ajax({
+                url: '/page/api',
+                type: method,
+                data: JSON.stringify(payload),
+                contentType: 'application/json; charset=UTF-8',
+                processData: false,
+                success: function (data) {
+                    console.log("----success with dynamic!!");
+                    $('#myTextToast').toast?.('show');
+                    updateDisplay(data);
+                },
+                error: function (xhr, status, err) {
+                    console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
+                },
+                complete: function () {
+                    $('.elementModal').modal?.('hide');
+                },
+            });
+        });
+    }
 
     // --- IMAGE (regular & AI) ---
     const uploadImageForm = document.getElementById('uploadFormModal');
@@ -487,9 +427,8 @@ export function initModals() {
             e.preventDefault();
 
             const fd = new FormData(choiceForm);
-            // const rawMethod = fd.get('choicerequest');
-            const method = getMethod(fd, 'choicerequest');
-            // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+            const rawMethod = fd.get('choicerequest');
+            const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
 
             // Base fields
             const uuid = fd.get('hiddenchoiceuuid');      // parent uuid to attach to
@@ -497,7 +436,10 @@ export function initModals() {
             const section = fd.get('section');            // required on POST?
             const label = (fd.get('modalchoiceInput') || '').toString();
             const destination = fd.get('destinationModal');
-            const newline = getCheckboxValue(fd, 'choicenewline');
+            const newline = (() => {
+                const v = fd.get('choicenewline');
+                return v === 'on' || v === 'true' || v === '1';
+            })();
             const eventCheckbox = (() => {
                 const z = fd.get('choicedispatchevent');
                 return z === 'on' || z === 'true' || z === '1';
@@ -520,8 +462,23 @@ export function initModals() {
 
                 console.log('---payload:', payload);
 
-                submitJsonToPageApi({ method, payload, toastId: '#myChoiceToast' });
-
+                $.ajax({
+                    url: '/page/api',
+                    type: method,
+                    data: JSON.stringify(payload),                 // <-- send JSON
+                    contentType: 'application/json; charset=UTF-8',
+                    processData: false,
+                    success: function (data) {
+                        $('#myChoiceToast').toast?.('show');
+                        updateDisplay(data);
+                    },
+                    error: function (xhr, status, err) {
+                        console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
+                    },
+                    complete: function () {
+                        $('.elementModal').modal?.('hide');
+                    },
+                });
             }
 
             if (destination === 'New') {
@@ -611,176 +568,79 @@ export function initModals() {
         });
     }
 
-    // --- TEXT ---
-    // const textForm = document.getElementById('textFormModal');
-    // if (textForm) {
-    //     textForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-
-    //         const fd = new FormData(textForm);
-    //         // const rawMethod = fd.get('textrequest');
-    //         const method = getMethod(fd, 'textrequest');
-    //         //const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-    //         // Normalize fields
-    //         const uuid = fd.get('uuid');
-    //         const section = fd.get('section');                // only used on POST
-    //         const value = (fd.get('modaltextInput') || '').toString();
-    //         const newline = getCheckboxValue(fd, 'textnewline');
-
-    //         console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
-
-    //         // Build a single payload shape the server expects
-    //         const payload =
-    //             method === 'POST'
-    //                 ? { uuid, section, type: 'text', value, newline }
-    //                 : { uuid, newDataObj: { value, newline } };
-
-    //         console.log(`----checking payload:`, payload);
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data: JSON.stringify(payload),
-    //             contentType: 'application/json; charset=UTF-8',
-    //             processData: false,
-    //             success: function (data) {
-    //                 console.log("----success with text!!");
-    //                 $('#myTextToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             error: function (xhr, status, err) {
-    //                 console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
-
-    // --- DYNAMIC ---
-    // const dynamicForm = document.getElementById('dynamicFormModal');
-    // if (dynamicForm) {
-    //     dynamicForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-
-    //         const fd = new FormData(dynamicForm);
-    //         // const rawMethod = fd.get('dynamicrequest');
-    //         const method = getMethod(fd, 'dynamicrequest');
-    //         // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-    //         // Normalize fields
-    //         const uuid = fd.get('uuid');
-    //         const section = fd.get('section');                // only used on POST
-    //         const value = (fd.get('modaldynamicInput') || '').toString();
-    //         const newline = getCheckboxValue(fd, 'dynamicnewline');
-
-    //         console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
-
-    //         // Build a single payload shape the server expects
-    //         const payload =
-    //             method === 'POST'
-    //                 ? { uuid, section, type: 'dynamic', value, newline }
-    //                 : { uuid, newDataObj: { value, newline } };
-
-    //         console.log(`----checking payload (method: ${method}):`, payload);
-
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data: JSON.stringify(payload),
-    //             contentType: 'application/json; charset=UTF-8',
-    //             processData: false,
-    //             success: function (data) {
-    //                 console.log("----success with dynamic!!");
-    //                 $('#myTextToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             error: function (xhr, status, err) {
-    //                 console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
-
     // --- CONDITION ---
-    // const conditionForm = document.getElementById('conditionFormModal');
-    // if (conditionForm) {
-    //     conditionForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(conditionForm);
+    const conditionForm = document.getElementById('conditionFormModal');
+    if (conditionForm) {
+        conditionForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(conditionForm);
 
-    //         const method = formData.get('conditionrequest') === 'POST' ? 'POST' : 'PUT';
-    //         const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')} `;
-    //         const and_or = formData.get('conditionAndOrGroup');
-    //         console.log("------SUBMIT CONDITION AND/OR: ", and_or);
+            const method = formData.get('conditionrequest') === 'POST' ? 'POST' : 'PUT';
+            const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')} `;
+            const and_or = formData.get('conditionAndOrGroup');
+            console.log("------SUBMIT CONDITION AND/OR: ", and_or);
 
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data:
-    //                 method === 'POST'
-    //                     ? {
-    //                         uuid: formData.get('hiddenconditionuuid'),
-    //                         section: formData.get('section'),
-    //                         type: 'condition',
-    //                         value,
-    //                         booloperator: "and"
-    //                     }
-    //                     : {
-    //                         uuid: formData.get('hiddenconditionuuid'),
-    //                         newDataObj: { value, booloperator: and_or },
-    //                     },
-    //             success: function (data) {
-    //                 $('#myConditionToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
+            $.ajax({
+                url: '/page/api',
+                type: method,
+                data:
+                    method === 'POST'
+                        ? {
+                            uuid: formData.get('hiddenconditionuuid'),
+                            section: formData.get('section'),
+                            type: 'condition',
+                            value,
+                            booloperator: "and"
+                        }
+                        : {
+                            uuid: formData.get('hiddenconditionuuid'),
+                            newDataObj: { value, booloperator: and_or },
+                        },
+                success: function (data) {
+                    $('#myConditionToast').toast?.('show');
+                    updateDisplay(data);
+                },
+                complete: function () {
+                    $('.elementModal').modal?.('hide');
+                },
+            });
+        });
+    }
 
     // --- PAGE ---
-    // const pageForm = document.getElementById('pageFormModal');
-    // if (pageForm) {
-    //     pageForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(pageForm);
-    //         const method = formData.get('pagerequest') === 'POST' ? 'POST' : 'PUT';
+    const pageForm = document.getElementById('pageFormModal');
+    if (pageForm) {
+        pageForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(pageForm);
+            const method = formData.get('pagerequest') === 'POST' ? 'POST' : 'PUT';
 
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data:
-    //                 method === 'POST'
-    //                     ? {
-    //                         uuid: formData.get('uuid'),
-    //                         section: formData.get('section'),
-    //                         type: 'page',
-    //                         value: formData.get('modalpageInput'),
-    //                     }
-    //                     : {
-    //                         uuid: formData.get('uuid'),
-    //                         newDataObj: {
-    //                             title: formData.get('modalpageInput'),
-    //                             value: formData.get('modalpageInput'),
-    //                         },
-    //                     },
-    //             success: function (data) {
-    //                 if (method === 'POST') $('#myPageToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
+            $.ajax({
+                url: '/page/api',
+                type: method,
+                data:
+                    method === 'POST'
+                        ? {
+                            uuid: formData.get('uuid'),
+                            section: formData.get('section'),
+                            type: 'page',
+                            value: formData.get('modalpageInput'),
+                        }
+                        : {
+                            uuid: formData.get('uuid'),
+                            newDataObj: {
+                                title: formData.get('modalpageInput'),
+                                value: formData.get('modalpageInput'),
+                            },
+                        },
+                success: function (data) {
+                    if (method === 'POST') $('#myPageToast').toast?.('show');
+                    updateDisplay(data);
+                },
+                complete: function () {
+                    $('.elementModal').modal?.('hide');
+                },
+            });
+        });
+    }
 }

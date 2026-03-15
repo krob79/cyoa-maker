@@ -253,6 +253,8 @@ export async function reorderElements({ from, to }) {
 
 
 export async function updateDisplay(data) {
+  console.log("----UPDATE DISPLAY - HERE'S CURRENT DATA:");
+  console.log(data);
   allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
 
   // console.log("---updateDisplay - allPageUUIDs? ", allPageUUIDs);
