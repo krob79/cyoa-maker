@@ -173,7 +173,8 @@ class StoryService {
     console.log(data);
 
     console.log("-------NEW PAGE CREATED: ", newData.uuid);
-    return writeFile(this.datafile, JSON.stringify(data));
+    await writeFile(this.datafile, JSON.stringify(data));
+    return newData.uuid;
     //return data; // return the full structure with the update included
 
     function insertData(obj, uuid, newData) {

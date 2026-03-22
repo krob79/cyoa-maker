@@ -154,22 +154,59 @@ function submitJsonToPageApi({
     });
 }
 
+function submitUrlEncoded({
+    url,
+    method,
+    payload,
+    toastId,
+    onSuccess,
+    onComplete,
+}) {
+    console.log(`---calling submitURLEncoded! ${url}, ${method}, payload:(${Object.values(payload)}`);
+    $.ajax({
+        url,
+        type: method,
+        data: payload,
+        success: function (data) {
+            if (toastId) $(toastId).toast?.('show');
+            if (typeof onSuccess === 'function') onSuccess(data);
+        },
+        error: function (xhr, status, err) {
+            console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
+        },
+        complete: function () {
+            if (typeof onComplete === 'function') onComplete();
+        },
+    });
+}
+
 function bindConfiguredForm(config) {
     const form = document.getElementById(config.formId);
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const fd = new FormData(form);
-        const { method, payload } = config.buildPayload(fd);
+        try {
+            const fd = new FormData(form);
 
-        submitJsonToPageApi({
-            method,
-            payload,
-            toastId: typeof config.toastId === 'function' ? config.toastId(method) : config.toastId,
-            modalSelector: config.modalSelector || '.elementModal',
-        });
+            // advanced form path
+            if (typeof config.submit === 'function') {
+                await config.submit({ fd, form, event: e, config });
+                return;
+            }
+
+            const { method, payload } = config.buildPayload(fd);
+
+            submitJsonToPageApi({
+                method,
+                payload,
+                toastId: typeof config.toastId === 'function' ? config.toastId(method) : config.toastId,
+                modalSelector: config.modalSelector || '.elementModal',
+            });
+        } catch (err) {
+            console.error(`Error submitting to ${config.formId}:`, err);
+        }
     });
 }
 
@@ -270,12 +307,156 @@ const modalConfigs = {
             };
         },
     },
+
+    choice: {
+        formId: 'choiceFormModal',
+        async submit({ fd }) {
+            const method = getMethod(fd, 'choicerequest');
+            const uuid = fd.get('hiddenchoiceuuid');
+            const storyUuid = fd.get('hiddenstoryuuid');
+            const section = fd.get('section');
+            const label = (fd.get('modalchoiceInput') || '').toString();
+            const destination = fd.get('destinationModal');
+            const newline = getCheckboxValue(fd, 'choicenewline');
+            const hasEvents = getCheckboxValue(fd, 'choicedispatchevent');
+
+            const submitChoiceToApi = (destUUID) => {
+                const finalValue = `${label}||${destUUID}`;
+
+                const payload =
+                    method === 'POST'
+                        ? {
+                            uuid,
+                            section,
+                            type: 'choice',
+                            value: finalValue,
+                            newline,
+                            hasEvents,
+                        }
+                        : {
+                            uuid,
+                            newDataObj: {
+                                value: finalValue,
+                                newline,
+                                hasEvents,
+                            },
+                        };
+
+                submitJsonToPageApi({
+                    method,
+                    payload,
+                    toastId: '#myChoiceToast',
+                    modalSelector: '.elementModal',
+                });
+            };
+
+            if (destination === 'New') {
+                console.log(`---creating NEW DESTINATION with story id: ${storyUuid}!!!`);
+                submitUrlEncoded({
+                    url: `/page/newpage/`,
+                    method: 'POST',
+                    payload: { uuid: storyUuid, value: label },
+                    toastId: '#myPageToast',
+                    onSuccess: function (data) {
+                        console.log('NEW PAGE RESPONSE:', data);
+                        submitChoiceToApi(data.uuid);
+                    },
+                });
+                return;
+            }
+
+            if (destination === 'Event') {
+                submitChoiceToApi('Event');
+                return;
+            }
+
+            submitChoiceToApi(destination);
+        },
+    },
+
+    imageUpload: {
+        formId: 'uploadFormModal',
+        async submit({ fd }) {
+            const method = getMethod(fd, 'imagerequest');
+            const imgPath = await createLocalImgUploadPath(fd);
+
+            const html = `<img class="pageImage" src="/uploads/${imgPath}">`;
+
+            const payload =
+                method === 'POST'
+                    ? {
+                        uuid: fd.get('uuid'),
+                        section: fd.get('section'),
+                        type: 'image',
+                        value: imgPath,
+                        conditions: [],
+                        html,
+                    }
+                    : {
+                        uuid: fd.get('uuid'),
+                        newDataObj: {
+                            value: imgPath,
+                            html,
+                        },
+                    };
+
+            submitJsonToPageApi({
+                method,
+                payload,
+                toastId: '#myImageToast',
+                modalSelector: '.elementModal',
+            });
+        },
+    },
+
+    imageAI: {
+        formId: 'uploadImageFormModal_AI',
+        async submit({ fd }) {
+            const method = getMethod(fd, 'imagerequest');
+            const imgPath = fd.get('imagepath_ai');
+            const html = `<img class="pageImage" src="/uploads/${imgPath}">`;
+
+            const payload =
+                method === 'POST'
+                    ? {
+                        uuid: fd.get('uuid'),
+                        section: fd.get('section'),
+                        type: 'image',
+                        value: imgPath,
+                        conditions: [],
+                        html,
+                    }
+                    : {
+                        uuid: fd.get('uuid'),
+                        newDataObj: {
+                            value: imgPath,
+                            html,
+                        },
+                    };
+
+            submitJsonToPageApi({
+                method,
+                payload,
+                toastId: '#myImageToast',
+                modalSelector: '.elementAiModal',
+                onComplete: function () {
+                    if (typeof window.aiForm_reset === 'function') window.aiForm_reset();
+                },
+            });
+        },
+    }
+
+
 };
 
 bindConfiguredForm(modalConfigs.text);
 bindConfiguredForm(modalConfigs.dynamic);
 bindConfiguredForm(modalConfigs.condition);
 bindConfiguredForm(modalConfigs.page);
+
+bindConfiguredForm(modalConfigs.choice);
+// bindConfiguredForm(modalConfigs.imageUpload);
+// bindConfiguredForm(modalConfigs.imageAI);
 
 //eventually everything at once
 //Object.values(modalConfigs).forEach(bindConfiguredForm);
@@ -480,80 +661,7 @@ export function initModals() {
     const uploadImageFormAI = document.getElementById('uploadImageFormModal_AI');
     if (uploadImageFormAI) uploadImageFormAI.addEventListener('submit', submitImage);
 
-    // --- CHOICE ---
-    const choiceForm = document.getElementById('choiceFormModal');
-    if (choiceForm) {
-        choiceForm.addEventListener('submit', function (e) {
-            e.preventDefault();
 
-            const fd = new FormData(choiceForm);
-            // const rawMethod = fd.get('choicerequest');
-            const method = getMethod(fd, 'choicerequest');
-            // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-            // Base fields
-            const uuid = fd.get('hiddenchoiceuuid');      // parent uuid to attach to
-            const storyUuid = fd.get('hiddenstoryuuid');
-            const section = fd.get('section');            // required on POST?
-            const label = (fd.get('modalchoiceInput') || '').toString();
-            const destination = fd.get('destinationModal');
-            const newline = getCheckboxValue(fd, 'choicenewline');
-            const eventCheckbox = (() => {
-                const z = fd.get('choicedispatchevent');
-                return z === 'on' || z === 'true' || z === '1';
-            })();
-            let newElements = [];
-
-            //special feature needed for event checkbox - if the box is checked, and no events currently exist
-            //we need to create an event and push it to the elements array
-            console.log(`--------EVENT CHECKBOX CHECKED? ${eventCheckbox}`);
-
-            function createOrUpdateChoice(destUUID) {
-                // Recompute the final "value" now that we know the true destination
-
-                const finalValue = `${label}||${destUUID}`;
-
-                const payload =
-                    method === 'POST'
-                        ? { uuid, section, type: 'choice', value: finalValue, newline, hasEvents: eventCheckbox }
-                        : { uuid, newDataObj: { value: finalValue, newline, hasEvents: eventCheckbox } };
-
-                console.log('---payload:', payload);
-
-                submitJsonToPageApi({ method, payload, toastId: '#myChoiceToast' });
-
-            }
-
-            if (destination === 'New') {
-                // Create the destination page first, then submit the choice with the new UUID
-                const justLabel = label; // the "choice" label only
-                console.log('---modal: creating new page first');
-                console.log(`-----CHOICE DISPATCH EVENT CHECKBOX: ${eventCheckbox}`);
-
-                $.ajax({
-                    url: `/page/newpage/${storyUuid}`,
-                    type: 'POST',
-                    // This endpoint previously worked with urlencoded; keep it simple
-                    data: { uuid: storyUuid, value: justLabel },
-                    success: function (data) {
-                        console.log('---modal: success creating new page');
-                        $('#myPageToast').toast?.('show');
-                        const newDest = data.newUUID;
-                        createOrUpdateChoice(newDest);              // <-- pass real UUID
-                    },
-                    error: function (xhr, status, err) {
-                        console.error('Create page error', status, err, xhr?.status, xhr?.responseText);
-                    },
-                });
-            } else if (destination === 'Event') {
-                createOrUpdateChoice('Event');
-                console.log('---creating a choice that triggers a placeholder event');
-            } else {
-                // Existing page UUID chosen in the dropdown
-                createOrUpdateChoice(destination);
-            }
-        });
-    }
 
     // --- EVENT ---
     const eventForm = document.getElementById('eventFormModal');
@@ -610,6 +718,81 @@ export function initModals() {
             });
         });
     }
+
+    // --- CHOICE ---
+    // const choiceForm = document.getElementById('choiceFormModal');
+    // if (choiceForm) {
+    //     choiceForm.addEventListener('submit', function (e) {
+    //         e.preventDefault();
+
+    //         const fd = new FormData(choiceForm);
+    //         // const rawMethod = fd.get('choicerequest');
+    //         const method = getMethod(fd, 'choicerequest');
+    //         // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
+
+    //         // Base fields
+    //         const uuid = fd.get('hiddenchoiceuuid');      // parent uuid to attach to
+    //         const storyUuid = fd.get('hiddenstoryuuid');
+    //         const section = fd.get('section');            // required on POST?
+    //         const label = (fd.get('modalchoiceInput') || '').toString();
+    //         const destination = fd.get('destinationModal');
+    //         const newline = getCheckboxValue(fd, 'choicenewline');
+    //         const eventCheckbox = (() => {
+    //             const z = fd.get('choicedispatchevent');
+    //             return z === 'on' || z === 'true' || z === '1';
+    //         })();
+    //         let newElements = [];
+
+    //         //special feature needed for event checkbox - if the box is checked, and no events currently exist
+    //         //we need to create an event and push it to the elements array
+    //         console.log(`--------EVENT CHECKBOX CHECKED? ${eventCheckbox}`);
+
+    //         function createOrUpdateChoice(destUUID) {
+    //             // Recompute the final "value" now that we know the true destination
+
+    //             const finalValue = `${label}||${destUUID}`;
+
+    //             const payload =
+    //                 method === 'POST'
+    //                     ? { uuid, section, type: 'choice', value: finalValue, newline, hasEvents: eventCheckbox }
+    //                     : { uuid, newDataObj: { value: finalValue, newline, hasEvents: eventCheckbox } };
+
+    //             console.log('---payload:', payload);
+
+    //             submitJsonToPageApi({ method, payload, toastId: '#myChoiceToast' });
+
+    //         }
+
+    //         if (destination === 'New') {
+    //             // Create the destination page first, then submit the choice with the new UUID
+    //             const justLabel = label; // the "choice" label only
+    //             console.log('---modal: creating new page first');
+    //             console.log(`-----CHOICE DISPATCH EVENT CHECKBOX: ${eventCheckbox}`);
+
+    //             $.ajax({
+    //                 url: `/page/newpage/${storyUuid}`,
+    //                 type: 'POST',
+    //                 // This endpoint previously worked with urlencoded; keep it simple
+    //                 data: { uuid: storyUuid, value: justLabel },
+    //                 success: function (data) {
+    //                     console.log('---modal: success creating new page');
+    //                     $('#myPageToast').toast?.('show');
+    //                     const newDest = data.newUUID;
+    //                     createOrUpdateChoice(newDest);              // <-- pass real UUID
+    //                 },
+    //                 error: function (xhr, status, err) {
+    //                     console.error('Create page error', status, err, xhr?.status, xhr?.responseText);
+    //                 },
+    //             });
+    //         } else if (destination === 'Event') {
+    //             createOrUpdateChoice('Event');
+    //             console.log('---creating a choice that triggers a placeholder event');
+    //         } else {
+    //             // Existing page UUID chosen in the dropdown
+    //             createOrUpdateChoice(destination);
+    //         }
+    //     });
+    // }
 
     // --- TEXT ---
     // const textForm = document.getElementById('textFormModal');

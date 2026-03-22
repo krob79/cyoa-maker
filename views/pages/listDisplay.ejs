@@ -13,7 +13,7 @@
                                 d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z" />
                         </svg></button>
                     <%}%>
-                        <!-- If the data type you're currently viewing is of type "page", then the list should show page elements that have a type of "text", "image", or "choice". The "New Text/Image/Choice" buttons should be visible to create more of these within the same page  -->
+                        <!-- If the data type you're currently viewing is of type "page", then the list should show page elements that have a type of "text", "image", "choice", "event", "dynamic". The "New Text/Image/Choice/Event/Dynamic" buttons should be visible to create more of these within the same page  -->
                         <% if(pageData.type=="page" ) {%>
                             <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal"
                                 data-bs-request="POST" data-bs-elementtype="text"
@@ -138,7 +138,8 @@
                                     <% if(pageData.type=="story" || pageData.type=="page" ){ %>
                                         <%= pageData.value %>
                                             <%}else if(pageData.type=="text" || pageData.type=="image" ||
-                                                pageData.type=="choice" ){%>
+                                                pageData.type=="choice" || pageData.type=="event" ||
+                                                pageData.type=="dynamic" ){%>
                                                 Editing Condition of <%= pageData.type %> element
                                                     <%}else{%>
                                                         Editing <%= pageData.type %>
@@ -162,7 +163,8 @@
                                     <%if(pageListItems.length> 0){%>
                                         <% pageListItems.forEach(function (item) {%>
 
-                                            <%- include(`partials/entry`, {item: item, allPageUUIDs: allPageUUIDs});%>
+                                            <%- include(`partials/entry`, {storyuuid: story.uuid, item: item,
+                                                allPageUUIDs: allPageUUIDs});%>
 
                                                 <%})%>
                                                     <%} else {%>

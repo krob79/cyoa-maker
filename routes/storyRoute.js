@@ -8,7 +8,7 @@ import inventory from '../services/inventory.js';
 const validations = [
     check('value')
         .trim()
-        .isLength({ min: 3 })
+        .isLength({ min: 1 })
         .escape()
         .withMessage('This field cannot be blank.'),
 ];
@@ -524,25 +524,14 @@ export default (params) => {
 
     });
 
-    //
-    router.post('/newpage/:uuid', validations, async (request, response, next) => {
+    router.post('/newpage/', validations, async (request, response, next) => {
 
         try {
-            const uuid = request.params.uuid;
-            console.log(`--- CALLING FOR NEW PAGE with story id: ${uuid}`);
-
-            const { value } = request.body;
-            console.log(`---request body text: ${value}`);
-            console.log(`-----calling addNewPage: uuid: ${uuid}`);
+            const { uuid, value } = request.body;
+            console.log(`-----calling addNewPage from /newpage/ route - uuid: ${uuid}`);
             const newPageUUID = await storyService.addNewPage({ uuid, value });
-            console.log(`-----page has been created, calling getDataByUUID - uuid: ${uuid}`);
-            const thisData = await storyService.getDataByUUID({ uuid });
-            console.log("---after calling getDataByUUID....");
-            console.log(thisData.elements[thisData.elements.length - 1]);
-            const newUUID = thisData.elements[thisData.elements.length - 1].uuid;
-
-            // return response.json({ "response": "we made it" });
-            return response.json({ newUUID });
+            const thisData = await storyService.getDataByUUID({ uuid: newPageUUID });
+            return response.json(thisData);
 
         } catch (err) {
             next(err);
