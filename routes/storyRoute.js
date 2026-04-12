@@ -302,20 +302,24 @@ export default (params) => {
 
     router.post('/render-entries', async (req, res, next) => {
         //console.log("-----HITTING RENDER ENTRY ROUTE");
+        //console.log(req.body);
+
         try {
-            const { items, storyuuid } = req.body;
+            const { items, storyuuid, allPageUUIDs } = req.body;
 
             if (!Array.isArray(items)) {
                 return res.status(400).json({ error: 'items must be an array' });
             }
 
-            res.render('pages/partials/entryList', { items, storyuuid }, (err, html) => {
+            res.render('pages/partials/entryList', { items, storyuuid, allPageUUIDs }, (err, html) => {
                 if (err) {
+                    console.error(err);
                     return next(err);
                 }
 
                 res.json({ html });
             });
+
         } catch (err) {
             next(err);
         }
