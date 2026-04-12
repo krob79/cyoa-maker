@@ -144,6 +144,7 @@ export default (params) => {
 
             let pageListItems = pageData.elements.map(el => {
                 //default true value, because there may be no conditions applied
+                el.storyUuid = story.uuid;
                 el.highlighted = false;
                 el.isVisible = true;
                 el.opacity = "1";
@@ -166,7 +167,7 @@ export default (params) => {
                     }
 
                     if (el.type == "dynamic") {
-                        console.log("----dynamic element found!");
+                        // console.log("----dynamic element found!");
                         el.dynamic = inventory.grabValue(el.value);
                     }
                 }
@@ -191,22 +192,8 @@ export default (params) => {
                 return el;
             });
 
-            let listPartialToUse;
-            //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
-            //Based on what type of object we are looking at, we will need the right partial to display the data
-            switch (pageData.type) {
-                case "story":
-                    listPartialToUse = "pagePartial"; //used for displaying pages as list items
-                    break;
-                case "page":
-                    listPartialToUse = "elementPartial"; //used for displaying page elements as list items
-                    break;
-                default:
-                    listPartialToUse = "conditionPartial"; //used for displaying conditions of an element as list items
-                    break;
-            }
 
-            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage, query });
+            return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, errors, successMessage, query });
         } catch (err) {
             return next(err);
         }
@@ -265,19 +252,19 @@ export default (params) => {
                         return e.type == "condition";
                     })
                     if (conditions.length > 0) {
-                        console.log(`---CONDITIONS FOUND ON ${el.type}`);
+                        // console.log(`---CONDITIONS FOUND ON ${el.type}`);
                         //console.log(conditions);
                         el.isVisible = resolveGroups(conditions);
                     }
 
                     if (el.type == "dynamic") {
-                        console.log("----dynamic element found!");
+                        // console.log("----dynamic element found!");
                         el.dynamic = inventory.grabValue(el.value);
                     }
                 }
                 //if type is event, parse the string value and dispatch any auto events
                 if (el.type == "event") {
-                    console.log("---event detected on view: ", el.value);
+                    // console.log("---event detected on view: ", el.value);
                     let evtType = el.value.split("_")[0];
                     if (evtType == "auto") {
                         inventory.parseEventCommand(el.value);
@@ -310,6 +297,27 @@ export default (params) => {
             return response.render('final', { pageTitle: "View Mode", template: 'storyPage', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
         } catch (err) {
             return next(err);
+        }
+    });
+
+    router.post('/render-entries', async (req, res, next) => {
+        //console.log("-----HITTING RENDER ENTRY ROUTE");
+        try {
+            const { items, storyuuid } = req.body;
+
+            if (!Array.isArray(items)) {
+                return res.status(400).json({ error: 'items must be an array' });
+            }
+
+            res.render('pages/partials/entryList', { items, storyuuid }, (err, html) => {
+                if (err) {
+                    return next(err);
+                }
+
+                res.json({ html });
+            });
+        } catch (err) {
+            next(err);
         }
     });
 
@@ -467,12 +475,12 @@ export default (params) => {
             }
             const errors = validationResult(request);
             console.log('VALIDATION ERRORS ON UPDATE:', validationResult(request));
-            console.log('BODY RECEIVED:', request.body);
+            // console.log('BODY RECEIVED:', request.body);
             if (!errors.isEmpty()) {
                 return response.status(400).json({ errors: errors.array() });
             }
-            console.log("----page/api - PUT request - request body:");
-            console.log(request.body);
+            //console.log("----page/api - PUT request - request body:");
+            // console.log(request.body);
 
 
             const { uuid, newDataObj } = request.body;

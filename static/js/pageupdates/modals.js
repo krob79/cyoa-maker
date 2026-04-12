@@ -128,6 +128,37 @@ function getMethod(fd, requestField) {
     return fd.get(requestField) === 'PUT' ? 'PUT' : 'POST';
 }
 
+function setValue(modal, selector, value) {
+    const el = modal.querySelector(selector);
+    if (el) el.value = value ?? '';
+    console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
+}
+
+function setChecked(modal, selector, checked) {
+    const el = modal.querySelector(selector);
+    if (el) el.checked = !!checked;
+}
+
+function setText(modal, selector, value) {
+    const el = modal.querySelector(selector);
+    if (el) el.textContent = value ?? '';
+}
+
+function showEl(modal, selector) {
+    const el = modal.querySelector(selector);
+    if (el) el.style.display = '';
+}
+
+function hideEl(modal, selector) {
+    const el = modal.querySelector(selector);
+    if (el) el.style.display = 'none';
+}
+
+function getTriggerData(event) {
+    console.log("---getting trigger data");
+    return event.relatedTarget?.dataset || {};
+}
+
 
 function submitJsonToPageApi({
     method,
@@ -210,6 +241,160 @@ function bindConfiguredForm(config) {
     });
 }
 
+async function bindConfiguredModalOpen(config) {
+    console.log(`---GETTING CONFIG: ${config.modalId}`);
+    const modal = document.getElementById(config.modalId);
+    if (!modal) return;
+
+    modal.addEventListener('show.bs.modal', async function (event) {
+        console.log("----MODAL OPEN");
+        const buttondata = getTriggerData(event);
+        let data;
+        console.log(`----Getting UUID from button: ${buttondata.bsElementuuid}`);
+        try {
+            // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
+            data = await getCurrentDataOnElement(buttondata.bsElementuuid);
+            data['request'] = buttondata.bsRequest;
+            data['storyUuid'] = buttondata.bsStoryuuid;
+            data['section'] = 'elements'; //eventually, should we do away with this? all sections will be 'elements'?
+            console.log("---Here's some data about the element!!! ", data);
+        } catch (e) {
+            console.log("----error: ", e);
+        }
+
+        if (typeof config.onBeforeOpen === 'function') {
+            config.onBeforeOpen({ modal, event, data, config });
+        }
+
+        if (typeof config.reset === 'function') {
+            config.reset({ modal, event, data, config });
+        }
+
+        if (typeof config.prefill === 'function') {
+            config.prefill({ modal, event, data, config });
+        }
+
+        if (typeof config.onAfterOpen === 'function') {
+            config.onAfterOpen({ modal, event, data, config });
+        }
+    });
+
+    if (typeof config.onHidden === 'function') {
+        modal.addEventListener('hidden.bs.modal', function (event) {
+            config.onHidden({ modal, event, config });
+        });
+    }
+}
+
+//for testing new modal open eventlistener code without completely commenting out the old code
+const USE_NEW_MODAL_OPEN = {
+    text: true,
+    choice: true,
+    dynamic: true,
+    image: false,
+    page: false,
+    condition: false,
+
+    event: false,
+};
+
+//config object for modal open - determining if "new" or "edit", what types of data to display, etc
+const modalOpenConfigs = {
+    text: {
+        modalId: 'textUpdateModal',
+
+        reset({ modal }) {
+            console.log("---RESET FOR TEXT");
+            setValue(modal, '[name="uuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modaltextInput"]', '');
+            setChecked(modal, '[name="textnewline"]', false);
+            setValue(modal, '[name="textrequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            console.log(`---PREFILL FOR TEXT - ${data.request}`);
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="uuid"]', data.uuid);
+            setValue(modal, '[name="section"]', data.section);
+
+            if (isEdit) {
+                setValue(modal, '[name="modaltextInput"]', data.value);
+                setChecked(modal, '[name="textnewline"]', data.newline === 'true');
+                setValue(modal, '[name="textrequest"]', 'PUT');
+            } else {
+                setValue(modal, '[name="textrequest"]', 'POST');
+            }
+        },
+    },
+    dynamic: {
+        modalId: 'dynamicUpdateModal',
+
+        reset({ modal }) {
+            setValue(modal, '[name="uuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modaldynamicInput"]', '');
+            setChecked(modal, '[name="dynamicnewline"]', false);
+            setValue(modal, '[name="dynamicrequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="uuid"]', data.uuid);
+            setValue(modal, '[name="section"]', data.section);
+
+            if (isEdit) {
+                setValue(modal, '[name="modaldynamicInput"]', data.value);
+                setChecked(modal, '[name="dynamicnewline"]', data.newline === 'true');
+                setValue(modal, '[name="dynamicrequest"]', 'PUT');
+            } else {
+                setValue(modal, '[name="dynamicrequest"]', 'POST');
+            }
+        },
+    },
+    choice: {
+        modalId: 'choiceUpdateModal',
+
+        reset({ modal }) {
+            setValue(modal, '[name="hiddenchoiceuuid"]', '');
+            setValue(modal, '[name="hiddenstoryuuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modalchoiceInput"]', '');
+            setValue(modal, '[name="destinationModal"]', '');
+            setChecked(modal, '[name="choicenewline"]', false);
+            setChecked(modal, '[name="choicedispatchevent"]', false);
+            setValue(modal, '[name="choicerequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="hiddenchoiceuuid"]', data.uuid);
+            setValue(modal, '[name="hiddenstoryuuid"]', data.storyUuid);
+            setValue(modal, '[name="section"]', data.section);
+
+            if (!isEdit) {
+                setValue(modal, '[name="choicerequest"]', 'POST');
+                return;
+            }
+
+            const rawValue = data.value || '';
+            const [label, destination] = rawValue.split('||');
+            console.log(`---choice destination: ${data.hasEvents}`);
+
+            setValue(modal, '[name="modalchoiceInput"]', label || '');
+            setValue(modal, '[name="destinationModal"]', destination || '');
+            setValue(modal, '[id="choiceDestinationModal"]', destination || '');
+            setChecked(modal, '[name="choicenewline"]', data.newline);
+            setChecked(modal, '[name="choicedispatchevent"]', data.hasEvents);
+            setValue(modal, '[name="choicerequest"]', 'PUT');
+        },
+    },
+}
+
+//config object for constructing payload and form submission
 const modalConfigs = {
     text: {
         formId: 'textFormModal',
@@ -448,15 +633,36 @@ const modalConfigs = {
 
 
 };
-
 bindConfiguredForm(modalConfigs.text);
+if (USE_NEW_MODAL_OPEN.text) {
+    bindConfiguredModalOpen(modalOpenConfigs.text);
+}
+
 bindConfiguredForm(modalConfigs.dynamic);
-bindConfiguredForm(modalConfigs.condition);
-bindConfiguredForm(modalConfigs.page);
+if (USE_NEW_MODAL_OPEN.dynamic) {
+    bindConfiguredModalOpen(modalOpenConfigs.dynamic);
+}
 
 bindConfiguredForm(modalConfigs.choice);
-// bindConfiguredForm(modalConfigs.imageUpload);
-// bindConfiguredForm(modalConfigs.imageAI);
+if (USE_NEW_MODAL_OPEN.choice) {
+    bindConfiguredModalOpen(modalOpenConfigs.choice);
+}
+
+bindConfiguredForm(modalConfigs.condition);
+if (USE_NEW_MODAL_OPEN.condition) {
+    bindConfiguredModalOpen(modalOpenConfigs.condition);
+}
+
+bindConfiguredForm(modalConfigs.page);
+if (USE_NEW_MODAL_OPEN.page) {
+    bindConfiguredModalOpen(modalOpenConfigs.page);
+}
+
+bindConfiguredForm(modalConfigs.imageUpload);
+if (USE_NEW_MODAL_OPEN.imageUpload) {
+    bindConfiguredModalOpen(modalOpenConfigs.imageUpload);
+}
+//bindConfiguredForm(modalConfigs.imageAI); // API has run out of credits
 
 //eventually everything at once
 //Object.values(modalConfigs).forEach(bindConfiguredForm);
@@ -480,7 +686,44 @@ export function initModals() {
     document.querySelectorAll('.elementModal').forEach((modal) => {
         modal.addEventListener('show.bs.modal', async (event) => {
             const button = event.relatedTarget;
+
             if (!button) return;
+            const el_type = button.dataset.bsElementtype;
+
+            if (el_type == "text" && USE_NEW_MODAL_OPEN.text) {
+                console.log("----------OLD FEATURE DISABLED FOR TEXT");
+                return;
+            }
+
+            if (el_type == "dynamic" && USE_NEW_MODAL_OPEN.dynamic) {
+                console.log("----------OLD FEATURE DISABLED FOR DYNAMIC");
+                return;
+            }
+
+            if (el_type == "image" && USE_NEW_MODAL_OPEN.image) {
+                console.log("----------OLD FEATURE DISABLED FOR IMAGE");
+                return;
+            }
+
+            if (el_type == "choice" && USE_NEW_MODAL_OPEN.choice) {
+                console.log("----------OLD FEATURE DISABLED FOR CHOICE");
+                return;
+            }
+
+            if (el_type == "page" && USE_NEW_MODAL_OPEN.page) {
+                console.log("----------OLD FEATURE DISABLED FOR PAGE");
+                return;
+            }
+
+            if (el_type == "condition" && USE_NEW_MODAL_OPEN.condition) {
+                console.log("----------OLD FEATURE DISABLED FOR CONDITION");
+                return;
+            }
+
+            if (el_type == "event" && USE_NEW_MODAL_OPEN.event) {
+                console.log("----------OLD FEATURE DISABLED FOR EVENT");
+                return;
+            }
 
             let elData;
 
@@ -496,7 +739,7 @@ export function initModals() {
 
 
             const el_title = button.dataset.bsElementtitle;
-            const el_type = button.dataset.bsElementtype;
+
             // const el_value = button.dataset.bsElementvalue;
             // const newline = button.dataset.bsNewline;
             // const el_title = elData.title;
@@ -539,6 +782,7 @@ export function initModals() {
 
             switch (el_type) {
                 case 'text':
+                    console.log("----WE'RE USING THE OLD TEXT CODE!");
                     createConditionEditLink();
                     // if (modalInput) modalInput.value = el_value || '';
                     modalInput.value = btn_request === 'POST' ? `` : el_value;
@@ -654,15 +898,6 @@ export function initModals() {
     });
 
 
-    // --- IMAGE (regular & AI) ---
-    const uploadImageForm = document.getElementById('uploadFormModal');
-    if (uploadImageForm) uploadImageForm.addEventListener('submit', submitImage);
-
-    const uploadImageFormAI = document.getElementById('uploadImageFormModal_AI');
-    if (uploadImageFormAI) uploadImageFormAI.addEventListener('submit', submitImage);
-
-
-
     // --- EVENT ---
     const eventForm = document.getElementById('eventFormModal');
     if (eventForm) {
@@ -718,252 +953,4 @@ export function initModals() {
             });
         });
     }
-
-    // --- CHOICE ---
-    // const choiceForm = document.getElementById('choiceFormModal');
-    // if (choiceForm) {
-    //     choiceForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-
-    //         const fd = new FormData(choiceForm);
-    //         // const rawMethod = fd.get('choicerequest');
-    //         const method = getMethod(fd, 'choicerequest');
-    //         // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-    //         // Base fields
-    //         const uuid = fd.get('hiddenchoiceuuid');      // parent uuid to attach to
-    //         const storyUuid = fd.get('hiddenstoryuuid');
-    //         const section = fd.get('section');            // required on POST?
-    //         const label = (fd.get('modalchoiceInput') || '').toString();
-    //         const destination = fd.get('destinationModal');
-    //         const newline = getCheckboxValue(fd, 'choicenewline');
-    //         const eventCheckbox = (() => {
-    //             const z = fd.get('choicedispatchevent');
-    //             return z === 'on' || z === 'true' || z === '1';
-    //         })();
-    //         let newElements = [];
-
-    //         //special feature needed for event checkbox - if the box is checked, and no events currently exist
-    //         //we need to create an event and push it to the elements array
-    //         console.log(`--------EVENT CHECKBOX CHECKED? ${eventCheckbox}`);
-
-    //         function createOrUpdateChoice(destUUID) {
-    //             // Recompute the final "value" now that we know the true destination
-
-    //             const finalValue = `${label}||${destUUID}`;
-
-    //             const payload =
-    //                 method === 'POST'
-    //                     ? { uuid, section, type: 'choice', value: finalValue, newline, hasEvents: eventCheckbox }
-    //                     : { uuid, newDataObj: { value: finalValue, newline, hasEvents: eventCheckbox } };
-
-    //             console.log('---payload:', payload);
-
-    //             submitJsonToPageApi({ method, payload, toastId: '#myChoiceToast' });
-
-    //         }
-
-    //         if (destination === 'New') {
-    //             // Create the destination page first, then submit the choice with the new UUID
-    //             const justLabel = label; // the "choice" label only
-    //             console.log('---modal: creating new page first');
-    //             console.log(`-----CHOICE DISPATCH EVENT CHECKBOX: ${eventCheckbox}`);
-
-    //             $.ajax({
-    //                 url: `/page/newpage/${storyUuid}`,
-    //                 type: 'POST',
-    //                 // This endpoint previously worked with urlencoded; keep it simple
-    //                 data: { uuid: storyUuid, value: justLabel },
-    //                 success: function (data) {
-    //                     console.log('---modal: success creating new page');
-    //                     $('#myPageToast').toast?.('show');
-    //                     const newDest = data.newUUID;
-    //                     createOrUpdateChoice(newDest);              // <-- pass real UUID
-    //                 },
-    //                 error: function (xhr, status, err) {
-    //                     console.error('Create page error', status, err, xhr?.status, xhr?.responseText);
-    //                 },
-    //             });
-    //         } else if (destination === 'Event') {
-    //             createOrUpdateChoice('Event');
-    //             console.log('---creating a choice that triggers a placeholder event');
-    //         } else {
-    //             // Existing page UUID chosen in the dropdown
-    //             createOrUpdateChoice(destination);
-    //         }
-    //     });
-    // }
-
-    // --- TEXT ---
-    // const textForm = document.getElementById('textFormModal');
-    // if (textForm) {
-    //     textForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-
-    //         const fd = new FormData(textForm);
-    //         // const rawMethod = fd.get('textrequest');
-    //         const method = getMethod(fd, 'textrequest');
-    //         //const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-    //         // Normalize fields
-    //         const uuid = fd.get('uuid');
-    //         const section = fd.get('section');                // only used on POST
-    //         const value = (fd.get('modaltextInput') || '').toString();
-    //         const newline = getCheckboxValue(fd, 'textnewline');
-
-    //         console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
-
-    //         // Build a single payload shape the server expects
-    //         const payload =
-    //             method === 'POST'
-    //                 ? { uuid, section, type: 'text', value, newline }
-    //                 : { uuid, newDataObj: { value, newline } };
-
-    //         console.log(`----checking payload:`, payload);
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data: JSON.stringify(payload),
-    //             contentType: 'application/json; charset=UTF-8',
-    //             processData: false,
-    //             success: function (data) {
-    //                 console.log("----success with text!!");
-    //                 $('#myTextToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             error: function (xhr, status, err) {
-    //                 console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
-
-    // --- DYNAMIC ---
-    // const dynamicForm = document.getElementById('dynamicFormModal');
-    // if (dynamicForm) {
-    //     dynamicForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-
-    //         const fd = new FormData(dynamicForm);
-    //         // const rawMethod = fd.get('dynamicrequest');
-    //         const method = getMethod(fd, 'dynamicrequest');
-    //         // const method = rawMethod === 'PUT' ? 'PUT' : 'POST';
-
-    //         // Normalize fields
-    //         const uuid = fd.get('uuid');
-    //         const section = fd.get('section');                // only used on POST
-    //         const value = (fd.get('modaldynamicInput') || '').toString();
-    //         const newline = getCheckboxValue(fd, 'dynamicnewline');
-
-    //         console.log(`----checking fields: ${uuid}, ${section}, ${value}, ${newline}`);
-
-    //         // Build a single payload shape the server expects
-    //         const payload =
-    //             method === 'POST'
-    //                 ? { uuid, section, type: 'dynamic', value, newline }
-    //                 : { uuid, newDataObj: { value, newline } };
-
-    //         console.log(`----checking payload (method: ${method}):`, payload);
-
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data: JSON.stringify(payload),
-    //             contentType: 'application/json; charset=UTF-8',
-    //             processData: false,
-    //             success: function (data) {
-    //                 console.log("----success with dynamic!!");
-    //                 $('#myTextToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             error: function (xhr, status, err) {
-    //                 console.error('AJAX error', status, err, xhr?.status, xhr?.responseText);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
-
-    // --- CONDITION ---
-    // const conditionForm = document.getElementById('conditionFormModal');
-    // if (conditionForm) {
-    //     conditionForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(conditionForm);
-
-    //         const method = formData.get('conditionrequest') === 'POST' ? 'POST' : 'PUT';
-    //         const value = `${formData.get('modalconditionInput')}${formData.get('conditionComparisonModal')}${formData.get('modalconditionInput2')} `;
-    //         const and_or = formData.get('conditionAndOrGroup');
-    //         console.log("------SUBMIT CONDITION AND/OR: ", and_or);
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data:
-    //                 method === 'POST'
-    //                     ? {
-    //                         uuid: formData.get('hiddenconditionuuid'),
-    //                         section: formData.get('section'),
-    //                         type: 'condition',
-    //                         value,
-    //                         booloperator: "and"
-    //                     }
-    //                     : {
-    //                         uuid: formData.get('hiddenconditionuuid'),
-    //                         newDataObj: { value, booloperator: and_or },
-    //                     },
-    //             success: function (data) {
-    //                 $('#myConditionToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
-
-    // --- PAGE ---
-    // const pageForm = document.getElementById('pageFormModal');
-    // if (pageForm) {
-    //     pageForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(pageForm);
-    //         const method = formData.get('pagerequest') === 'POST' ? 'POST' : 'PUT';
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data:
-    //                 method === 'POST'
-    //                     ? {
-    //                         uuid: formData.get('uuid'),
-    //                         section: formData.get('section'),
-    //                         type: 'page',
-    //                         value: formData.get('modalpageInput'),
-    //                     }
-    //                     : {
-    //                         uuid: formData.get('uuid'),
-    //                         newDataObj: {
-    //                             title: formData.get('modalpageInput'),
-    //                             value: formData.get('modalpageInput'),
-    //                         },
-    //                     },
-    //             success: function (data) {
-    //                 if (method === 'POST') $('#myPageToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
 }

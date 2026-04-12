@@ -66,7 +66,8 @@
                                         <% } else if (item.type==='image' ) { %>
                                             <%- include('./listDisplayItems/display_image', {item: item}) %>
                                                 <% } else if (item.type==='choice' ) { %>
-                                                    <%- include('./listDisplayItems/display_choice', {item: item}) %>
+                                                    <%- include('./listDisplayItems/display_choice', {item: item,
+                                                        allPageUUIDs:allPageUUIDs}) %>
                                                         <% } else if (item.type==='event' ) { %>
                                                             <%- include('./listDisplayItems/display_event', {item:
                                                                 item}) %>

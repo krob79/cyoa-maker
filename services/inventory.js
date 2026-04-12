@@ -258,28 +258,28 @@ class Inventory extends EventEmitter {
             const amount = found?.entry?.amount ?? 0;
             switch (op) {
                 case '>':
-                    console.log(`-----CHECKING ${expr} ${amount > value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount > value} - ${amount}`);
                     return amount > value;
                     break;
                 case '>=':
-                    console.log(`-----CHECKING ${expr} ${amount >= value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount >= value} - ${amount}`);
                     return amount >= value;
                     break;
                 case '<':
-                    console.log(`-----CHECKING ${expr} ${amount < value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount < value} - ${amount}`);
                     return amount < value;
                     break;
                 case '<=':
-                    console.log(`-----CHECKING ${expr} ${amount <= value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount <= value} - ${amount}`);
                     return amount <= value;
                     break;
                 case '=':
                 case '==':
-                    console.log(`-----CHECKING ${expr} ${amount === value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount === value} - ${amount}`);
                     return amount === value;
                     break;
                 case '!=':
-                    console.log(`-----CHECKING ${expr} ${amount !== value} - ${amount}`);
+                    // console.log(`-----CHECKING ${expr} ${amount !== value} - ${amount}`);
                     return amount !== value;
                     break;
                 default: return false;

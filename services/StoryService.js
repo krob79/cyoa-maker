@@ -266,8 +266,8 @@ class StoryService {
 
 
     console.log(`-----calling updateDataByUUID()`);
-    console.log(`----received newDataObj`);
-    console.log(newDataObj);
+    // console.log(`----received newDataObj`);
+    // console.log(newDataObj);
 
 
     const updated = updateData(data, uuid, newDataObj);
@@ -290,7 +290,7 @@ class StoryService {
         //if (obj.type == "choice" && newData.value.split("||")[1] == "Event") {
         if (obj.type == "choice") {
           if (newDataObj.hasEvents) {
-            console.log("---SERVICE CHECKING CHOICE AND HASEVENTS - TRUE");
+            //console.log("---SERVICE CHECKING CHOICE AND HASEVENTS - TRUE");
             //if no events are found, we need to add a placeholder event to avoid accidentally creating broken links
             if (obj.elements.filter(el => el.type == 'event').length == 0) {
 

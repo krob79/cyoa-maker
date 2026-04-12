@@ -1,6 +1,6 @@
 // console.log("----utils.js");
 export function findUuidInURL() {
-    // console.log("----finding UUID in URL:");
+    //console.log("----finding UUID in URL:");
     const currentUrl = window.location.href;
     const regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gm;
     const str = window.location.href;
@@ -18,7 +18,7 @@ export function findUuidInURL() {
         // we only ever want the first, because that's the ID of the element we're editing
         // so we're pushing all results into an array and making sure we're always returning the first match
         m.forEach((match, groupIndex) => {
-            // console.log(`Found match, group ${groupIndex}: ${match}`);
+            //console.log(`Found match, ${match}`);
             result.push(match);
         });
     }

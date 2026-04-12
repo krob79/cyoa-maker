@@ -5,7 +5,7 @@ import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './dele
 import { elementSchemas } from '../forms/elementSchemas.js';
 import { renderForm } from '../forms/formRenderer.js';
 
-// console.log("----render.js");
+console.log("----render.js");
 
 let allPageUUIDs = [];
 // cache the template text so we fetch once
@@ -161,20 +161,46 @@ async function getEntryTemplate() {
     const res = await fetch('/templates/entry.ejs');
     console.log("----LOADING EJS TEMPLATE: ", res);
     ENTRY_TPL_TEXT = await res.text();
+    console.log("----HERE'S THE ENTRY_TPL_TEXT: " + ENTRY_TPL_TEXT);
   }
   return ENTRY_TPL_TEXT;
 }
 
 //for using the EJS template in CSR and SSR
 //keep assembleEntry function as a fallback in case the loading of EJS entry doesn't work
-async function renderEntries(items) {
+// async function renderEntries(items) {
+//   try {
+//     const tpl = await getEntryTemplate();
+//     return items.map(item => {
+//       return ejs.render(tpl, { item, storyuuid });
+//     }).join('');
+
+//     console.log("---EJS Template imported successfully!");
+//   } catch {
+//     // fallback to JS builder
+//     console.log("---EJS Template failed to import!");
+//     return items.map(item => assembleEntry(item)).join('');
+//   }
+// }
+
+async function renderEntries(items, storyuuid) {
   try {
-    const tpl = await getEntryTemplate();
-    return items.map(item => ejs.render(tpl, { item })).join('');
-    console.log("---EJS Template imported successfully!");
-  } catch {
-    // fallback to JS builder
-    console.log("---EJS Template failed to import!");
+    const res = await fetch('/page/render-entries', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: JSON.stringify({ items, storyuuid })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Render request failed: ${res.status}`);
+    }
+
+    const result = await res.json();
+    return result.html;
+  } catch (err) {
+    console.log('---Server-side entry render failed!', err);
     return items.map(item => assembleEntry(item)).join('');
   }
 }
@@ -256,6 +282,7 @@ export async function updateDisplay(data) {
   console.log("----UPDATE DISPLAY - HERE'S CURRENT DATA:");
   console.log(data);
   allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
+  let storyUuid = data.pageData[0].uuid;
 
   // console.log("---updateDisplay - allPageUUIDs? ", allPageUUIDs);
   $('.toast').toast();
@@ -271,8 +298,8 @@ export async function updateDisplay(data) {
     $('#uploadForm').trigger('reset');
 
     let uuidInURL = findUuidInURL();
-    // console.log("---what's the data looking like?");
-    // console.log(data);
+    //console.log("---what's the uuid looking like?");
+    //console.log(uuidInURL);
     let page;
     //grab uuid from URL and use that to load in and display data
     if (uuidInURL) {
@@ -289,7 +316,7 @@ export async function updateDisplay(data) {
     }
 
     //new version using EJS template
-    const html = await renderEntries(page);
+    const html = await renderEntries(page, storyUuid);
     document.querySelector('.feedback-items').innerHTML = html;
 
   } else {
@@ -377,7 +404,7 @@ function outputHtmlForElement(item) {
 //only used if external entry.ejs file can't be loaded
 //so...is there a point to this if it basically does what I'm trying to avoid doing, which is have two separate block of code that build the same list items?
 function assembleEntry(item) {
-  // console.log("-----assemble NEW ENTRY!!!");
+  console.log("-----assemble NEW ENTRY!!!");
   const isPage = item.type === 'page';
 
   // DELETE button: type='page' uses the confirmation modal; other types delete immediately
@@ -411,6 +438,7 @@ function assembleEntry(item) {
             data-bs-newline="${item.newline}"
             data-bs-elementtype="${item.type}"
             data-bs-elementuuid="${item.uuid}"
+            data-bs-storyuuid="${item.storyUuid}"
             data-bs-elementvalue="${item.value || ''}"
             data-bs-target="#${item.type}UpdateModal">
       <svg xmlns="http://www.w3.org/2000/svg" name="editIcon" width="24" height="24" viewBox="0 -960 960 960">

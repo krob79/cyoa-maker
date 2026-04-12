@@ -6,13 +6,13 @@
                 <strong><a class="pageLink userevent" data-uuid="<%= item.uuid %>" href="javascript:void(0)">
                         <%= label %>
                     </a></strong>
-                <%}else{%>
+                <%}else {%>
                     <strong><a class="pageLink choiceLink" data-uuid="<%= item.uuid %>" href="/page/<%= dest %>/edit">
-                            <%= label %>
+                            <%= label %> (<%= dest %>)
                         </a></strong>
                     <%}%>
                         <% } else { %>
                             <a class="pageLink">
-                                <%= label %>
+                                <%= label %> (PAGE LINK)
                             </a>
                             <% } %>
