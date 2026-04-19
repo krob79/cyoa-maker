@@ -11,7 +11,7 @@
       },
       {
         "name": "porchstick",
-        "amount": 0,
+        "amount": 1,
         "meta": {
           "createdAt": "2026-03-01T19:14:25.657Z"
         }
@@ -67,9 +67,16 @@
       },
       {
         "name": "apples",
-        "amount": 3,
+        "amount": 9,
         "meta": {
           "createdAt": "2026-04-11T20:39:43.616Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-79e4b",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-04-12T20:08:53.290Z"
         }
       }
     ],

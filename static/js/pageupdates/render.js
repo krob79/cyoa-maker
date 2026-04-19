@@ -272,7 +272,7 @@ export async function updateDisplay(data) {
     let uuidInURL = findUuidInURL();
     //console.log("---what's the uuid looking like?");
     //console.log(uuidInURL);
-    let page;
+    let pageItems;
     //grab uuid from URL and use that to load in and display data
     if (uuidInURL) {
       await fetch(`/page/${uuidInURL}`)
@@ -280,7 +280,7 @@ export async function updateDisplay(data) {
         .then(data => {
           // console.log("-----update displays testfetch: ");
           // console.log(data.elements);
-          page = data.elements;
+          pageItems = data.elements;
         })
 
     } else {
@@ -288,7 +288,7 @@ export async function updateDisplay(data) {
     }
 
     //new version using EJS template
-    const html = await renderEntries(page, storyUuid, allPageUUIDs);
+    const html = await renderEntries(pageItems, storyUuid, allPageUUIDs);
     document.querySelector('.feedback-items').innerHTML = html;
 
   } else {

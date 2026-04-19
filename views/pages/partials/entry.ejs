@@ -49,8 +49,10 @@
                     <div class="feedback-head">
                         <div class="feedback-title">
                             <% if (item.type==='page' ) { %>
-                                <%= item.value %>
-                                    <% } %>
+                                <a class="pageLink" href="/page/<%= item.uuid %>/edit">
+                                    <%= item.value %>
+                                </a>
+                                <% } %>
                         </div>
                         <!-- If this is a "page", display the tiny icons, plus count of text, images, and choices -->
                         <% if (item.type==='page' && item.elements) { %>

@@ -77,6 +77,68 @@ export default (params) => {
 
     }
 
+    const processPageElement = (storyuuid, query, elements) => {
+        console.log(`---running processPageElement()`);
+        //console.log(pageData);
+        let pageListItems = elements.map(el => {
+            //default true value, because there may be no conditions applied
+            el.storyUuid = storyuuid;
+            el.highlighted = false;
+            el.isVisible = true;
+            el.opacity = "1";
+
+            // console.log(`---processed element: ${el.storyUuid}`);
+
+            // console.log(`---compare ${typeof el.uuid} with ${typeof query}`);
+            if (el.uuid === query) {
+                // console.log("---found query!");
+                el.highlighted = true;
+            }
+            //checking if these elements are the type which would have conditions
+
+            //checking if these elements are the type which would have conditions
+            if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
+
+                //filter all conditions
+                let conditions = el.elements.filter((e) => {
+                    return e.type == "condition";
+                })
+                if (conditions.length > 0) {
+                    // console.log(`---CONDITIONS FOUND ON ${el.type}`);
+                    //console.log(conditions);
+                    el.isVisible = resolveGroups(conditions);
+                }
+
+                if (el.type == "dynamic") {
+                    // console.log("----dynamic element found!");
+                    el.dynamic = inventory.grabValue(el.value);
+                }
+            }
+
+            if (el.type == "condition") {
+                if (el.booloperator == "or") {
+                    currGroupIndex++;
+                    // console.log("adding to group index");
+                }
+                el["groupName"] = `g${currGroupIndex}`;
+
+                // console.log(`----CONDITION: ${el.title} BOOL:${el.booloperator} GROUP: ${el.groupName}`);
+
+            }
+            //if type is event, parse the string value and dispatch any auto events
+            if (el.type == "event") {
+                let evtType = el.value.split("_")[0];
+                if (evtType == "auto") {
+                    inventory.parseEventCommand(el.value);
+                }
+            }
+            return el;
+
+        });
+        //console.log(pageListItems);
+        return pageListItems;
+    }
+
     router.get('/', async (request, response, next) => {
         return response.redirect('/page/b69d00be-744f-465c-bb90-c2a3a938ce20/edit');
 
@@ -135,63 +197,13 @@ export default (params) => {
             //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
 
-
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
 
             let currGroupIndex = 0;
 
-            let pageListItems = pageData.elements.map(el => {
-                //default true value, because there may be no conditions applied
-                el.storyUuid = story.uuid;
-                el.highlighted = false;
-                el.isVisible = true;
-                el.opacity = "1";
-                // console.log(`---compare ${typeof el.uuid} with ${typeof query}`);
-                if (el.uuid === query) {
-                    // console.log("---found query!");
-                    el.highlighted = true;
-                }
-                //checking if these elements are the type which would have conditions
-                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
-
-                    //filter all conditions
-                    let conditions = el.elements.filter((e) => {
-                        return e.type == "condition";
-                    })
-                    if (conditions.length > 0) {
-                        // console.log(`---CONDITIONS FOUND ON ${el.type}`);
-                        //console.log(conditions);
-                        el.isVisible = resolveGroups(conditions);
-                    }
-
-                    if (el.type == "dynamic") {
-                        // console.log("----dynamic element found!");
-                        el.dynamic = inventory.grabValue(el.value);
-                    }
-                }
-
-                if (el.type == "condition") {
-                    if (el.booloperator == "or") {
-                        currGroupIndex++;
-                        // console.log("adding to group index");
-                    }
-                    el["groupName"] = `g${currGroupIndex}`;
-
-                    // console.log(`----CONDITION: ${el.title} BOOL:${el.booloperator} GROUP: ${el.groupName}`);
-
-                }
-                //if type is event, parse the string value and dispatch any auto events
-                if (el.type == "event") {
-                    let evtType = el.value.split("_")[0];
-                    if (evtType == "auto") {
-                        inventory.parseEventCommand(el.value);
-                    }
-                }
-                return el;
-            });
-
+            let pageListItems = processPageElement(story.uuid, query, pageData.elements);
 
             return response.render('layout', { pageTitle: "Editor Mode", template: 'listDisplay', story, pages, events, allPageUUIDs, pageData, pageListItems, errors, successMessage, query });
         } catch (err) {
@@ -233,76 +245,32 @@ export default (params) => {
 
             //Get list items for this specific UUID
             const pageData = await storyService.getDataByUUID({ uuid: request.params.uuid });
-
+            const query = request.query.q;
 
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
 
-            let pageListItems = pageData.elements.map(el => {
-                // console.log(`---what type is this element? ${el.type}`);
-                //default true value, because there may be no conditions applied
-                el.isVisible = true;
-                el.opacity = "1";
-                //checking if these elements are the type which would have conditions
-                if (el.type == "text" || el.type == "image" || el.type == "choice" || el.type == "event" || el.type == "dynamic") {
-
-                    //filter all conditions
-                    let conditions = el.elements.filter((e) => {
-                        return e.type == "condition";
-                    })
-                    if (conditions.length > 0) {
-                        // console.log(`---CONDITIONS FOUND ON ${el.type}`);
-                        //console.log(conditions);
-                        el.isVisible = resolveGroups(conditions);
-                    }
-
-                    if (el.type == "dynamic") {
-                        // console.log("----dynamic element found!");
-                        el.dynamic = inventory.grabValue(el.value);
-                    }
-                }
-                //if type is event, parse the string value and dispatch any auto events
-                if (el.type == "event") {
-                    // console.log("---event detected on view: ", el.value);
-                    let evtType = el.value.split("_")[0];
-                    if (evtType == "auto") {
-                        inventory.parseEventCommand(el.value);
-                    }
-                }
-                return el;
-            });
-
-
+            let pageListItems = processPageElement(story.uuid, query, pageData.elements);
 
             //{evtname:'modalevent', detail: {title:`New Item Added: ${item.title}`,desc:`${item.desc}`,image:`item-${item.id}.png`}}
             // content.dispatchEvent(new CustomEvent({ evtname: 'modalevent', detail: { title: `New Item Added: ${'Some Stick'}`, desc: `${'It\'s just a crazy stick...'}`, image: `item-stick.png` } }));
 
-
-            let listPartialToUse;
-            //TO DO: Find a more elegant way of doing this - do a better job of linking the type of the element to the partial
-            //Based on what type of object we are looking at, we will need the right partial to display the data
-            switch (pageData.type) {
-                case "story":
-                    listPartialToUse = "pagePartial"; //used for displaying pages as list items
-                    break;
-                case "page":
-                    listPartialToUse = "elementPartial"; //used for displaying page elements as list items
-                    break;
-                default:
-                    listPartialToUse = "conditionPartial"; //used for displaying conditions of an element as list items
-                    break;
-            }
-
-            return response.render('final', { pageTitle: "View Mode", template: 'storyPage', story, pages, allPageUUIDs, pageData, pageListItems, listPartialToUse, errors, successMessage });
+            return response.render('final', { pageTitle: "View Mode", template: 'storyPage', story, pages, allPageUUIDs, pageData, pageListItems, errors, successMessage });
         } catch (err) {
             return next(err);
         }
     });
 
     router.post('/render-entries', async (req, res, next) => {
-        //console.log("-----HITTING RENDER ENTRY ROUTE");
-        //console.log(req.body);
+        console.log("-----HITTING RENDER ENTRY ROUTE");
+        console.log(req.body.items);
+
+        const query = req.query.q;
+
+        if (query) {
+            console.log("---query: ", query);
+        }
 
         try {
             const { items, storyuuid, allPageUUIDs } = req.body;
@@ -310,8 +278,13 @@ export default (params) => {
             if (!Array.isArray(items)) {
                 return res.status(400).json({ error: 'items must be an array' });
             }
+            //(story, query, elements)
+            let processedItems = processPageElement(storyuuid, query, items);
 
-            res.render('pages/partials/entryList', { items, storyuuid, allPageUUIDs }, (err, html) => {
+            console.log("---PROCESSED ITEMS:");
+            console.log(processedItems);
+
+            res.render('pages/partials/entryList', { items: processedItems, storyuuid, allPageUUIDs }, (err, html) => {
                 if (err) {
                     console.error(err);
                     return next(err);
