@@ -80,6 +80,7 @@ export default (params) => {
     const processPageElement = (storyuuid, query, elements) => {
         console.log(`---running processPageElement()`);
         //console.log(pageData);
+        let currGroupIndex = 0;
         let pageListItems = elements.map(el => {
             //default true value, because there may be no conditions applied
             el.storyUuid = storyuuid;
@@ -200,8 +201,6 @@ export default (params) => {
             const errors = request.session.pageData ? request.session.pageData.errors : false;
             const successMessage = request.session.pageData ? request.session.pageData.message : false;
             request.session.pageData = {};
-
-            let currGroupIndex = 0;
 
             let pageListItems = processPageElement(story.uuid, query, pageData.elements);
 
