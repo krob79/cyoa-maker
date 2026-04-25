@@ -249,14 +249,36 @@ export async function reorderElements({ from, to }) {
 
 }
 
+function generateMenuOptions(data) {
+  console.log(":::MENU OPTIONS:::");
+  let menu = document.getElementById("choiceDestinationModal");
+  menu.options.length = 0; //clear the dropdown's options
+  let options = data.pageData[0].elements.map(p => {
+    return { label: p.value, uuid: p.uuid };
+  });
+  console.log(options);
+  options.forEach(option => {
+    const newOption = document.createElement('option');
+    //option.label = the label, option.uuid = the actual value
+    newOption.textContent = option.label;
+    newOption.value = option.uuid;
+    console.log()
+    menu.appendChild(newOption);
+  })
+}
+
 export async function updateDisplay(data) {
   console.log("----UPDATE DISPLAY - HERE'S CURRENT DATA:");
   console.log(data);
   allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
   let storyUuid = data.pageData[0].uuid;
 
-  // console.log("---updateDisplay - allPageUUIDs? ");
+  generateMenuOptions(data);
+  // console.log("---ALL PAGES:");
   // console.log(allPageUUIDs);
+
+  console.log("---updateDisplay - allPageUUIDs? ");
+  console.log(allPageUUIDs);
   $('.toast').toast();
   const render = [];
   let assembledHTML = "";

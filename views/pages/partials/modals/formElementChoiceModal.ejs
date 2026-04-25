@@ -9,7 +9,7 @@
                 <input type="hidden" name="hiddenstoryuuid" id="hiddenstoryuuid" value="<%=uuid %>">
                 <input type="hidden" name="hiddenchoiceuuid" id="hiddenchoiceuuid" value="<%=uuid %>">
                 <input type="hidden" name="section" value="elements">
-                <input type="hidden" id="destinationModal" name="destinationModal" value="New">
+                <input type="hidden" id="destinationModal" name="destinationModal" value="">
                 <input type="hidden" id="choicerequest" name="choicerequest" value="">
                 <div class="row">
 
@@ -36,7 +36,8 @@
                         </select>
                         <div class="col"><input type="checkbox" id="choicedispatchevent" name="choicedispatchevent">
                             <label for="choicedispatchevent" class="form-label">Trigger
-                                Event On Click</label></div>
+                                Event On Click</label>
+                        </div>
 
                     </div>
                     <div class="col-md-12"><input type="checkbox" id="choicenewline" name="choicenewline"> <label
@@ -80,18 +81,15 @@
                 // console.log("---choice display!")
                 destinationModal.value = display;
             } else {
+                console.log("----NO DISPLAY FROM MENU ");
                 destinationModal.value = dropdown.value
             }
 
-            // console.log("calling changeChoiceDestinationModal() ", dropdown.value);
+            console.log("calling changeChoiceDestinationModal() ", dropdown.value);
 
-            // console.log(choiceDropdown);
-            // if (destination.value == "Choose Page") {
-            //   document.getElementById("choiceElementSubmit").disabled = true;
-            // } else {
-            //   document.getElementById("choiceElementSubmit").disabled = false;
-            // }
         }
-
+        // setTimeout(() => {
+        //     changeChoiceDestinationModal("Create New Page");
+        // }, 2000);
         changeChoiceDestinationModal("Create New Page");
     </script>

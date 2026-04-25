@@ -265,7 +265,7 @@ class StoryService {
     const data = (await this.getData()) || [];
 
 
-    console.log(`-----calling updateDataByUUID()`);
+    // console.log(`-----calling updateDataByUUID()`);
     // console.log(`----received newDataObj`);
     // console.log(newDataObj);
 
@@ -344,7 +344,7 @@ class StoryService {
   }
 
   async getDataByUUID({ uuid }) {
-    console.log(`---getDataByUUID() - searching for ${uuid}`);
+    //console.log(`---getDataByUUID() - searching for ${uuid}`);
 
     const obj = (await this.getData()) || [];
     //console.log("---initial obj: ");

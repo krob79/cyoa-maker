@@ -131,7 +131,7 @@ function getMethod(fd, requestField) {
 function setValue(modal, selector, value) {
     const el = modal.querySelector(selector);
     if (el) el.value = value ?? '';
-    console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
+    //console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
 }
 
 function setChecked(modal, selector, checked) {
@@ -356,6 +356,7 @@ const modalOpenConfigs = {
     },
     choice: {
         modalId: 'choiceUpdateModal',
+        dropdown: 'choiceDestinationModal',
 
         reset({ modal }) {
             setValue(modal, '[name="hiddenchoiceuuid"]', '');
@@ -382,7 +383,7 @@ const modalOpenConfigs = {
 
             const rawValue = data.value || '';
             const [label, destination] = rawValue.split('||');
-            console.log(`---choice destination: ${data.hasEvents}`);
+            console.log(`---choice raw value: ${rawValue} - destination: ${destination}`);
 
             setValue(modal, '[name="modalchoiceInput"]', label || '');
             setValue(modal, '[name="destinationModal"]', destination || '');
@@ -501,7 +502,7 @@ const modalConfigs = {
             const storyUuid = fd.get('hiddenstoryuuid');
             const section = fd.get('section');
             const label = (fd.get('modalchoiceInput') || '').toString();
-            const destination = fd.get('destinationModal');
+            const destination = fd.get('destinationModal') || "New";
             const newline = getCheckboxValue(fd, 'choicenewline');
             const hasEvents = getCheckboxValue(fd, 'choicedispatchevent');
 
@@ -534,7 +535,7 @@ const modalConfigs = {
                     modalSelector: '.elementModal',
                 });
             };
-
+            console.log(`----DESTINATION? ${destination}`);
             if (destination === 'New') {
                 console.log(`---creating NEW DESTINATION with story id: ${storyUuid}!!!`);
                 submitUrlEncoded({

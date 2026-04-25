@@ -263,7 +263,7 @@ export default (params) => {
 
     router.post('/render-entries', async (req, res, next) => {
         console.log("-----HITTING RENDER ENTRY ROUTE");
-        console.log(req.body.items);
+        //console.log(req.body.items);
 
         const query = req.query.q;
 
@@ -280,8 +280,8 @@ export default (params) => {
             //(story, query, elements)
             let processedItems = processPageElement(storyuuid, query, items);
 
-            console.log("---PROCESSED ITEMS:");
-            console.log(processedItems);
+            //console.log("---PROCESSED ITEMS:");
+            //console.log(processedItems);
 
             res.render('pages/partials/entryList', { items: processedItems, storyuuid, allPageUUIDs }, (err, html) => {
                 if (err) {
