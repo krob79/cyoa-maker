@@ -202,6 +202,11 @@ p.pageText {
   height: 35px;
 }
 
+.editElement.editTitle {
+  position: absolute;
+  left: 90%;
+}
+
 .successToast {
   color: #155724;
   background-color: #d4edda;

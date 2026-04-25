@@ -249,20 +249,18 @@ export async function reorderElements({ from, to }) {
 
 }
 
+//for making sure the choice display element is refreshed with the most current list of page UUIDs
 function generateMenuOptions(data) {
-  console.log(":::MENU OPTIONS:::");
   let menu = document.getElementById("choiceDestinationModal");
   menu.options.length = 0; //clear the dropdown's options
   let options = data.pageData[0].elements.map(p => {
     return { label: p.value, uuid: p.uuid };
   });
-  console.log(options);
   options.forEach(option => {
     const newOption = document.createElement('option');
     //option.label = the label, option.uuid = the actual value
     newOption.textContent = option.label;
     newOption.value = option.uuid;
-    console.log()
     menu.appendChild(newOption);
   })
 }
@@ -295,13 +293,15 @@ export async function updateDisplay(data) {
     //console.log("---what's the uuid looking like?");
     //console.log(uuidInURL);
     let pageItems;
+    let pageHeader;
     //grab uuid from URL and use that to load in and display data
     if (uuidInURL) {
       await fetch(`/page/${uuidInURL}`)
         .then(response => response.json())
         .then(data => {
-          // console.log("-----update displays testfetch: ");
-          // console.log(data.elements);
+          console.log("-----update displays testfetch: ");
+          console.log(data);
+          pageHeader = data.title;
           pageItems = data.elements;
         })
 
@@ -309,6 +309,8 @@ export async function updateDisplay(data) {
       console.log("-----ERROR: NO UUID FOUND IN URL!!!");
     }
 
+    const pageTitle = Array.from(document.getElementsByClassName("pageTitle"))[0];
+    pageTitle.textContent = pageHeader;
     //new version using EJS template
     const html = await renderEntries(pageItems, storyUuid, allPageUUIDs);
     document.querySelector('.feedback-items').innerHTML = html;

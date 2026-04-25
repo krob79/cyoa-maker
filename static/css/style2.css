@@ -189,6 +189,11 @@ font-size: 1em; */
   height: 35px;
 }
 
+.editElement.editTitle {
+  background-color: red;color: red;
+  display: none;
+}
+
 .successToast {
   color: #155724;
   background-color: #d4edda;

@@ -155,7 +155,7 @@ function hideEl(modal, selector) {
 }
 
 function getTriggerData(event) {
-    console.log("---getting trigger data");
+    //console.log("---getting trigger data");
     return event.relatedTarget?.dataset || {};
 }
 
@@ -250,7 +250,7 @@ async function bindConfiguredModalOpen(config) {
         console.log("----MODAL OPEN");
         const buttondata = getTriggerData(event);
         let data;
-        console.log(`----Getting UUID from button: ${buttondata.bsElementuuid}`);
+        //console.log(`----Getting UUID from button: ${buttondata.bsElementuuid}`);
         try {
             // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
             data = await getCurrentDataOnElement(buttondata.bsElementuuid);
