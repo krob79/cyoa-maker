@@ -134,6 +134,12 @@ function setValue(modal, selector, value) {
     //console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
 }
 
+function setAttribute(modal, selector, attr, value) {
+    const el = modal.querySelector(selector);
+    if (el) el.setAttribute(attr, value ?? '');
+    console.log(`---SETTING ATTRIBUTE of ${selector} ${attr}... ${value}`);
+}
+
 function setChecked(modal, selector, checked) {
     const el = modal.querySelector(selector);
     if (el) el.checked = !!checked;
@@ -157,6 +163,22 @@ function hideEl(modal, selector) {
 function getTriggerData(event) {
     //console.log("---getting trigger data");
     return event.relatedTarget?.dataset || {};
+}
+
+// helper for the "Set Conditions" link
+function createConditionEditLink(data) {
+    console.log(`---NEW CREATE CONDITION!! ${data.type}`);
+    const conditionsLink = document.getElementById(`modal${data.type}Conditions`);
+    const uuidinput = document.getElementById(`hidden${data.type}uuid`);
+
+    if (conditionsLink && data.request == 'PUT') {
+        conditionsLink.style.display = "block";
+        conditionsLink.setAttribute('href', `/page/${data.uuid}/edit`);
+        conditionsLink.textContent = `Set Conditions for this ${data.type} >`;
+    } else {
+        console.log("----THIS IS A POST NOT A PUT!! NO CONDITIONS EXIST YET");
+        conditionsLink.style.display = "none";
+    }
 }
 
 
@@ -250,14 +272,19 @@ async function bindConfiguredModalOpen(config) {
         console.log("----MODAL OPEN");
         const buttondata = getTriggerData(event);
         let data;
-        //console.log(`----Getting UUID from button: ${buttondata.bsElementuuid}`);
+        console.log(`----Getting UUID from button:`);
+        console.log(buttondata);
         try {
             // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
+            //if this is existing content (PUT, not POST), then using the data object as-is will be fine
+            //but if the request is POST, nothing exists yet, including the type, meaning thr
+            //createConditionEditLink function will pull in the incorrect data
             data = await getCurrentDataOnElement(buttondata.bsElementuuid);
             data['request'] = buttondata.bsRequest;
             data['storyUuid'] = buttondata.bsStoryuuid;
             data['section'] = 'elements'; //eventually, should we do away with this? all sections will be 'elements'?
             console.log("---Here's some data about the element!!! ", data);
+            createConditionEditLink(data);
         } catch (e) {
             console.log("----error: ", e);
         }
@@ -303,7 +330,7 @@ const modalOpenConfigs = {
     text: {
         modalId: 'textUpdateModal',
 
-        reset({ modal }) {
+        reset({ modal, data }) {
             console.log("---RESET FOR TEXT");
             setValue(modal, '[name="uuid"]', '');
             setValue(modal, '[name="section"]', '');
@@ -319,9 +346,10 @@ const modalOpenConfigs = {
             setValue(modal, '[name="uuid"]', data.uuid);
             setValue(modal, '[name="section"]', data.section);
 
+
             if (isEdit) {
                 setValue(modal, '[name="modaltextInput"]', data.value);
-                setChecked(modal, '[name="textnewline"]', data.newline === 'true');
+                setChecked(modal, '[name="textnewline"]', data.newline === true);
                 setValue(modal, '[name="textrequest"]', 'PUT');
             } else {
                 setValue(modal, '[name="textrequest"]', 'POST');
@@ -358,12 +386,13 @@ const modalOpenConfigs = {
         modalId: 'choiceUpdateModal',
         dropdown: 'choiceDestinationModal',
 
-        reset({ modal }) {
+        reset({ modal, data }) {
             setValue(modal, '[name="hiddenchoiceuuid"]', '');
             setValue(modal, '[name="hiddenstoryuuid"]', '');
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modalchoiceInput"]', '');
             setValue(modal, '[name="destinationModal"]', '');
+            setValue(modal, '[name="choicedestinationModal"]', "New");
             setChecked(modal, '[name="choicenewline"]', false);
             setChecked(modal, '[name="choicedispatchevent"]', false);
             setValue(modal, '[name="choicerequest"]', 'POST');
@@ -459,6 +488,33 @@ const modalConfigs = {
                         : {
                             uuid: fd.get('hiddenconditionuuid'),
                             newDataObj: { value, booloperator },
+                        },
+            };
+        },
+    },
+
+    event: {
+        formId: 'eventFormModal',
+        toastId: '#myEventToast',
+        buildPayload(fd) {
+            const method = getMethod(fd, 'eventrequest');
+            const value = `${fd.get('modaleventInput')}${fd.get('eventComparisonModal')}${fd.get('modaleventInput2')}`;
+            const evtComparison = fd.get('eventComparisonModal');
+            const displayevent = fd.get('choicedisplayevent');
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? {
+                            uuid: fd.get('hiddeneventuuid'),
+                            section: fd.get('section'),
+                            type: 'event',
+                            value,
+                        }
+                        : {
+                            uuid: fd.get('hiddeneventuuid'),
+                            newDataObj: { value, evtComparison },
                         },
             };
         },
@@ -682,14 +738,38 @@ export function initModals() {
         });
     });
 
+
+
     // --- Element modals (text/image/choice/page/condition/event) ---
     // code that fires when a modal is opened
     document.querySelectorAll('.elementModal').forEach((modal) => {
         modal.addEventListener('show.bs.modal', async (event) => {
             const button = event.relatedTarget;
 
+            let elData;
+
+            //pull existing data from element to use for various inputs in modal display
+            //want to eventually get all necessary data this way instead of using button.dataset for everything - not sustainable!
+            try {
+                // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
+                elData = await getCurrentDataOnElement(button.dataset.bsElementuuid);
+                console.log("---Here's some data about the element!!! ", elData);
+            } catch (e) {
+                console.log("----error: ", e);
+            }
+
+            const el_title = button.dataset.bsElementtitle;
+            //const el_value = button.dataset.bsElementvalue;
+            //const newline = button.dataset.bsNewline;
+            //const el_type = button.dataset.bsElementtype;
+            //const el_title = elData.title;
+            const el_type = elData.type;
+            const el_value = elData.value;
+            const newline = elData.newline;
+            const el_subtype = button.dataset.bsElementsubtype;
+
             if (!button) return;
-            const el_type = button.dataset.bsElementtype;
+
 
             if (el_type == "text" && USE_NEW_MODAL_OPEN.text) {
                 console.log("----------OLD FEATURE DISABLED FOR TEXT");
@@ -726,39 +806,16 @@ export function initModals() {
                 return;
             }
 
-            let elData;
-
-            //pull existing data from element to use for various inputs in modal display
-            //want to eventually get all necessary data this way instead of using button.dataset for everything - not sustainable!
-            try {
-                // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
-                elData = await getCurrentDataOnElement(button.dataset.bsElementuuid);
-                console.log("---Here's some data about the element!!! ", elData);
-            } catch (e) {
-                console.log("----error: ", e);
-            }
-
-
-            const el_title = button.dataset.bsElementtitle;
-
-            // const el_value = button.dataset.bsElementvalue;
-            // const newline = button.dataset.bsNewline;
-            // const el_title = elData.title;
-            // const el_type = elData.type;
-            const el_value = elData.value;
-            const newline = elData.newline;
-            const el_subtype = button.dataset.bsElementsubtype;
-
             const modalInput = document.getElementById(`modal${el_type}Input`);
             const modalTitle = document.getElementById(`modal${el_type}Label`);
             const modalnewlinecheckbox = document.getElementById(`${el_type}newline`);
             const uuidinput = document.getElementById(`hidden${el_type}uuid`);
 
             try {
-                console.log("---newline? ", newline);
+                //console.log("---newline? ", newline);
                 modalnewlinecheckbox.checked = newline;
             } catch (e) {
-                console.log("---error: No newline checkbox found");
+                console.log("---No newline checkbox found");
             }
 
 
@@ -768,18 +825,7 @@ export function initModals() {
             const btn_request = button.dataset.bsRequest || 'PUT';
 
             if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
-
-            // helper for the "Set Conditions" link
-            function createConditionEditLink() {
-                const conditionsLink = document.getElementById(`modal${el_type}Conditions`);
-                if (conditionsLink && uuidinput?.value && btn_request == 'PUT') {
-                    conditionsLink.style.display = "block";
-                    conditionsLink.setAttribute('href', `/page/${uuidinput.value}/edit`);
-                    conditionsLink.textContent = `Set Conditions for this ${el_type} >`;
-                } else {
-                    conditionsLink.style.display = "none";
-                }
-            }
+            console.log(`----what is UUID INPUT? ${uuidinput}`);
 
             switch (el_type) {
                 case 'text':
@@ -857,6 +903,7 @@ export function initModals() {
                 case 'event': {
                     createConditionEditLink();
                     let [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
+                    console.log(`eType: ${eType}, p: ${p}, o: ${o}, v: ${v}`);
                     if (el_subtype) {
                         console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
                         eType = el_subtype;

@@ -2,8 +2,9 @@ import { findUuidInURL } from './utils.js';
 import { alertItem } from './custommodal.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
 
-import { elementSchemas } from '../forms/elementSchemas.js';
-import { renderForm } from '../forms/formRenderer.js';
+//DEV NOTE: It's been a while since we looked at this - important that we review what is going on here
+// import { elementSchemas } from '../forms/elementSchemas.js';
+// import { renderForm } from '../forms/formRenderer.js';
 
 console.log("----render.js");
 
@@ -51,19 +52,19 @@ function initializeUserEventLinks() {
   })
 }
 
-function initializeNewElementButtons() {
-  let btns = Array.from(document.querySelectorAll('.universalForm'));
-  let form = document.getElementById("universalFormModal");
-  btns.forEach((el) => {
+// function initializeNewElementButtons() {
+//   let btns = Array.from(document.querySelectorAll('.universalForm'));
+//   let form = document.getElementById("universalFormModal");
+//   btns.forEach((el) => {
 
-    el.addEventListener("click", async (e) => {
-      renderForm(elementSchemas.condition, form);
-    });
-  })
+//     el.addEventListener("click", async (e) => {
+//       renderForm(elementSchemas.condition, form);
+//     });
+//   })
 
-}
+// }
 
-initializeNewElementButtons();
+//initializeNewElementButtons();
 
 function initializeChoiceLinks() {
   let choiceLinks = Array.from(document.querySelectorAll('.choiceLink'));
@@ -251,11 +252,15 @@ export async function reorderElements({ from, to }) {
 
 //for making sure the choice display element is refreshed with the most current list of page UUIDs
 function generateMenuOptions(data) {
+  console.log("----generateMenuOptions:");
   let menu = document.getElementById("choiceDestinationModal");
   menu.options.length = 0; //clear the dropdown's options
   let options = data.pageData[0].elements.map(p => {
     return { label: p.value, uuid: p.uuid };
   });
+  options.splice(0, 0, { label: "No Page - Trigger Events Only", uuid: "Event" });
+  options.splice(0, 0, { label: "Create New Page", uuid: "New" });
+  console.log(options);
   options.forEach(option => {
     const newOption = document.createElement('option');
     //option.label = the label, option.uuid = the actual value
@@ -275,8 +280,7 @@ export async function updateDisplay(data) {
   // console.log("---ALL PAGES:");
   // console.log(allPageUUIDs);
 
-  console.log("---updateDisplay - allPageUUIDs? ");
-  console.log(allPageUUIDs);
+
   $('.toast').toast();
   const render = [];
   let assembledHTML = "";
