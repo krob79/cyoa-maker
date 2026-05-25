@@ -8,13 +8,13 @@
                 <input type="hidden" name="hiddenconditionuuid" id="hiddenconditionuuid" value="<%=uuid %>">
                 <input type="hidden" name="section" value="elements">
                 <input type="hidden" id="comparisonModal" name="comparisonModal" value="">
-                <input type="hidden" id="conditionrequest" name="conditionrequest" value="">
+                <input type="hidden" id="conditionRequest" name="conditionRequest" value="">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon3">Property Name:</span>
-                            <input type="text" class="form-control" name="modalconditionInput" id="modalconditionInput"
-                                aria-describedby="basic-addon3 basic-addon4">
+                            <input type="text" class="form-control" name="modalConditionProperty"
+                                id="modalConditionProperty" aria-describedby="basic-addon3 basic-addon4">
                         </div>
                         <div class="valid-feedback">
                             Looks good!
@@ -25,8 +25,8 @@
                     <div class="col-sm-12">
                         <!-- <div class="input-group" width="50px"> -->
                         <label class="input-group-text" for="inputGroupSelect01">Comparison:</label>
-                        <select class="form-select" id="conditionComparisonModal" name="conditionComparisonModal"
-                            onchange="changeconditionComparisonModal()">
+                        <select class="form-select" id="modalConditionOperator" name="modalConditionOperator"
+                            onchange="changemodalConditionOperator()">
                             <option value="<">less than</option>
                             <option value="=">equal to</option>
                             <option value=">">greater than</option>
@@ -36,15 +36,15 @@
                     <div class="col-sm-12">
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon4">Value:</span>
-                            <input type="text" class="form-control" name="modalconditionInput2"
-                                id="modalconditionInput2" aria-describedby="basic-addon3 basic-addon4">
+                            <input type="text" class="form-control" name="modalConditionAmount"
+                                id="modalConditionAmount" aria-describedby="basic-addon3 basic-addon4">
                         </div>
                     </div>
                     <div class="col-sm-12">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="conditionAndOrGroup" id="condition_or"
+                            <input class="form-check-input" type="checkbox" name="booloperator" id="booloperator"
                                 value="or">
-                            <label class="form-check-label" for="condition_or">
+                            <label class="form-check-label" for="booloperator">
                                 Make This An Alternative Condition
                             </label>
                         </div>
@@ -69,9 +69,9 @@
 </div>
 <%- include('formElementValidation', {}); %>
     <script>
-        function changeconditionComparisonModal(display = null) {
+        function changemodalConditionOperator(display = null) {
 
-            let dropdown = document.getElementById('conditionComparisonModal');
+            let dropdown = document.getElementById('modalConditionOperator');
             let hiddenconditionuuid = document.getElementById("hiddenconditionuuid");
             let comparisonModal = document.getElementById("comparisonModal");
 
@@ -81,7 +81,7 @@
                 comparisonModal.value = dropdown.value
             }
 
-            console.log("calling changeconditionComparisonModal() ", dropdown.value);
+            console.log("calling changemodalConditionOperator() ", dropdown.value);
             // console.log(choiceDropdown);
             // if (destination.value == "Choose Page") {
             //   document.getElementById("choiceElementSubmit").disabled = true;

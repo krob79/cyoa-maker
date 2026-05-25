@@ -295,7 +295,7 @@ export const elementSchemas = {
                                 type: "group",
                                 children: [
                                     { type: "span", className: "input-group-text", attrs: { id: "basic-addon3" }, text: "Property Name:" },
-                                    { type: "input", inputType: "text", className: "form-control", name: "modalconditionInput", id: "modalconditionInput", attrs: { "aria-describedby": "basic-addon3 basic-addon4" } }
+                                    { type: "input", inputType: "text", className: "form-control", name: "modalConditionProperty", id: "modalConditionProperty", attrs: { "aria-describedby": "basic-addon3 basic-addon4" } }
                                 ]
                             },
                             { type: "div", className: "valid-feedback", text: "Looks good!" }
@@ -314,14 +314,14 @@ export const elementSchemas = {
                             {
                                 type: "select",
                                 className: "form-select",
-                                id: "conditionComparisonModal",
-                                name: "conditionComparisonModal",
+                                id: "modalConditionOperator",
+                                name: "modalConditionOperator",
                                 options: [
                                     { value: "<", label: "<" },
                                     { value: "=", label: "=" },
                                     { value: ">", label: ">" }
                                 ],
-                                attrs: { onchange: "changeconditionComparisonModal()" }
+                                attrs: { onchange: "changemodalConditionOperator()" }
                             }
                         ]
                     },
@@ -333,7 +333,7 @@ export const elementSchemas = {
                                 type: "group",
                                 children: [
                                     { type: "span", className: "input-group-text", attrs: { id: "basic-addon4" }, text: "Value:" },
-                                    { type: "input", inputType: "text", className: "form-control", name: "modalconditionInput2", id: "modalconditionInput2", attrs: { "aria-describedby": "basic-addon3 basic-addon4" } }
+                                    { type: "input", inputType: "text", className: "form-control", name: "modalConditionAmount", id: "modalConditionAmount", attrs: { "aria-describedby": "basic-addon3 basic-addon4" } }
                                 ]
                             }
                         ]

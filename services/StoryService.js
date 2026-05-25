@@ -52,6 +52,7 @@ class StoryService {
 
   async addDataByUUID(requestBody) {
     console.log("----StoryService.js ADDDING DATA BY UUID");
+    console.log(requestBody);
     const data = (await this.getData()) || [];
 
     const { uuid, type, value, newline, hasEvents } = requestBody || {};
@@ -59,16 +60,23 @@ class StoryService {
 
 
     // 2) Build newData
-    const newData = {
-      uuid: crypto.randomUUID(),
-      title: requestBody.value,
-      parent: requestBody.uuid,
-      type,                     // normalized lower-case
-      value,
-      newline,
-      hasEvents,
-      elements: requestBody.elements ?? [],
-    }
+    // const newData = {
+    //   uuid: crypto.randomUUID(),
+    //   title: requestBody.value,
+    //   parent: requestBody.uuid,
+    //   type: requestBody.type,                     // normalized lower-case
+    //   value: requestBody.value,
+    //   newline: requestBody.newline ?? false,
+    //   hasEvents: requestBody.hasEvents ?? false,
+    //   elements: requestBody.elements ?? [],
+    // }
+
+    const newData = {};
+
+    Object.assign(newData, requestBody);
+    newData['parent'] = requestBody.uuid;
+    newData['uuid'] = crypto.randomUUID(); //have to reassign the UUID property here, otherwise it keeps whatever the requestBody had.
+    newData['elements'] = requestBody.elements ?? [];
 
     console.log('------addDataByUUID - newData:', newData);
 
@@ -82,6 +90,7 @@ class StoryService {
         parent: newData.uuid,
         title: 'Placeholder User Event',
         uuid: randuuid,
+        subtype: 'user',
         type: 'event',
         value: `user_placeholderEvent-${shortId}_+_0`,
         elements: [],
@@ -94,7 +103,7 @@ class StoryService {
     // If the element itself is an event, you referenced undefined vars previously;
     // use `type` / `value` that we normalized above.
     if (type === 'event') {
-      newData.title = value;
+      newData.title = "Event";
     }
 
     console.log(`---addDataByUUID() - uuid: ${uuid} - type: ${newData.type}`);

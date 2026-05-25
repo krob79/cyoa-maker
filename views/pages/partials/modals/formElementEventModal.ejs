@@ -10,7 +10,7 @@
                 <input type="hidden" name="modaleventType" id="modaleventType">
                 <input type="hidden" name="section" value="elements">
                 <input type="hidden" id="comparisonModal" name="comparisonModal" value="">
-                <input type="hidden" id="eventrequest" name="eventrequest" value="">
+                <input type="hidden" id="eventRequest" name="eventRequest" value="">
                 <div class="row">
                     <div class="col">
                         <span id="eventMessage"></span>
@@ -20,7 +20,7 @@
                     <div class="col">
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon3">Property Name:</span>
-                            <input type="text" class="form-control" name="modaleventInput" id="modaleventInput"
+                            <input type="text" class="form-control" name="eventProperty" id="eventProperty"
                                 aria-describedby="basic-addon3 basic-addon4">
                         </div>
                         <div class="valid-feedback">
@@ -32,8 +32,8 @@
                     <div class="col">
                         <div class="input-group">
                             <label class="input-group-text" for="inputGroupSelect01">Method of Change:</label>
-                            <select class="form-select" id="eventComparisonModal" name="eventComparisonModal"
-                                onchange="changeeventComparisonModal()">
+                            <select class="form-select" id="eventOperator" name="eventOperator"
+                                onchange="changeoperator()">
                                 <option value="-">decrease value by</option>
                                 <option value="=">set value equal to</option>
                                 <option value="+">increase value by</option>
@@ -43,14 +43,14 @@
                     <div class="col">
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon4">Value:</span>
-                            <input type="text" class="form-control" name="modaleventInput2" id="modaleventInput2"
+                            <input type="text" class="form-control" name="eventAmount" id="eventAmount"
                                 aria-describedby="basic-addon3 basic-addon4">
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <input type="checkbox" id="choicedisplayevent" name="choicedisplayevent">
+                        <input type="checkbox" id="eventdisplayevent" name="eventdisplayevent">
                         <label for="choicedisplayevent" class="form-label">Display Alert On Page When Event
                             Triggers</label>
                     </div>
@@ -75,21 +75,10 @@
 </div>
 <%- include('formElementValidation', {}); %>
     <script>
-        // const radioButtons = document.querySelectorAll('input[type="radio"]');
-        // radioButtons[0].checked = true;
-        // radioButtons.forEach(radioButton => {
-        //     radioButton.addEventListener('change', function () {
-        //         // This function will execute when the selection changes
-        //         if (this.checked) {
-        //             console.log("Selected radio button value:", this.value);
-        //             // You can perform other actions here based on the selected value
-        //         }
-        //     });
-        // });
 
-        function changeeventComparisonModal(display = null) {
+        function changeoperator(display = null) {
 
-            let dropdown = document.getElementById('eventComparisonModal');
+            let dropdown = document.getElementById('eventOperator');
             let hiddeneventuuid = document.getElementById("hiddeneventuuid");
             let comparisonModal = document.getElementById("comparisonModal");
 
@@ -99,7 +88,7 @@
                 comparisonModal.value = dropdown.value
             }
 
-            console.log("calling changeeventComparisonModal() ", dropdown.value);
+            console.log("calling changeoperator() ", dropdown.value);
             // console.log(choiceDropdown);
             // if (destination.value == "Choose Page") {
             //   document.getElementById("choiceElementSubmit").disabled = true;

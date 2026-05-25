@@ -6,7 +6,7 @@ import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './dele
 // import { elementSchemas } from '../forms/elementSchemas.js';
 // import { renderForm } from '../forms/formRenderer.js';
 
-console.log("----render.js");
+//console.log("----render.js");
 
 let allPageUUIDs = [];
 // cache the template text so we fetch once
@@ -252,7 +252,7 @@ export async function reorderElements({ from, to }) {
 
 //for making sure the choice display element is refreshed with the most current list of page UUIDs
 function generateMenuOptions(data) {
-  console.log("----generateMenuOptions:");
+  //console.log("----generateMenuOptions:");
   let menu = document.getElementById("choiceDestinationModal");
   menu.options.length = 0; //clear the dropdown's options
   let options = data.pageData[0].elements.map(p => {
@@ -260,7 +260,7 @@ function generateMenuOptions(data) {
   });
   options.splice(0, 0, { label: "No Page - Trigger Events Only", uuid: "Event" });
   options.splice(0, 0, { label: "Create New Page", uuid: "New" });
-  console.log(options);
+  //console.log(options);
   options.forEach(option => {
     const newOption = document.createElement('option');
     //option.label = the label, option.uuid = the actual value
@@ -275,6 +275,7 @@ export async function updateDisplay(data) {
   console.log(data);
   allPageUUIDs = data.pageData[0].elements.map(p => p.uuid);
   let storyUuid = data.pageData[0].uuid;
+  let uuidInURL = findUuidInURL();
 
   generateMenuOptions(data);
   // console.log("---ALL PAGES:");
@@ -293,18 +294,20 @@ export async function updateDisplay(data) {
     $('.feedback-form').trigger('reset');
     $('#uploadForm').trigger('reset');
 
-    let uuidInURL = findUuidInURL();
+
     //console.log("---what's the uuid looking like?");
     //console.log(uuidInURL);
     let pageItems;
     let pageHeader;
     //grab uuid from URL and use that to load in and display data
+    //This seems like double work, because we already have the whole data object here, but to get any info from it, we would need to filter through everything
+    //Unless there's a quick way to recursively filter, easier to just run fetch on the UUID, and get exactly the info we need in the recursive search we already have
     if (uuidInURL) {
       await fetch(`/page/${uuidInURL}`)
         .then(response => response.json())
         .then(data => {
-          console.log("-----update displays testfetch: ");
-          console.log(data);
+          //console.log("-----update displays testfetch: ");
+          //console.log(data);
           pageHeader = data.title;
           pageItems = data.elements;
         })
@@ -314,7 +317,7 @@ export async function updateDisplay(data) {
     }
 
     const pageTitle = Array.from(document.getElementsByClassName("pageTitle"))[0];
-    pageTitle.textContent = pageHeader;
+    //pageTitle.textContent = pageHeader;
     //new version using EJS template
     const html = await renderEntries(pageItems, storyUuid, allPageUUIDs);
     document.querySelector('.feedback-items').innerHTML = html;

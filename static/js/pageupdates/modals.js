@@ -82,8 +82,7 @@ async function submitImage(e) {
     const assembledData = {
         uuid: formData.get('uuid'),
         newDataObj: {
-            value: imgPath,
-            html: `<img class="pageImage" src="/uploads/${imgPath}">`,
+            value: imgPath
         },
     };
 
@@ -99,8 +98,7 @@ async function submitImage(e) {
                     section: formData.get('section'),
                     type: 'image',
                     value: imgPath,
-                    conditions: [],
-                    html: `<img class="pageImage" src="/uploads/${imgPath}">`,
+                    elements: []
                 }
                 : { ...assembledData },
         success: function (data) {
@@ -125,12 +123,27 @@ function getCheckboxValue(fd, fieldName) {
 }
 
 function getMethod(fd, requestField) {
+    //console.log("---GET METHOD: " + requestField);
     return fd.get(requestField) === 'PUT' ? 'PUT' : 'POST';
 }
 
 function setValue(modal, selector, value) {
+    //console.log(`---ATTEMPTING TO SET VALUE - ${selector} - ${value}`)
     const el = modal.querySelector(selector);
+    //console.log(`---SET VALUE - ${el.type} - ${el.name}`);
     if (el) el.value = value ?? '';
+    //console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
+}
+
+function getValue(modal, selector) {
+    //console.log(`---ATTEMPTING TO GET VALUE - ${selector}`)
+    const el = modal.querySelector(selector);
+    //console.log(`---SET VALUE - ${el.type} - ${el.name}`);
+    if (el) {
+        return el.value;
+    } else {
+        return '';
+    }
     //console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
 }
 
@@ -167,11 +180,11 @@ function getTriggerData(event) {
 
 // helper for the "Set Conditions" link
 function createConditionEditLink(data) {
-    console.log(`---NEW CREATE CONDITION!! ${data.type}`);
+    console.log(`---createConditionEditLink! ${data.type}`);
     const conditionsLink = document.getElementById(`modal${data.type}Conditions`);
     const uuidinput = document.getElementById(`hidden${data.type}uuid`);
 
-    if (conditionsLink && data.request == 'PUT') {
+    if (data.request == 'PUT') {
         conditionsLink.style.display = "block";
         conditionsLink.setAttribute('href', `/page/${data.uuid}/edit`);
         conditionsLink.textContent = `Set Conditions for this ${data.type} >`;
@@ -185,8 +198,11 @@ function createConditionEditLink(data) {
 function submitJsonToPageApi({
     method,
     payload,
-    toastId
+    toastId,
+    modalSelector,
 }) {
+    //console.log("----WHATS COMING IN TO SUBMIT JSON....");
+    //console.log(method, payload, toastId, modalSelector);
     $.ajax({
         url: '/page/api',
         type: method,
@@ -235,6 +251,7 @@ function submitUrlEncoded({
 
 function bindConfiguredForm(config) {
     const form = document.getElementById(config.formId);
+    const modal = document.getElementById(config.modalId);
     if (!form) return;
 
     form.addEventListener('submit', async function (e) {
@@ -249,7 +266,7 @@ function bindConfiguredForm(config) {
                 return;
             }
 
-            const { method, payload } = config.buildPayload(fd);
+            const { method, payload } = config.buildPayload(fd, modal);
 
             submitJsonToPageApi({
                 method,
@@ -282,8 +299,9 @@ async function bindConfiguredModalOpen(config) {
             data = await getCurrentDataOnElement(buttondata.bsElementuuid);
             data['request'] = buttondata.bsRequest;
             data['storyUuid'] = buttondata.bsStoryuuid;
+            data['subType'] = buttondata.bsElementsubtype || '';
             data['section'] = 'elements'; //eventually, should we do away with this? all sections will be 'elements'?
-            console.log("---Here's some data about the element!!! ", data);
+            console.log("---from bindConfiguredModalOpen - Here's some data about the element!!! ", data);
             createConditionEditLink(data);
         } catch (e) {
             console.log("----error: ", e);
@@ -318,17 +336,18 @@ const USE_NEW_MODAL_OPEN = {
     text: true,
     choice: true,
     dynamic: true,
+    event: true,
     image: false,
     page: false,
-    condition: false,
-
-    event: false,
+    condition: true,
 };
 
 //config object for modal open - determining if "new" or "edit", what types of data to display, etc
 const modalOpenConfigs = {
     text: {
         modalId: 'textUpdateModal',
+        formId: 'textFormModal',
+        toastId: '#myTextToast',
 
         reset({ modal, data }) {
             console.log("---RESET FOR TEXT");
@@ -355,9 +374,27 @@ const modalOpenConfigs = {
                 setValue(modal, '[name="textrequest"]', 'POST');
             }
         },
+
+        buildPayload(fd) {
+            const method = getMethod(fd, 'textrequest');
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');
+            const value = (fd.get('modaltextInput') || '').toString();
+            const newline = getCheckboxValue(fd, 'textnewline');
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'text', value, newline }
+                        : { uuid, newDataObj: { value, newline } },
+            };
+        },
     },
     dynamic: {
         modalId: 'dynamicUpdateModal',
+        formId: 'dynamicFormModal',
+        toastId: '#myTextToast',
 
         reset({ modal }) {
             setValue(modal, '[name="uuid"]', '');
@@ -381,10 +418,27 @@ const modalOpenConfigs = {
                 setValue(modal, '[name="dynamicrequest"]', 'POST');
             }
         },
+
+        buildPayload(fd) {
+            const method = getMethod(fd, 'dynamicrequest');
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');
+            const value = (fd.get('modaldynamicInput') || '').toString();
+            const newline = getCheckboxValue(fd, 'dynamicnewline');
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'dynamic', value, newline }
+                        : { uuid, newDataObj: { value, newline } },
+            };
+        },
     },
     choice: {
         modalId: 'choiceUpdateModal',
         dropdown: 'choiceDestinationModal',
+        formId: 'choiceFormModal',
 
         reset({ modal, data }) {
             setValue(modal, '[name="hiddenchoiceuuid"]', '');
@@ -412,7 +466,7 @@ const modalOpenConfigs = {
 
             const rawValue = data.value || '';
             const [label, destination] = rawValue.split('||');
-            console.log(`---choice raw value: ${rawValue} - destination: ${destination}`);
+            //console.log(`---choice raw value: ${rawValue} - destination: ${destination}`);
 
             setValue(modal, '[name="modalchoiceInput"]', label || '');
             setValue(modal, '[name="destinationModal"]', destination || '');
@@ -421,6 +475,213 @@ const modalOpenConfigs = {
             setChecked(modal, '[name="choicedispatchevent"]', data.hasEvents);
             setValue(modal, '[name="choicerequest"]', 'PUT');
         },
+
+        async submit({ fd }) {
+            const method = getMethod(fd, 'choicerequest');
+            const uuid = fd.get('hiddenchoiceuuid');
+            const storyUuid = fd.get('hiddenstoryuuid');
+            const section = fd.get('section');
+            const label = (fd.get('modalchoiceInput') || '').toString();
+            const destination = fd.get('destinationModal') || "New";
+            const newline = getCheckboxValue(fd, 'choicenewline');
+            const hasEvents = getCheckboxValue(fd, 'choicedispatchevent');
+
+            const submitChoiceToApi = (destUUID) => {
+                const finalValue = `${label}||${destUUID}`;
+
+                const payload =
+                    method === 'POST'
+                        ? {
+                            uuid,
+                            section,
+                            type: 'choice',
+                            value: finalValue,
+                            newline,
+                            hasEvents,
+                        }
+                        : {
+                            uuid,
+                            newDataObj: {
+                                value: finalValue,
+                                newline,
+                                hasEvents,
+                            },
+                        };
+
+                submitJsonToPageApi({
+                    method,
+                    payload,
+                    toastId: '#myChoiceToast',
+                    modalSelector: '.elementModal',
+                });
+            };
+            console.log(`----DESTINATION? ${destination}`);
+            if (destination === 'New') {
+                console.log(`---creating NEW DESTINATION with story id: ${storyUuid}!!!`);
+                submitUrlEncoded({
+                    url: `/page/newpage/`,
+                    method: 'POST',
+                    payload: { uuid: storyUuid, value: label },
+                    toastId: '#myPageToast',
+                    onSuccess: function (data) {
+                        console.log('NEW PAGE RESPONSE:', data);
+                        submitChoiceToApi(data.uuid);
+                    },
+                });
+                return;
+            }
+
+            if (destination === 'Event') {
+                submitChoiceToApi('Event');
+                return;
+            }
+
+            submitChoiceToApi(destination);
+        },
+
+
+    },
+    event: {
+        modalId: 'eventUpdateModal',
+        dropdown: 'eventDestinationModal',
+        formId: 'eventFormModal',
+        toastId: '#myEventToast',
+
+        reset({ modal, data }) {
+            console.log("---reset for event");
+            setValue(modal, '[name="hiddeneventuuid"]', '');
+            setValue(modal, '[name="modaleventType"]', data.subType);
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="comparisonModal"]', '');
+            setValue(modal, '[name="eventRequest"]', '');
+            setValue(modal, '[name="eventProperty"]', '');
+            setValue(modal, '[name="eventOperator"]', '');
+            setValue(modal, '[name="eventAmount"]', '');
+            setValue(modal, '[name="eventdisplayevent"]', '');
+        },
+
+        prefill({ modal, data }) {
+            console.log("---prefill");
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="hiddeneventuuid"]', data.uuid);
+            setValue(modal, '[name="modaleventType"]', data.subType);
+            setValue(modal, '[name="section"]', data.section);
+
+            if (!isEdit) {
+                setValue(modal, '[name="eventRequest"]', 'POST');
+                return;
+            } else {
+                setValue(modal, '[name="eventRequest"]', 'PUT');
+            }
+
+
+            setValue(modal, '[name="eventProperty"]', data.property);
+            setValue(modal, '[name="eventOperator"]', data.operator);
+            setValue(modal, '[name="eventAmount"]', data.amount);
+
+
+        },
+
+        buildPayload(fd, data) {
+            const method = getMethod(fd, 'eventRequest');
+            const subtype = getValue(modal, 'modaleventType');
+            const property = getValue(modal, 'eventProperty');
+            const operator = getValue(modal, 'eventOperator');
+            const amount = getValue(modal, 'eventAmount');
+            const value = `${subtype}_${property}_${operator}_${amount}`;
+            console.log(`HERE'S WHAT'S COMING: ${value}`);
+            const displayevent = getValue(modal, 'eventDisplayEvent');
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? {
+                            uuid: fd.get('hiddeneventuuid'),
+                            section: fd.get('section'),
+                            type: 'event',
+                            value,
+                        }
+                        : {
+                            uuid: fd.get('hiddeneventuuid'),
+                            newDataObj: { value, operator },
+                        },
+            };
+        },
+
+
+    },
+    condition: {
+        modalId: 'conditionUpdateModal',
+        dropdown: 'conditionDestinationModal',
+        formId: 'conditionFormModal',
+        toastId: '#myconditionToast',
+
+        reset({ modal, data }) {
+            console.log("---reset for condition");
+            setValue(modal, '[name="hiddenconditionuuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="comparisonModal"]', '');
+            setValue(modal, '[name="conditionRequest"]', '');
+            setValue(modal, '[name="modalConditionProperty"]', '');
+            setValue(modal, '[name="modalConditionOperator"]', '');
+            setValue(modal, '[name="modalConditionAmount"]', '');
+            setChecked(modal, '[name="booloperator"]', false);
+        },
+
+        prefill({ modal, data }) {
+            console.log(`---prefill for condition - ${data.request}`);
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="hiddenconditionuuid"]', data.uuid);
+            setValue(modal, '[name="section"]', data.section);
+
+            if (!isEdit) {
+                setValue(modal, '[name="conditionRequest"]', 'POST');
+                return;
+            } else {
+                console.log("---we are editing the condition!");
+                setValue(modal, '[name="conditionRequest"]', 'PUT');
+            }
+
+
+            setValue(modal, '[name="modalConditionProperty"]', data.property);
+            setValue(modal, '[name="modalConditionOperator"]', data.operator);
+            setValue(modal, '[name="modalConditionAmount"]', data.amount);
+            setChecked(modal, '[name="booloperator"]', data.booloperator == "or");
+
+
+        },
+
+        buildPayload(fd, data) {
+            console.log("----BUILDING CONDITION PAYLOAD");
+            const method = getMethod(fd, 'conditionRequest');
+            const subtype = getValue(modal, 'modalconditionType');
+            const property = getValue(modal, 'modalConditionProperty');
+            const operator = getValue(modal, 'conditionOperator');
+            const amount = getValue(modal, 'conditionAmount');
+            const value = `${subtype}_${property}_${operator}_${amount}`;
+            console.log(`HERE'S WHAT'S COMING: ${value}`);
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? {
+                            uuid: fd.get('hiddenConditionuuid'),
+                            section: fd.get('section'),
+                            type: 'event',
+                            value,
+                        }
+                        : {
+                            uuid: fd.get('hiddenConditiontuuid'),
+                            newDataObj: { value, operator },
+                        },
+            };
+        },
+
+
     },
 }
 
@@ -429,7 +690,7 @@ const modalConfigs = {
     text: {
         formId: 'textFormModal',
         toastId: '#myTextToast',
-        buildPayload(fd) {
+        buildPayload(fd, modal) {
             const method = getMethod(fd, 'textrequest');
             const uuid = fd.get('uuid');
             const section = fd.get('section');
@@ -470,9 +731,12 @@ const modalConfigs = {
         formId: 'conditionFormModal',
         toastId: '#myConditionToast',
         buildPayload(fd) {
-            const method = getMethod(fd, 'conditionrequest');
-            const value = `${fd.get('modalconditionInput')}${fd.get('conditionComparisonModal')}${fd.get('modalconditionInput2')}`;
-            const booloperator = fd.get('conditionAndOrGroup');
+            const method = getMethod(fd, 'conditionRequest');
+            const property = fd.get('modalConditionProperty');
+            const operator = fd.get('modalConditionOperator');
+            const amount = fd.get('modalConditionAmount');
+            const value = `${fd.get('modalConditionProperty')}${fd.get('modalConditionOperator')}${fd.get('modalConditionAmount')}`;
+            const booloperator = fd.get('booloperator') ?? "and";
 
             return {
                 method,
@@ -482,12 +746,21 @@ const modalConfigs = {
                             uuid: fd.get('hiddenconditionuuid'),
                             section: fd.get('section'),
                             type: 'condition',
+                            property,
+                            operator,
+                            amount,
                             value,
-                            booloperator: 'and',
+                            booloperator,
                         }
                         : {
                             uuid: fd.get('hiddenconditionuuid'),
-                            newDataObj: { value, booloperator },
+                            newDataObj: {
+                                property,
+                                operator,
+                                amount,
+                                value,
+                                booloperator
+                            },
                         },
             };
         },
@@ -496,11 +769,15 @@ const modalConfigs = {
     event: {
         formId: 'eventFormModal',
         toastId: '#myEventToast',
-        buildPayload(fd) {
-            const method = getMethod(fd, 'eventrequest');
-            const value = `${fd.get('modaleventInput')}${fd.get('eventComparisonModal')}${fd.get('modaleventInput2')}`;
-            const evtComparison = fd.get('eventComparisonModal');
-            const displayevent = fd.get('choicedisplayevent');
+        buildPayload(fd, modal) {
+            const method = fd.get('eventRequest');
+            const subtype = fd.get('modaleventType');
+            const property = fd.get('eventProperty');
+            const operator = fd.get('eventOperator');
+            const amount = fd.get('eventAmount');
+            const value = `${subtype}_${property}_${operator}_${amount}`;
+
+            const displayevent = fd.get('eventdisplayevent');
 
             return {
                 method,
@@ -510,11 +787,14 @@ const modalConfigs = {
                             uuid: fd.get('hiddeneventuuid'),
                             section: fd.get('section'),
                             type: 'event',
+                            property,
+                            operator,
+                            amount,
                             value,
                         }
                         : {
                             uuid: fd.get('hiddeneventuuid'),
-                            newDataObj: { value, evtComparison },
+                            newDataObj: { property, operator, amount, value },
                         },
             };
         },
@@ -630,15 +910,12 @@ const modalConfigs = {
                         uuid: fd.get('uuid'),
                         section: fd.get('section'),
                         type: 'image',
-                        value: imgPath,
-                        conditions: [],
-                        html,
+                        value: imgPath
                     }
                     : {
                         uuid: fd.get('uuid'),
                         newDataObj: {
                             value: imgPath,
-                            html,
                         },
                     };
 
@@ -698,6 +975,11 @@ if (USE_NEW_MODAL_OPEN.text) {
 bindConfiguredForm(modalConfigs.dynamic);
 if (USE_NEW_MODAL_OPEN.dynamic) {
     bindConfiguredModalOpen(modalOpenConfigs.dynamic);
+}
+
+bindConfiguredForm(modalConfigs.event);
+if (USE_NEW_MODAL_OPEN.event) {
+    bindConfiguredModalOpen(modalOpenConfigs.event);
 }
 
 bindConfiguredForm(modalConfigs.choice);
@@ -806,6 +1088,8 @@ export function initModals() {
                 return;
             }
 
+            //-----------------RETURNS SHOULD STOP ANYTHING BEYOND THIS POINT
+
             const modalInput = document.getElementById(`modal${el_type}Input`);
             const modalTitle = document.getElementById(`modal${el_type}Label`);
             const modalnewlinecheckbox = document.getElementById(`${el_type}newline`);
@@ -825,107 +1109,107 @@ export function initModals() {
             const btn_request = button.dataset.bsRequest || 'PUT';
 
             if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
-            console.log(`----what is UUID INPUT? ${uuidinput}`);
+            //console.log(`----what is UUID INPUT? ${uuidinput}`);
 
             switch (el_type) {
-                case 'text':
-                    console.log("----WE'RE USING THE OLD TEXT CODE!");
-                    createConditionEditLink();
-                    // if (modalInput) modalInput.value = el_value || '';
-                    modalInput.value = btn_request === 'POST' ? `` : el_value;
-                    break;
+                // case 'text':
+                //     console.log("----WE'RE USING THE OLD TEXT CODE!");
+                //     createConditionEditLink();
+                //     // if (modalInput) modalInput.value = el_value || '';
+                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
+                //     break;
 
-                case 'dynamic':
-                    createConditionEditLink();
-                    // if (modalInput) modalInput.value = el_value || '';
-                    modalInput.value = btn_request === 'POST' ? `` : el_value;
-                    break;
+                // case 'dynamic':
+                //     createConditionEditLink();
+                //     // if (modalInput) modalInput.value = el_value || '';
+                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
+                //     break;
 
-                case 'image': {
-                    createConditionEditLink();
-                    const imgPreview = /** @type {HTMLImageElement} */ (document.getElementById('previewModal'));
-                    if (imgPreview) {
-                        if (btn_request === 'PUT') {
-                            imgPreview.src = `/uploads/${el_value}`;
-                            imgPreview.style.display = 'block';
-                        } else {
-                            imgPreview.style.display = 'none';
-                        }
-                    }
-                    break;
-                }
+                // case 'image': {
+                //     createConditionEditLink();
+                //     const imgPreview = /** @type {HTMLImageElement} */ (document.getElementById('previewModal'));
+                //     if (imgPreview) {
+                //         if (btn_request === 'PUT') {
+                //             imgPreview.src = `/uploads/${el_value}`;
+                //             imgPreview.style.display = 'block';
+                //         } else {
+                //             imgPreview.style.display = 'none';
+                //         }
+                //     }
+                //     break;
+                // }
 
-                case 'choice': {
-                    createConditionEditLink();
-                    const [label, dest] = String(el_value || '').split('||');
-                    modalInput.value = label;
-                    const dropdown = /** @type {HTMLSelectElement} */ (document.getElementById('choiceDestinationModal'));
-                    const hiddendestination = /** @type {HTMLInputElement} */ (document.getElementById('destinationModal'));
-                    const hiddenstoryuuid = /** @type {HTMLInputElement} */ (document.getElementById('hiddenstoryuuid'));
-                    const evtCheckbox = /** @type {HTMLInputElement} */ (document.getElementById('choicedispatchevent'));
-                    const evtIsChecked = elData.hasEvents;
+                // case 'choice': {
+                //     createConditionEditLink();
+                //     const [label, dest] = String(el_value || '').split('||');
+                //     modalInput.value = label;
+                //     const dropdown = /** @type {HTMLSelectElement} */ (document.getElementById('choiceDestinationModal'));
+                //     const hiddendestination = /** @type {HTMLInputElement} */ (document.getElementById('destinationModal'));
+                //     const hiddenstoryuuid = /** @type {HTMLInputElement} */ (document.getElementById('hiddenstoryuuid'));
+                //     const evtCheckbox = /** @type {HTMLInputElement} */ (document.getElementById('choicedispatchevent'));
+                //     const evtIsChecked = elData.hasEvents;
 
-                    evtCheckbox.checked = evtIsChecked;
-                    console.log(`-----------EVENT CHKBOX  ${evtCheckbox.checked} - DISPATCH EVENT ${evtIsChecked}`);
-                    if (hiddenstoryuuid) hiddenstoryuuid.value = button.dataset.bsStoryuuid || '';
-                    //if (modalInput) modalInput.value = label || '';
+                //     evtCheckbox.checked = evtIsChecked;
+                //     console.log(`-----------EVENT CHKBOX  ${evtCheckbox.checked} - DISPATCH EVENT ${evtIsChecked}`);
+                //     if (hiddenstoryuuid) hiddenstoryuuid.value = button.dataset.bsStoryuuid || '';
+                //     //if (modalInput) modalInput.value = label || '';
 
-                    if (!dest) {
-                        if (dropdown) dropdown.value = 'New';
-                        if (hiddendestination) hiddendestination.value = 'New';
-                    } else {
-                        if (dropdown) dropdown.value = dest;
-                        if (hiddendestination) hiddendestination.value = dest;
-                    }
-                    break;
-                }
+                //     if (!dest) {
+                //         if (dropdown) dropdown.value = 'New';
+                //         if (hiddendestination) hiddendestination.value = 'New';
+                //     } else {
+                //         if (dropdown) dropdown.value = dest;
+                //         if (hiddendestination) hiddendestination.value = dest;
+                //     }
+                //     break;
+                // }
 
-                case 'page':
-                    // if (modalInput) modalInput.value = el_value || '';
-                    modalInput.value = btn_request === 'POST' ? `` : el_value;
-                    break;
+                // case 'page':
+                //     // if (modalInput) modalInput.value = el_value || '';
+                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
+                //     break;
 
-                case 'condition': {
-                    console.log("----condition before parsing..", el_value);
-                    const and_radio = document.querySelector('input[name="conditionAndOrGroup"]').value;
-                    document.querySelector('input[name="conditionAndOrGroup"][value="or"]').checked = (elData.booloperator === "or");
-                    console.log("------CONDITION AND/OR: ", elData.booloperator);
-                    const [lhs, op, rhs] = parseConditionString(el_value);
-                    const a = document.getElementById('modalconditionInput');
-                    const o = document.getElementById('conditionComparisonModal');
-                    const b = document.getElementById('modalconditionInput2');
-                    if (a) a.value = lhs;
-                    if (o) o.value = op;
-                    if (b) b.value = rhs;
-                    break;
-                }
+                // case 'condition': {
+                //     console.log("----condition before parsing..", el_value);
+                //     const and_radio = document.querySelector('input[name="booloperator"]').value;
+                //     document.querySelector('input[name="booloperator"][value="or"]').checked = (elData.booloperator === "or");
+                //     console.log("------CONDITION AND/OR: ", elData.booloperator);
+                //     const [lhs, op, rhs] = parseConditionString(el_value);
+                //     const a = document.getElementById('modalConditionProperty');
+                //     const o = document.getElementById('modalConditionOperator');
+                //     const b = document.getElementById('modalConditionAmount');
+                //     if (a) a.value = lhs;
+                //     if (o) o.value = op;
+                //     if (b) b.value = rhs;
+                //     break;
+                // }
 
-                case 'event': {
-                    createConditionEditLink();
-                    let [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
-                    console.log(`eType: ${eType}, p: ${p}, o: ${o}, v: ${v}`);
-                    if (el_subtype) {
-                        console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
-                        eType = el_subtype;
-                        document.getElementById('modaleventType').value = el_subtype;
-                        let evtMsg = document.getElementById("eventMessage");
-                        if (el_subtype == "auto") {
-                            evtMsg.textContent = "This event will be triggered immediately once the page loads.";
-                        } else {
-                            evtMsg.textContent = "This event will be triggered only from clicking this link."
-                        }
-                    }
+                // case 'event': {
+                //     createConditionEditLink();
+                //     let [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
+                //     console.log(`eType: ${eType}, p: ${p}, o: ${o}, v: ${v}`);
+                //     if (el_subtype) {
+                //         console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
+                //         eType = el_subtype;
+                //         document.getElementById('modaleventType').value = el_subtype;
+                //         let evtMsg = document.getElementById("eventMessage");
+                //         if (el_subtype == "auto") {
+                //             evtMsg.textContent = "This event will be triggered immediately once the page loads.";
+                //         } else {
+                //             evtMsg.textContent = "This event will be triggered only from clicking this link."
+                //         }
+                //     }
 
-                    const prop = document.getElementById('modaleventInput');
-                    const oper = document.getElementById('eventComparisonModal');
-                    const amt = document.getElementById('modaleventInput2');
+                //     const prop = document.getElementById('modaleventInput');
+                //     const oper = document.getElementById('operator');
+                //     const amt = document.getElementById('modaleventInput2');
 
-                    if (prop) prop.value = p;
-                    if (oper) oper.value = o;
-                    if (amt) amt.value = v;
+                //     if (prop) prop.value = p;
+                //     if (oper) oper.value = o;
+                //     if (amt) amt.value = v;
 
-                    break;
-                }
+                //     break;
+                // }
             }
 
             if (modalTitle) {
@@ -947,58 +1231,58 @@ export function initModals() {
 
 
     // --- EVENT ---
-    const eventForm = document.getElementById('eventFormModal');
-    if (eventForm) {
-        eventForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(eventForm);
+    // const eventForm = document.getElementById('eventFormModal');
+    // if (eventForm) {
+    //     eventForm.addEventListener('submit', function (e) {
+    //         e.preventDefault();
+    //         const formData = new FormData(eventForm);
 
-            const uuid = formData.get('hiddeneventuuid');
-            const evttype = formData.get('modaleventType');
-            const property = formData.get('modaleventInput');
-            const operator = formData.get('eventComparisonModal');
-            const amount = formData.get('modaleventInput2');
-            const value = `${evttype}_${property}_${operator}_${amount}`;
+    //         const uuid = formData.get('hiddeneventuuid');
+    //         const evttype = formData.get('modaleventType');
+    //         const property = formData.get('modaleventInput');
+    //         const operator = formData.get('operator');
+    //         const amount = formData.get('modaleventInput2');
+    //         const value = `${evttype}_${property}_${operator}_${amount}`;
 
-            const assembledData = {
-                uuid,
-                newDataObj: {
-                    evttype,
-                    title: "event",
-                    property,
-                    operator,
-                    amount,
-                    value,
-                },
-            };
+    //         const assembledData = {
+    //             uuid,
+    //             newDataObj: {
+    //                 evttype,
+    //                 title: "event",
+    //                 property,
+    //                 operator,
+    //                 amount,
+    //                 value,
+    //             },
+    //         };
 
-            const method = formData.get('eventrequest') === 'POST' ? 'POST' : 'PUT';
+    //         const method = formData.get('eventRequest') === 'POST' ? 'POST' : 'PUT';
 
-            $.ajax({
-                url: '/page/api',
-                type: method,
-                data:
-                    method === 'POST'
-                        ? {
-                            uuid: formData.get('hiddeneventuuid'),
-                            section: formData.get('section'),
-                            type: 'event',
-                            evttype,
-                            title: "",
-                            property,
-                            operator,
-                            amount,
-                            value,
-                        }
-                        : { ...assembledData },
-                success: function (data) {
-                    $('#myChoiceToast').toast?.('show');
-                    updateDisplay(data);
-                },
-                complete: function () {
-                    $('.elementModal').modal?.('hide');
-                },
-            });
-        });
-    }
+    //         $.ajax({
+    //             url: '/page/api',
+    //             type: method,
+    //             data:
+    //                 method === 'POST'
+    //                     ? {
+    //                         uuid: formData.get('hiddeneventuuid'),
+    //                         section: formData.get('section'),
+    //                         type: 'event',
+    //                         evttype,
+    //                         title: "",
+    //                         property,
+    //                         operator,
+    //                         amount,
+    //                         value,
+    //                     }
+    //                     : { ...assembledData },
+    //             success: function (data) {
+    //                 $('#myChoiceToast').toast?.('show');
+    //                 updateDisplay(data);
+    //             },
+    //             complete: function () {
+    //                 $('.elementModal').modal?.('hide');
+    //             },
+    //         });
+    //     });
+    // }
 }
