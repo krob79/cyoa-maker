@@ -11,14 +11,14 @@
       },
       {
         "name": "butts",
-        "amount": 7,
+        "amount": 0,
         "meta": {
           "createdAt": "2026-05-24T15:54:52.745Z"
         }
       },
       {
         "name": "poops",
-        "amount": 4,
+        "amount": 11,
         "meta": {
           "createdAt": "2026-05-25T21:29:41.402Z"
         }
@@ -28,6 +28,41 @@
         "amount": 0,
         "meta": {
           "createdAt": "2026-05-25T21:54:18.584Z"
+        }
+      },
+      {
+        "name": "idiot",
+        "amount": null,
+        "meta": {
+          "createdAt": "2026-05-27T02:09:52.138Z"
+        }
+      },
+      {
+        "name": "key",
+        "amount": 1,
+        "meta": {
+          "createdAt": "2026-05-28T01:52:01.124Z"
+        }
+      },
+      {
+        "name": "keyzzz",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-05-28T01:54:29.007Z"
+        }
+      },
+      {
+        "name": "New Auto Event On Page",
+        "amount": 1,
+        "meta": {
+          "createdAt": "2026-05-29T21:01:30.879Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-dcebf",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-05-29T21:39:31.500Z"
         }
       }
     ],

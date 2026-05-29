@@ -92,6 +92,7 @@ class StoryService {
         uuid: randuuid,
         subtype: 'user',
         type: 'event',
+        displayevent: false,
         value: `user_placeholderEvent-${shortId}_+_0`,
         elements: [],
       };

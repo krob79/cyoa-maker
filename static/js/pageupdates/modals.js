@@ -117,9 +117,10 @@ async function submitImage(e) {
     });
 }
 
-function getCheckboxValue(fd, fieldName) {
-    const v = fd.get(fieldName);
-    return v === 'on' || v === 'true' || v === '1';
+function getCheckboxValue(fieldId) {
+    const el = document.getElementById(fieldId);
+    //console.log("-----CHECKBOX VALUE: " + (v === 'on' || v === 'true' || v === '1'));
+    return el.checked;
 }
 
 function getMethod(fd, requestField) {
@@ -380,7 +381,7 @@ const modalOpenConfigs = {
             const uuid = fd.get('uuid');
             const section = fd.get('section');
             const value = (fd.get('modaltextInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'textnewline');
+            const newline = getCheckboxValue('textnewline');
 
             return {
                 method,
@@ -412,7 +413,7 @@ const modalOpenConfigs = {
 
             if (isEdit) {
                 setValue(modal, '[name="modaldynamicInput"]', data.value);
-                setChecked(modal, '[name="dynamicnewline"]', data.newline === 'true');
+                setChecked(modal, '[name="dynamicnewline"]', data.newline);
                 setValue(modal, '[name="dynamicrequest"]', 'PUT');
             } else {
                 setValue(modal, '[name="dynamicrequest"]', 'POST');
@@ -424,7 +425,7 @@ const modalOpenConfigs = {
             const uuid = fd.get('uuid');
             const section = fd.get('section');
             const value = (fd.get('modaldynamicInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'dynamicnewline');
+            const newline = eventDisplayEvent(fd, 'dynamicnewline');
 
             return {
                 method,
@@ -483,8 +484,8 @@ const modalOpenConfigs = {
             const section = fd.get('section');
             const label = (fd.get('modalchoiceInput') || '').toString();
             const destination = fd.get('destinationModal') || "New";
-            const newline = getCheckboxValue(fd, 'choicenewline');
-            const hasEvents = getCheckboxValue(fd, 'choicedispatchevent');
+            const newline = getCheckboxValue('choicenewline');
+            const hasEvents = getCheckboxValue('choicedispatchevent');
 
             const submitChoiceToApi = (destUUID) => {
                 const finalValue = `${label}||${destUUID}`;
@@ -550,14 +551,14 @@ const modalOpenConfigs = {
         reset({ modal, data }) {
             console.log("---reset for event");
             setValue(modal, '[name="hiddeneventuuid"]', '');
-            setValue(modal, '[name="modaleventType"]', data.subType);
+            setValue(modal, '[name="modalEventType"]', data.subType);
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="comparisonModal"]', '');
             setValue(modal, '[name="eventRequest"]', '');
             setValue(modal, '[name="eventProperty"]', '');
             setValue(modal, '[name="eventOperator"]', '');
             setValue(modal, '[name="eventAmount"]', '');
-            setValue(modal, '[name="eventdisplayevent"]', '');
+            setChecked(modal, '[name="eventDisplayEvent"]', false);
         },
 
         prefill({ modal, data }) {
@@ -565,7 +566,7 @@ const modalOpenConfigs = {
             const isEdit = data.request === 'PUT';
 
             setValue(modal, '[name="hiddeneventuuid"]', data.uuid);
-            setValue(modal, '[name="modaleventType"]', data.subType);
+            setValue(modal, '[name="modalEventType"]', data.subType);
             setValue(modal, '[name="section"]', data.section);
 
             if (!isEdit) {
@@ -579,19 +580,22 @@ const modalOpenConfigs = {
             setValue(modal, '[name="eventProperty"]', data.property);
             setValue(modal, '[name="eventOperator"]', data.operator);
             setValue(modal, '[name="eventAmount"]', data.amount);
+            setChecked(modal, '[name="eventDisplayEvent"]', data.displayevent);
+
 
 
         },
 
         buildPayload(fd, data) {
+            console.log("----building payload");
             const method = getMethod(fd, 'eventRequest');
-            const subtype = getValue(modal, 'modaleventType');
-            const property = getValue(modal, 'eventProperty');
-            const operator = getValue(modal, 'eventOperator');
-            const amount = getValue(modal, 'eventAmount');
+            const subtype = getValue(fd, 'modalEventType');
+            const property = getValue(fd, 'eventProperty');
+            const operator = getValue(fd, 'eventOperator');
+            const amount = getValue(fd, 'eventAmount');
             const value = `${subtype}_${property}_${operator}_${amount}`;
             console.log(`HERE'S WHAT'S COMING: ${value}`);
-            const displayevent = getValue(modal, 'eventDisplayEvent');
+            const displayevent = getCheckboxValue('eventDisplayEvent');
 
             return {
                 method,
@@ -601,11 +605,16 @@ const modalOpenConfigs = {
                             uuid: fd.get('hiddeneventuuid'),
                             section: fd.get('section'),
                             type: 'event',
+                            subtype,
+                            property,
+                            operator,
+                            amount,
                             value,
+                            displayevent,
                         }
                         : {
                             uuid: fd.get('hiddeneventuuid'),
-                            newDataObj: { value, operator },
+                            newDataObj: { subtype, property, operator, amount, value, displayevent },
                         },
             };
         },
@@ -695,7 +704,7 @@ const modalConfigs = {
             const uuid = fd.get('uuid');
             const section = fd.get('section');
             const value = (fd.get('modaltextInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'textnewline');
+            const newline = getCheckboxValue('textnewline');
 
             return {
                 method,
@@ -715,7 +724,7 @@ const modalConfigs = {
             const uuid = fd.get('uuid');
             const section = fd.get('section');
             const value = (fd.get('modaldynamicInput') || '').toString();
-            const newline = getCheckboxValue(fd, 'dynamicnewline');
+            const newline = getCheckboxValue('dynamicnewline');
 
             return {
                 method,
@@ -771,13 +780,13 @@ const modalConfigs = {
         toastId: '#myEventToast',
         buildPayload(fd, modal) {
             const method = fd.get('eventRequest');
-            const subtype = fd.get('modaleventType');
+            const subtype = fd.get('modalEventType');
             const property = fd.get('eventProperty');
             const operator = fd.get('eventOperator');
             const amount = fd.get('eventAmount');
             const value = `${subtype}_${property}_${operator}_${amount}`;
 
-            const displayevent = fd.get('eventdisplayevent');
+            const displayevent = getCheckboxValue('eventDisplayEvent');
 
             return {
                 method,
@@ -791,10 +800,11 @@ const modalConfigs = {
                             operator,
                             amount,
                             value,
+                            displayevent
                         }
                         : {
                             uuid: fd.get('hiddeneventuuid'),
-                            newDataObj: { property, operator, amount, value },
+                            newDataObj: { property, operator, amount, value, displayevent },
                         },
             };
         },
@@ -839,8 +849,8 @@ const modalConfigs = {
             const section = fd.get('section');
             const label = (fd.get('modalchoiceInput') || '').toString();
             const destination = fd.get('destinationModal') || "New";
-            const newline = getCheckboxValue(fd, 'choicenewline');
-            const hasEvents = getCheckboxValue(fd, 'choicedispatchevent');
+            const newline = getCheckboxValue('choicenewline');
+            const hasEvents = getCheckboxValue('choicedispatchevent');
 
             const submitChoiceToApi = (destUUID) => {
                 const finalValue = `${label}||${destUUID}`;
@@ -1191,7 +1201,7 @@ export function initModals() {
                 //     if (el_subtype) {
                 //         console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
                 //         eType = el_subtype;
-                //         document.getElementById('modaleventType').value = el_subtype;
+                //         document.getElementById('modalEventType').value = el_subtype;
                 //         let evtMsg = document.getElementById("eventMessage");
                 //         if (el_subtype == "auto") {
                 //             evtMsg.textContent = "This event will be triggered immediately once the page loads.";
@@ -1238,7 +1248,7 @@ export function initModals() {
     //         const formData = new FormData(eventForm);
 
     //         const uuid = formData.get('hiddeneventuuid');
-    //         const evttype = formData.get('modaleventType');
+    //         const evttype = formData.get('modalEventType');
     //         const property = formData.get('modaleventInput');
     //         const operator = formData.get('operator');
     //         const amount = formData.get('modaleventInput2');

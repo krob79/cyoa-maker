@@ -180,7 +180,7 @@ export default (params) => {
             //if there's anything that gets put in this events array, it came from the session, and is therefore from a choice link
             //sessions are the key to carrying an event from a choice over to the next page
             const events = Array.isArray(request.session?.events) ? request.session.events : [];
-            console.log("---EVENT QUEUE: ", events);
+            //console.log("---EVENT QUEUE: ", events);
             //these should be user initiated events that are tied to a Choice, so they won't fire automatically
             //therefore, we are replacing the "user" portion of the event string with "auto", then parsing so it fires
             events.forEach((evt) => {
@@ -228,7 +228,7 @@ export default (params) => {
             }
 
             const events = Array.isArray(request.session?.events) ? request.session.events : [];
-            console.log("---EVENT QUEUE: ", events);
+            //console.log("---EVENT QUEUE: ", events);
             //these should be user initiated events that are tied to a Choice, so they won't fire automatically
             //therefore, we are replacing the "user" portion of the event string with "auto", then parsing so it fires
             events.forEach((evt) => {
@@ -313,6 +313,8 @@ export default (params) => {
         After all conditions have been displayed, any remaining events that have no conditions paired with them will display.
         */
         console.log("---checking all events");
+        //this is clearly test code - we need to finish this. The all events page needs to check if something is being used, and if it is not,
+        //it needs to be removed so we have proper cleanup and don't bulk up the file with old properties.
         let testProp = "woodencane";
         let removeProp = "banana";
         console.log(`-------checking for the existence of ${testProp} - ${inventory.hasAny(testProp)}`);
