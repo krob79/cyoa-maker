@@ -35,7 +35,7 @@ export default (params) => {
     const { storyService } = params;
 
     const resolveGroups = (conditionsArray) => {
-        console.log("---resolve groups");
+        //console.log("---resolve groups");
         //establish condition groups
         let allGroups = [];
         let group = [];
@@ -64,15 +64,15 @@ export default (params) => {
                 if (!inventory.check(allGroups[i][j].value)) {
                     groupPass = false;
                 }
-                console.log(`----checking ${allGroups[i][j].value}: ${inventory.check(allGroups[i][j].value)}`);
+                //console.log(`----checking ${allGroups[i][j].value}: ${inventory.check(allGroups[i][j].value)}`);
             }
-            console.log(`--------GROUP ${i} PASS: ${groupPass}`);
+            //console.log(`--------GROUP ${i} PASS: ${groupPass}`);
             if (groupPass == true) {
                 allGroupsPass = true;
                 break;
             }
         }
-        console.log("------FINAL CONDITION OUTCOME: " + allGroupsPass);
+        //console.log("------FINAL CONDITION OUTCOME: " + allGroupsPass);
         return allGroupsPass;
 
     }

@@ -51,6 +51,7 @@ function parseConditionString(str = '') {
 
 async function createLocalImgUploadPath(formData) {
     //the '/upload' route should be in server.js 
+    console.log("----createLocalImgUploadPath");
     const res = await fetch('/upload', { method: 'POST', body: formData });
     if (!res.ok) {
         const err = await res.text();
@@ -78,6 +79,7 @@ async function submitImage(e) {
     } else if (e.target.id === 'uploadImageFormModal_AI') {
         imgPath = formData.get('imagepath_ai');
     }
+    console.log("---We're done with creating an image!");
 
     const assembledData = {
         uuid: formData.get('uuid'),
@@ -338,13 +340,60 @@ const USE_NEW_MODAL_OPEN = {
     choice: true,
     dynamic: true,
     event: true,
-    image: false,
+    imageUpload: false,
     page: false,
     condition: true,
 };
 
 //config object for modal open - determining if "new" or "edit", what types of data to display, etc
 const modalOpenConfigs = {
+    imageUpload: {
+        modalId: 'imageUpdateModal',
+        formId: 'uploadFormModal',
+        toastId: '#myImageToast',
+
+        reset({ modal, data }) {
+            console.log("---RESET FOR TEXT");
+            setValue(modal, '[name="uuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modaltextInput"]', '');
+            setChecked(modal, '[name="textnewline"]', false);
+            setValue(modal, '[name="textrequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            console.log(`---PREFILL FOR TEXT - ${data.request}`);
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="uuid"]', data.uuid);
+            setValue(modal, '[name="section"]', data.section);
+
+
+            if (isEdit) {
+                setValue(modal, '[name="modaltextInput"]', data.value);
+                setChecked(modal, '[name="textnewline"]', data.newline === true);
+                setValue(modal, '[name="textrequest"]', 'PUT');
+            } else {
+                setValue(modal, '[name="textrequest"]', 'POST');
+            }
+        },
+
+        buildPayload(fd) {
+            const method = getMethod(fd, 'textrequest');
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');
+            const value = (fd.get('modaltextInput') || '').toString();
+            const newline = getCheckboxValue('textnewline');
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'text', value, newline }
+                        : { uuid, newDataObj: { value, newline } },
+            };
+        },
+    },
     text: {
         modalId: 'textUpdateModal',
         formId: 'textFormModal',
@@ -715,6 +764,25 @@ const modalConfigs = {
             };
         },
     },
+    imageUpload: {
+        formId: 'uploadFormModal',
+        toastId: '#myImageToast',
+        async buildPayload(fd, modal) {
+
+            const method = getMethod(fd, 'imagerequest');
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');
+            const value = await createLocalImgUploadPath(fd);
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'image', value }
+                        : { uuid, newDataObj: { value } },
+            };
+        },
+    },
 
     dynamic: {
         formId: 'dynamicFormModal',
@@ -1073,7 +1141,7 @@ export function initModals() {
                 return;
             }
 
-            if (el_type == "image" && USE_NEW_MODAL_OPEN.image) {
+            if (el_type == "image" && USE_NEW_MODAL_OPEN.imageUpload) {
                 console.log("----------OLD FEATURE DISABLED FOR IMAGE");
                 return;
             }
