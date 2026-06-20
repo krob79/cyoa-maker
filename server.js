@@ -114,7 +114,7 @@ async function deleteImage(filename) {
 
 //making a copy of an image from a local directory and placing it in the '/uploads' directory
 app.post('/upload', function (req, res) {
-    console.log("----from app.post /upload: ");
+    console.log("----from server.js app.post /upload: ");
     let sampleFile;
     let uploadPath;
     // console.log(req.files.file);

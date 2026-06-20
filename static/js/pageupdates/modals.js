@@ -75,9 +75,12 @@ async function submitImage(e) {
 
     // FIRST FETCH REQUEST (only for local file uploads)
     if (e.target.id === 'uploadFormModal') {
+        console.log("attempting to crete Img Upload Path...");
         imgPath = await createLocalImgUploadPath(formData);
     } else if (e.target.id === 'uploadImageFormModal_AI') {
         imgPath = formData.get('imagepath_ai');
+    } else {
+        console.log("---none of this image shit is working");
     }
     console.log("---We're done with creating an image!");
 
@@ -131,11 +134,15 @@ function getMethod(fd, requestField) {
 }
 
 function setValue(modal, selector, value) {
-    //console.log(`---ATTEMPTING TO SET VALUE - ${selector} - ${value}`)
+    console.log(`---ATTEMPTING TO SET VALUE - ${selector} - ${value}`);
+    //try {
     const el = modal.querySelector(selector);
     //console.log(`---SET VALUE - ${el.type} - ${el.name}`);
     if (el) el.value = value ?? '';
     //console.log(`---SETTING VALUE of ${selector} to ${value}... ${el.value}`);
+    //} catch (e) {
+    //console.log("---error using setValue function");
+    //}
 }
 
 function getValue(modal, selector) {
@@ -340,7 +347,7 @@ const USE_NEW_MODAL_OPEN = {
     choice: true,
     dynamic: true,
     event: true,
-    imageUpload: false,
+    imageUpload: true,
     page: false,
     condition: true,
 };
@@ -354,36 +361,43 @@ const modalOpenConfigs = {
 
         reset({ modal, data }) {
             console.log("---RESET FOR TEXT");
-            setValue(modal, '[name="uuid"]', '');
+            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
             setValue(modal, '[name="section"]', '');
-            setValue(modal, '[name="modaltextInput"]', '');
-            setChecked(modal, '[name="textnewline"]', false);
-            setValue(modal, '[name="textrequest"]', 'POST');
+            setValue(modal, '[name="modalimageInput"]', '');
+            setValue(modal, '[name="imagerequest"]', 'POST');
         },
 
         prefill({ modal, data }) {
             console.log(`---PREFILL FOR TEXT - ${data.request}`);
             const isEdit = data.request === 'PUT';
-
-            setValue(modal, '[name="uuid"]', data.uuid);
+            const imgPreview = document.getElementById("previewModal");
+            console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
+            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
+            console.log("---something went wrong with image upload");
             setValue(modal, '[name="section"]', data.section);
 
 
             if (isEdit) {
-                setValue(modal, '[name="modaltextInput"]', data.value);
-                setChecked(modal, '[name="textnewline"]', data.newline === true);
-                setValue(modal, '[name="textrequest"]', 'PUT');
+                imgPreview.src = `/uploads/${data.value}`;
+                setValue(modal, '[name="modalimageInput"]', data.value);
+                setValue(modal, '[name="imagerequest"]', 'PUT');
             } else {
-                setValue(modal, '[name="textrequest"]', 'POST');
+                imgPreview.src = ``;
+                try {
+                    setValue(modal, '[name="modalimageInput"]', '');
+                } catch (e) {
+                    console.log("---something went wrong with image upload");
+                }
+
+                setValue(modal, '[name="imagerequest"]', 'POST');
             }
         },
 
         buildPayload(fd) {
-            const method = getMethod(fd, 'textrequest');
-            const uuid = fd.get('uuid');
+            const method = getMethod(fd, 'imagerequest');
+            const uuid = fd.get('hiddenimageuuid');
             const section = fd.get('section');
-            const value = (fd.get('modaltextInput') || '').toString();
-            const newline = getCheckboxValue('textnewline');
+            const value = (fd.get('modalimageInput') || '').toString();
 
             return {
                 method,
@@ -764,25 +778,6 @@ const modalConfigs = {
             };
         },
     },
-    imageUpload: {
-        formId: 'uploadFormModal',
-        toastId: '#myImageToast',
-        async buildPayload(fd, modal) {
-
-            const method = getMethod(fd, 'imagerequest');
-            const uuid = fd.get('uuid');
-            const section = fd.get('section');
-            const value = await createLocalImgUploadPath(fd);
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? { uuid, section, type: 'image', value }
-                        : { uuid, newDataObj: { value } },
-            };
-        },
-    },
 
     dynamic: {
         formId: 'dynamicFormModal',
@@ -985,13 +980,13 @@ const modalConfigs = {
             const payload =
                 method === 'POST'
                     ? {
-                        uuid: fd.get('uuid'),
+                        uuid: fd.get('hiddenimageuuid'),
                         section: fd.get('section'),
                         type: 'image',
                         value: imgPath
                     }
                     : {
-                        uuid: fd.get('uuid'),
+                        uuid: fd.get('hiddenimageuuid'),
                         newDataObj: {
                             value: imgPath,
                         },
@@ -1087,6 +1082,7 @@ if (USE_NEW_MODAL_OPEN.imageUpload) {
 /**
  * Wire up all modal open/close events and form submissions.
  */
+
 export function initModals() {
     // --- AI image modal prefill ---
     document.querySelectorAll('.elementAiModal').forEach((modal) => {
@@ -1180,115 +1176,12 @@ export function initModals() {
                 console.log("---No newline checkbox found");
             }
 
-
-
             const requestField = document.getElementById(`${el_type}request`);
             if (requestField) requestField.value = button.dataset.bsRequest || 'PUT';
             const btn_request = button.dataset.bsRequest || 'PUT';
 
             if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
-            //console.log(`----what is UUID INPUT? ${uuidinput}`);
 
-            switch (el_type) {
-                // case 'text':
-                //     console.log("----WE'RE USING THE OLD TEXT CODE!");
-                //     createConditionEditLink();
-                //     // if (modalInput) modalInput.value = el_value || '';
-                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
-                //     break;
-
-                // case 'dynamic':
-                //     createConditionEditLink();
-                //     // if (modalInput) modalInput.value = el_value || '';
-                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
-                //     break;
-
-                // case 'image': {
-                //     createConditionEditLink();
-                //     const imgPreview = /** @type {HTMLImageElement} */ (document.getElementById('previewModal'));
-                //     if (imgPreview) {
-                //         if (btn_request === 'PUT') {
-                //             imgPreview.src = `/uploads/${el_value}`;
-                //             imgPreview.style.display = 'block';
-                //         } else {
-                //             imgPreview.style.display = 'none';
-                //         }
-                //     }
-                //     break;
-                // }
-
-                // case 'choice': {
-                //     createConditionEditLink();
-                //     const [label, dest] = String(el_value || '').split('||');
-                //     modalInput.value = label;
-                //     const dropdown = /** @type {HTMLSelectElement} */ (document.getElementById('choiceDestinationModal'));
-                //     const hiddendestination = /** @type {HTMLInputElement} */ (document.getElementById('destinationModal'));
-                //     const hiddenstoryuuid = /** @type {HTMLInputElement} */ (document.getElementById('hiddenstoryuuid'));
-                //     const evtCheckbox = /** @type {HTMLInputElement} */ (document.getElementById('choicedispatchevent'));
-                //     const evtIsChecked = elData.hasEvents;
-
-                //     evtCheckbox.checked = evtIsChecked;
-                //     console.log(`-----------EVENT CHKBOX  ${evtCheckbox.checked} - DISPATCH EVENT ${evtIsChecked}`);
-                //     if (hiddenstoryuuid) hiddenstoryuuid.value = button.dataset.bsStoryuuid || '';
-                //     //if (modalInput) modalInput.value = label || '';
-
-                //     if (!dest) {
-                //         if (dropdown) dropdown.value = 'New';
-                //         if (hiddendestination) hiddendestination.value = 'New';
-                //     } else {
-                //         if (dropdown) dropdown.value = dest;
-                //         if (hiddendestination) hiddendestination.value = dest;
-                //     }
-                //     break;
-                // }
-
-                // case 'page':
-                //     // if (modalInput) modalInput.value = el_value || '';
-                //     modalInput.value = btn_request === 'POST' ? `` : el_value;
-                //     break;
-
-                // case 'condition': {
-                //     console.log("----condition before parsing..", el_value);
-                //     const and_radio = document.querySelector('input[name="booloperator"]').value;
-                //     document.querySelector('input[name="booloperator"][value="or"]').checked = (elData.booloperator === "or");
-                //     console.log("------CONDITION AND/OR: ", elData.booloperator);
-                //     const [lhs, op, rhs] = parseConditionString(el_value);
-                //     const a = document.getElementById('modalConditionProperty');
-                //     const o = document.getElementById('modalConditionOperator');
-                //     const b = document.getElementById('modalConditionAmount');
-                //     if (a) a.value = lhs;
-                //     if (o) o.value = op;
-                //     if (b) b.value = rhs;
-                //     break;
-                // }
-
-                // case 'event': {
-                //     createConditionEditLink();
-                //     let [eType = '', p = '', o = '', v = ''] = String(el_value || '').split('_');
-                //     console.log(`eType: ${eType}, p: ${p}, o: ${o}, v: ${v}`);
-                //     if (el_subtype) {
-                //         console.log("---EVENT SUBTYPE FOUND: ", el_subtype);
-                //         eType = el_subtype;
-                //         document.getElementById('modalEventType').value = el_subtype;
-                //         let evtMsg = document.getElementById("eventMessage");
-                //         if (el_subtype == "auto") {
-                //             evtMsg.textContent = "This event will be triggered immediately once the page loads.";
-                //         } else {
-                //             evtMsg.textContent = "This event will be triggered only from clicking this link."
-                //         }
-                //     }
-
-                //     const prop = document.getElementById('modaleventInput');
-                //     const oper = document.getElementById('operator');
-                //     const amt = document.getElementById('modaleventInput2');
-
-                //     if (prop) prop.value = p;
-                //     if (oper) oper.value = o;
-                //     if (amt) amt.value = v;
-
-                //     break;
-                // }
-            }
 
             if (modalTitle) {
                 modalTitle.textContent = btn_request === 'POST' ? `Create new ${el_type}` : `Edit ${el_type}`;
@@ -1308,59 +1201,4 @@ export function initModals() {
     });
 
 
-    // --- EVENT ---
-    // const eventForm = document.getElementById('eventFormModal');
-    // if (eventForm) {
-    //     eventForm.addEventListener('submit', function (e) {
-    //         e.preventDefault();
-    //         const formData = new FormData(eventForm);
-
-    //         const uuid = formData.get('hiddeneventuuid');
-    //         const evttype = formData.get('modalEventType');
-    //         const property = formData.get('modaleventInput');
-    //         const operator = formData.get('operator');
-    //         const amount = formData.get('modaleventInput2');
-    //         const value = `${evttype}_${property}_${operator}_${amount}`;
-
-    //         const assembledData = {
-    //             uuid,
-    //             newDataObj: {
-    //                 evttype,
-    //                 title: "event",
-    //                 property,
-    //                 operator,
-    //                 amount,
-    //                 value,
-    //             },
-    //         };
-
-    //         const method = formData.get('eventRequest') === 'POST' ? 'POST' : 'PUT';
-
-    //         $.ajax({
-    //             url: '/page/api',
-    //             type: method,
-    //             data:
-    //                 method === 'POST'
-    //                     ? {
-    //                         uuid: formData.get('hiddeneventuuid'),
-    //                         section: formData.get('section'),
-    //                         type: 'event',
-    //                         evttype,
-    //                         title: "",
-    //                         property,
-    //                         operator,
-    //                         amount,
-    //                         value,
-    //                     }
-    //                     : { ...assembledData },
-    //             success: function (data) {
-    //                 $('#myChoiceToast').toast?.('show');
-    //                 updateDisplay(data);
-    //             },
-    //             complete: function () {
-    //                 $('.elementModal').modal?.('hide');
-    //             },
-    //         });
-    //     });
-    // }
 }

@@ -11,14 +11,14 @@
       },
       {
         "name": "butts",
-        "amount": 4,
+        "amount": 8,
         "meta": {
           "createdAt": "2026-05-24T15:54:52.745Z"
         }
       },
       {
         "name": "poops",
-        "amount": 15,
+        "amount": 17,
         "meta": {
           "createdAt": "2026-05-25T21:29:41.402Z"
         }
@@ -63,6 +63,13 @@
         "amount": 0,
         "meta": {
           "createdAt": "2026-05-29T21:39:31.500Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-d78a8",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-06-20T19:36:27.219Z"
         }
       }
     ],

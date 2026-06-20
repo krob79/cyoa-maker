@@ -6,7 +6,7 @@ console.log("------NEW MAIN.JS!!");
 
 document.addEventListener('DOMContentLoaded', () => {
     initDragDrop();
-    initModals();
+    //initModals();
     initializeDeleteButtons();
     initializeDeleteButtonFromModal();
 });
