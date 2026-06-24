@@ -11,7 +11,7 @@
       },
       {
         "name": "butts",
-        "amount": 8,
+        "amount": 4,
         "meta": {
           "createdAt": "2026-05-24T15:54:52.745Z"
         }
@@ -70,6 +70,27 @@
         "amount": 0,
         "meta": {
           "createdAt": "2026-06-20T19:36:27.219Z"
+        }
+      },
+      {
+        "name": "apples",
+        "amount": 1,
+        "meta": {
+          "createdAt": "2026-06-23T15:46:15.012Z"
+        }
+      },
+      {
+        "name": "fromAppleTree",
+        "amount": 1,
+        "meta": {
+          "createdAt": "2026-06-23T23:14:12.734Z"
+        }
+      },
+      {
+        "name": "appleVisits",
+        "amount": 5,
+        "meta": {
+          "createdAt": "2026-06-23T23:42:27.343Z"
         }
       }
     ],

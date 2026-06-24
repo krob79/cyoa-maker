@@ -220,7 +220,6 @@ function submitJsonToPageApi({
         contentType: 'application/json; charset=UTF-8',
         processData: false,
         success: function (data) {
-            console.log("----success with submitJsonToPageApi!!");
             if (toastId) $(toastId).toast?.('show');
             updateDisplay(data);
         },
@@ -348,7 +347,7 @@ const USE_NEW_MODAL_OPEN = {
     dynamic: true,
     event: true,
     imageUpload: true,
-    page: false,
+    page: true,
     condition: true,
 };
 
@@ -452,6 +451,50 @@ const modalOpenConfigs = {
                     method === 'POST'
                         ? { uuid, section, type: 'text', value, newline }
                         : { uuid, newDataObj: { value, newline } },
+            };
+        },
+    },
+    page: {
+        modalId: 'pageUpdateModal',
+        formId: 'pageFormModal',
+        toastId: '#myPageToast',
+
+        reset({ modal, data }) {
+            console.log("---RESET FOR PAGE");
+            setValue(modal, '[name="uuid"]', '');
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modalpageInput"]', '');
+            setValue(modal, '[name="pagerequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            console.log(`---PREFILL FOR PAGE - ${data.request}`);
+            const isEdit = data.request === 'PUT';
+
+            setValue(modal, '[name="uuid"]', data.uuid);
+            setValue(modal, '[name="section"]', data.section);
+
+
+            if (isEdit) {
+                setValue(modal, '[name="modalpageInput"]', data.value);
+                setValue(modal, '[name="pagerequest"]', 'PUT');
+            } else {
+                setValue(modal, '[name="pagerequest"]', 'POST');
+            }
+        },
+
+        buildPayload(fd) {
+            const method = getMethod(fd, 'pagerequest');
+            const uuid = fd.get('uuid');
+            const section = fd.get('section');
+            const value = (fd.get('modalpageInput') || '').toString();
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'page', value }
+                        : { uuid, newDataObj: { value } },
             };
         },
     },
@@ -1085,6 +1128,7 @@ if (USE_NEW_MODAL_OPEN.imageUpload) {
 
 export function initModals() {
     // --- AI image modal prefill ---
+    /*
     document.querySelectorAll('.elementAiModal').forEach((modal) => {
         modal.addEventListener('show.bs.modal', (event) => {
             const button = event.relatedTarget;
@@ -1093,11 +1137,13 @@ export function initModals() {
             if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
         });
     });
+    */
 
 
 
     // --- Element modals (text/image/choice/page/condition/event) ---
     // code that fires when a modal is opened
+    /*
     document.querySelectorAll('.elementModal').forEach((modal) => {
         modal.addEventListener('show.bs.modal', async (event) => {
             const button = event.relatedTarget;
@@ -1191,6 +1237,7 @@ export function initModals() {
         // Placeholder for any per-modal teardown if needed later
         modal.addEventListener('hidden.bs.modal', () => { });
     });
+    */
 
     // Clear bootstrap remote cache when hidden (jQuery style used in your code)
     $('.elementModal').on?.('hidden.bs.modal', function () {
