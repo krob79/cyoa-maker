@@ -1,1 +1,591 @@
-[{"title":"Story Title","uuid":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"story","value":"Story Title","elements":[{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"The Fork In The Road","uuid":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"page","value":"The Fork In The Road","newline":false,"elements":[{"uuid":"2e9e61e8-c7c4-48c3-a9ce-0aaf927aae04","section":"elements","type":"image","value":"cyoa_fork.png","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","elements":[]},{"uuid":"07cc5faa-80ce-4ebb-825d-d7ef2ed9d905","title":"Here&#x27;s some more","parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","type":"text","value":"You are walking in the forest when you approach a fork in the path. Which path do you take?","newline":true,"elements":[]},{"uuid":"8a3a68a9-afbb-4385-ad3d-81ff46dbfacf","section":"elements","type":"choice","value":"Take The Left Path||c74c8c0f-28f1-4874-ac9b-539d984326d0","newline":false,"hasEvents":false,"parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","elements":[]},{"uuid":"f6adb153-808e-49e2-93a0-ee65bf31b13f","section":"elements","type":"choice","value":"Take the Right Path||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","newline":false,"hasEvents":true,"parent":"5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","elements":[{"parent":"f6adb153-808e-49e2-93a0-ee65bf31b13f","title":"Placeholder User Event","uuid":"842f1557-da79-42c2-8402-cf2edaf422ba","type":"event","value":"auto_fromAppleTree_=_0","elements":[],"property":"fromAppleTree","operator":"=","amount":"0","displayevent":true}]}]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Left Path - Apple Tree","uuid":"c74c8c0f-28f1-4874-ac9b-539d984326d0","type":"page","value":"Left Path - Apple Tree","elements":[{"uuid":"e9a1b02a-2fb5-4c8f-acd0-092979d6fc5b","section":"elements","type":"image","value":"cyoa_leftpath_appleTree1.png","parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"a9d39a7e-5096-427e-a134-3bc1e59c892d","section":"elements","type":"condition","property":"apples","operator":"<","amount":"1","value":"apples<1","booloperator":"and","parent":"e9a1b02a-2fb5-4c8f-acd0-092979d6fc5b","elements":[]}]},{"uuid":"0567c428-8812-4e81-852e-df666d4c7d6e","section":"elements","type":"image","value":"cyoa_leftpath_appleTree2.png","parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"0e575a1b-dd7b-498f-93bc-99b745dc6e30","section":"elements","type":"condition","property":"apples","operator":">","amount":"0","value":"apples>0","booloperator":"and","parent":"0567c428-8812-4e81-852e-df666d4c7d6e","elements":[]}]},{"uuid":"ee0020d6-57d8-48f6-a687-8ea2765ac55b","section":"elements","type":"event","property":"appleVisits","operator":"+","amount":"1","value":"auto_appleVisits_+_1","displayevent":true,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[],"title":"Event"},{"uuid":"476e8dd5-aa05-4824-9e2e-16bde2fbd612","section":"elements","type":"text","value":"You take the left path and continue walking.","newline":true,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[]},{"uuid":"6f0dbc49-6ff1-4db0-84b8-1f4c740049ae","section":"elements","type":"text","value":"You come across a tree","newline":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"cb7eae29-a05f-4c9f-89f7-a630a86b3f33","section":"elements","type":"condition","property":"appleVisits","operator":"<","amount":"2","value":"appleVisits<2","booloperator":"and","parent":"6f0dbc49-6ff1-4db0-84b8-1f4c740049ae","elements":[]}]},{"uuid":"111d5ab3-d39c-45d6-87fc-a21bb7b3359d","section":"elements","type":"text","value":"You're back at the apple tree","newline":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"d090107e-4ef0-44e7-828e-80e03e73a13c","section":"elements","type":"condition","property":"appleVisits","operator":">","amount":"1","value":"appleVisits>1","booloperator":"and","parent":"111d5ab3-d39c-45d6-87fc-a21bb7b3359d","elements":[]}]},{"uuid":"9bc8a39e-8feb-4f81-bbe4-37c062396f65","section":"elements","type":"text","value":", displaying a single apple from its branch.","newline":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"75f92600-618d-413c-bc37-0d9c81e5e384","section":"elements","type":"condition","property":"apples","operator":"<","amount":"1","value":"apples<1","booloperator":"and","parent":"9bc8a39e-8feb-4f81-bbe4-37c062396f65","elements":[]}]},{"uuid":"00b3f8d5-756d-40bb-b1d6-1b162b95601d","section":"elements","type":"text","value":", one of its branches bent from where you picked its apple.","newline":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"uuid":"ec744a9d-92c1-4f19-a2e5-160a7d5bd991","section":"elements","type":"condition","property":"apples","operator":">","amount":"0","value":"apples>0","booloperator":"and","parent":"00b3f8d5-756d-40bb-b1d6-1b162b95601d","elements":[]}]},{"uuid":"63bf559a-c4f2-4ca2-9251-789756afeaea","section":"elements","type":"text","value":"What now?","newline":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[]},{"uuid":"4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47","section":"elements","type":"choice","value":"Pick The Apple||Event","newline":false,"hasEvents":true,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"parent":"4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47","title":"Placeholder User Event","uuid":"9cdf2ec0-60cc-4a38-8ded-3a563d419ec8","subtype":"user","type":"event","displayevent":true,"value":"auto_apples_+_1","elements":[],"property":"apples","operator":"+","amount":"1"},{"uuid":"1807b363-06ed-47a2-a6bf-b178ce2e1026","section":"elements","type":"condition","property":"apples","operator":"<","amount":"1","value":"apples<1","booloperator":"and","parent":"4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47","elements":[]}],"title":"user_placeholderEvent-9cdf2_+_0"},{"uuid":"2c1a4305-3a5f-4ec9-b3b2-eb492afb17d0","section":"elements","type":"choice","value":"Continue On The Path||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","newline":false,"hasEvents":true,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[{"parent":"2c1a4305-3a5f-4ec9-b3b2-eb492afb17d0","title":"Placeholder User Event","uuid":"e522e22f-7d64-4af1-9305-6ea37e579a15","type":"event","value":"auto_fromAppleTree_=_1","elements":[],"property":"fromAppleTree","operator":"=","amount":"1","displayevent":true}]},{"uuid":"ea5f8884-472c-4f01-9a74-f9238a0ff05e","section":"elements","type":"choice","value":"Head Back To Fork||5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","newline":false,"hasEvents":false,"parent":"c74c8c0f-28f1-4874-ac9b-539d984326d0","elements":[]}]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Right Path - Further Down","uuid":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","type":"page","value":"Right Path - Further Down","elements":[{"uuid":"5d1d2fc0-c0fc-4205-bb42-a4af9a0d7530","section":"elements","type":"image","value":"cyoa_furtherPath.png","parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[]},{"uuid":"4b5112e1-0c98-422c-9912-3bdee4739434","section":"elements","type":"text","value":"This is further down the path. Yay.","newline":true,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[]},{"uuid":"c3b3355a-3d45-4dc0-8804-4a006df83d28","section":"elements","type":"text","value":"You notice a small path curving sharply to the left.","newline":false,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[{"uuid":"e4dbffbc-3025-47c9-9141-3cf44d1398ec","section":"elements","type":"condition","property":"fromAppleTree","operator":"<","amount":"1","value":"fromAppleTree<1","booloperator":"and","parent":"c3b3355a-3d45-4dc0-8804-4a006df83d28","elements":[]}]},{"uuid":"724b22ad-13e7-4b06-82aa-c966dee40886","section":"elements","type":"choice","value":"Check Out The Left Path||c74c8c0f-28f1-4874-ac9b-539d984326d0","newline":false,"hasEvents":false,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[{"uuid":"d113fa05-7f93-45fe-b148-e4c810136953","section":"elements","type":"condition","property":"fromAppleTree","operator":"<","amount":"1","value":"fromAppleTree<1","booloperator":"and","parent":"724b22ad-13e7-4b06-82aa-c966dee40886","elements":[]}]},{"uuid":"266b9739-5b35-4af7-a957-f198482a252c","section":"elements","type":"text","value":"You notice a path curving sharply to the right.","newline":false,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[{"uuid":"84b5fcf7-066f-46e5-b99e-c26349a1fcdf","section":"elements","type":"condition","property":"fromAppleTree","operator":">","amount":"0","value":"fromAppleTree>0","booloperator":"and","parent":"266b9739-5b35-4af7-a957-f198482a252c","elements":[]}]},{"uuid":"88912a29-6b1d-44a9-9dac-9557ab10a9ba","section":"elements","type":"choice","value":"Check Out The Sharp Path To The Right||5c994d03-9d1e-4a55-b1c6-6999a7b5d47e","newline":false,"hasEvents":false,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[{"uuid":"ecada12e-8b87-4d38-a189-46f6200c1a72","section":"elements","type":"condition","property":"fromAppleTree","operator":">","amount":"0","value":"fromAppleTree>0","booloperator":"and","parent":"88912a29-6b1d-44a9-9dac-9557ab10a9ba","elements":[]}]},{"uuid":"c0be4b20-020a-43ef-b712-cf81f575afe7","section":"elements","type":"choice","value":"Go Back to The Apple Tree||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","newline":false,"hasEvents":false,"parent":"e91a8a4e-283a-4147-bcdf-7ac6cd1c994f","elements":[{"uuid":"734dcaa9-7d0a-478e-95ce-063b2d67ee0c","section":"elements","type":"condition","property":"fromAppleTree","operator":">","amount":"0","value":"fromAppleTree>0","booloperator":"and","parent":"c0be4b20-020a-43ef-b712-cf81f575afe7","elements":[]}]}]},{"uuid":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","title":"Test Page","parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"page","value":"Test Page","elements":[{"uuid":"fdbae4df-ea5b-4063-87dc-155636f1fb23","section":"elements","type":"text","value":"This is a test page","newline":true,"parent":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","elements":[]},{"uuid":"9dc67e5f-776d-4b5b-9301-3aff7af4c759","section":"elements","type":"event","property":"apples","operator":"=","amount":"0","value":"auto_apples_=_0","displayevent":true,"parent":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","elements":[],"title":"Event"},{"uuid":"0b8d200e-0245-4429-95eb-d46f9e1c33ba","section":"elements","type":"event","property":"appleVisits","operator":"+","amount":"0","value":"auto_appleVisits_+_0","displayevent":false,"parent":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","elements":[],"title":"Event"},{"uuid":"5973d342-928e-443c-adde-b39a61b52ae6","section":"elements","type":"choice","value":"Do Stuff||4eae7c30-f299-4a07-9851-53ea1adc58db","newline":false,"hasEvents":false,"parent":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","elements":[]},{"uuid":"eeeac3a9-3955-4e21-9810-cbb4c2efbd0f","section":"elements","type":"event","property":"key","operator":"=","amount":"69","value":"auto_key_=_69","displayevent":false,"parent":"4d7b15ac-cba5-4eef-b02e-7cbc09d91061","elements":[],"title":"Event"}]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Do Stuff","uuid":"4eae7c30-f299-4a07-9851-53ea1adc58db","type":"page","value":"Do Stuff","elements":[]},{"uuid":"312db3f3-fdd1-4d4a-a1c5-edc5cd2ef37f","title":"BBBBBBBB","parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"page","value":"BBBBBBBB","elements":[]},{"uuid":"d301d324-f1bb-4063-9e52-0c6c1eb8c969","title":"CCCCCCCCC","parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"page","value":"CCCCCCCCC","elements":[]},{"uuid":"c5ba3ceb-d033-4bce-971a-4c862ec4e066","title":"DDDDDDDDD","parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"page","value":"DDDDDDDDD","elements":[]},{"uuid":"5f8ba7b3-0c6f-477b-8a78-c1faad0fa826","title":"EEEEEEEEEEE","parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","type":"page","value":"EEEEEEEEEEE","elements":[]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Do Stuff","uuid":"5803abb6-c3a2-4f81-96f7-e2facaa6ac97","type":"page","value":"Do Stuff","elements":[]},{"parent":"b69d00be-744f-465c-bb90-c2a3a938ce20","title":"Test Page 2","uuid":"5b45cf13-111d-413d-b374-2b071389282d","type":"page","value":"Test Page 2","elements":[{"uuid":"aecd2609-64dc-4fa2-97ae-58e1ef403a90","section":"elements","type":"choice","value":"Go Back To Test Page 1||4d7b15ac-cba5-4eef-b02e-7cbc09d91061","newline":false,"hasEvents":false,"parent":"5b45cf13-111d-413d-b374-2b071389282d","elements":[]}]}]}]
+[
+  {
+    "title": "Story Title",
+    "uuid": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+    "type": "story",
+    "value": "Story Title",
+    "elements": [
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "The Fork In The Road",
+        "uuid": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+        "type": "page",
+        "value": "The Fork In The Road",
+        "newline": false,
+        "elements": [
+          {
+            "uuid": "2e9e61e8-c7c4-48c3-a9ce-0aaf927aae04",
+            "section": "elements",
+            "type": "image",
+            "value": "cyoa_fork.png",
+            "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "elements": []
+          },
+          {
+            "uuid": "07cc5faa-80ce-4ebb-825d-d7ef2ed9d905",
+            "title": "Here&#x27;s some more",
+            "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "type": "text",
+            "value": "You are walking in the forest when you approach a fork in the path. Which path do you take?",
+            "newline": true,
+            "elements": []
+          },
+          {
+            "uuid": "8a3a68a9-afbb-4385-ad3d-81ff46dbfacf",
+            "section": "elements",
+            "type": "choice",
+            "value": "Take The Left Path||c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "elements": []
+          },
+          {
+            "uuid": "f6adb153-808e-49e2-93a0-ee65bf31b13f",
+            "section": "elements",
+            "type": "choice",
+            "value": "Take the Right Path||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "newline": false,
+            "hasEvents": true,
+            "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "elements": [
+              {
+                "parent": "f6adb153-808e-49e2-93a0-ee65bf31b13f",
+                "title": "Placeholder User Event",
+                "uuid": "842f1557-da79-42c2-8402-cf2edaf422ba",
+                "type": "event",
+                "value": "auto_fromAppleTree_=_0",
+                "elements": [],
+                "property": "fromAppleTree",
+                "operator": "=",
+                "amount": "0",
+                "displayevent": true
+              }
+            ]
+          },
+          {
+            "uuid": "89361edb-f81d-4432-a536-c1ecf0d63cfa",
+            "section": "elements",
+            "type": "image",
+            "value": "aaaaweirdGirl.webp",
+            "parent": "5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "elements": []
+          }
+        ]
+      },
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "Left Path - Apple Tree",
+        "uuid": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+        "type": "page",
+        "value": "Left Path - Apple Tree",
+        "elements": [
+          {
+            "uuid": "e9a1b02a-2fb5-4c8f-acd0-092979d6fc5b",
+            "section": "elements",
+            "type": "image",
+            "value": "cyoa_leftpath_appleTree1.png",
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "a9d39a7e-5096-427e-a134-3bc1e59c892d",
+                "section": "elements",
+                "type": "condition",
+                "property": "apples",
+                "operator": "<",
+                "amount": "1",
+                "value": "apples<1",
+                "booloperator": "and",
+                "parent": "e9a1b02a-2fb5-4c8f-acd0-092979d6fc5b",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "0567c428-8812-4e81-852e-df666d4c7d6e",
+            "section": "elements",
+            "type": "image",
+            "value": "cyoa_leftpath_appleTree2.png",
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "0e575a1b-dd7b-498f-93bc-99b745dc6e30",
+                "section": "elements",
+                "type": "condition",
+                "property": "apples",
+                "operator": ">",
+                "amount": "0",
+                "value": "apples>0",
+                "booloperator": "and",
+                "parent": "0567c428-8812-4e81-852e-df666d4c7d6e",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "ee0020d6-57d8-48f6-a687-8ea2765ac55b",
+            "section": "elements",
+            "type": "event",
+            "property": "appleVisits",
+            "operator": "+",
+            "amount": "1",
+            "value": "auto_appleVisits_+_1",
+            "displayevent": true,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [],
+            "title": "Event"
+          },
+          {
+            "uuid": "476e8dd5-aa05-4824-9e2e-16bde2fbd612",
+            "section": "elements",
+            "type": "text",
+            "value": "You take the left path and continue walking.",
+            "newline": true,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": []
+          },
+          {
+            "uuid": "6f0dbc49-6ff1-4db0-84b8-1f4c740049ae",
+            "section": "elements",
+            "type": "text",
+            "value": "You come across a tree",
+            "newline": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "cb7eae29-a05f-4c9f-89f7-a630a86b3f33",
+                "section": "elements",
+                "type": "condition",
+                "property": "appleVisits",
+                "operator": "<",
+                "amount": "2",
+                "value": "appleVisits<2",
+                "booloperator": "and",
+                "parent": "6f0dbc49-6ff1-4db0-84b8-1f4c740049ae",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "111d5ab3-d39c-45d6-87fc-a21bb7b3359d",
+            "section": "elements",
+            "type": "text",
+            "value": "You're back at the apple tree",
+            "newline": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "d090107e-4ef0-44e7-828e-80e03e73a13c",
+                "section": "elements",
+                "type": "condition",
+                "property": "appleVisits",
+                "operator": ">",
+                "amount": "1",
+                "value": "appleVisits>1",
+                "booloperator": "and",
+                "parent": "111d5ab3-d39c-45d6-87fc-a21bb7b3359d",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "9bc8a39e-8feb-4f81-bbe4-37c062396f65",
+            "section": "elements",
+            "type": "text",
+            "value": ", displaying a single apple from its branch.",
+            "newline": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "75f92600-618d-413c-bc37-0d9c81e5e384",
+                "section": "elements",
+                "type": "condition",
+                "property": "apples",
+                "operator": "<",
+                "amount": "1",
+                "value": "apples<1",
+                "booloperator": "and",
+                "parent": "9bc8a39e-8feb-4f81-bbe4-37c062396f65",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "00b3f8d5-756d-40bb-b1d6-1b162b95601d",
+            "section": "elements",
+            "type": "text",
+            "value": ", one of its branches bent from where you picked its apple.",
+            "newline": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "uuid": "ec744a9d-92c1-4f19-a2e5-160a7d5bd991",
+                "section": "elements",
+                "type": "condition",
+                "property": "apples",
+                "operator": ">",
+                "amount": "0",
+                "value": "apples>0",
+                "booloperator": "and",
+                "parent": "00b3f8d5-756d-40bb-b1d6-1b162b95601d",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "63bf559a-c4f2-4ca2-9251-789756afeaea",
+            "section": "elements",
+            "type": "text",
+            "value": "What now?",
+            "newline": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": []
+          },
+          {
+            "uuid": "4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47",
+            "section": "elements",
+            "type": "choice",
+            "value": "Pick The Apple||Event",
+            "newline": false,
+            "hasEvents": true,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "parent": "4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47",
+                "title": "Placeholder User Event",
+                "uuid": "9cdf2ec0-60cc-4a38-8ded-3a563d419ec8",
+                "subtype": "user",
+                "type": "event",
+                "displayevent": true,
+                "value": "auto_apples_+_1",
+                "elements": [],
+                "property": "apples",
+                "operator": "+",
+                "amount": "1"
+              },
+              {
+                "uuid": "1807b363-06ed-47a2-a6bf-b178ce2e1026",
+                "section": "elements",
+                "type": "condition",
+                "property": "apples",
+                "operator": "<",
+                "amount": "1",
+                "value": "apples<1",
+                "booloperator": "and",
+                "parent": "4aecb03a-6b8b-427d-ad5e-d2cdd7a19e47",
+                "elements": []
+              }
+            ],
+            "title": "user_placeholderEvent-9cdf2_+_0"
+          },
+          {
+            "uuid": "2c1a4305-3a5f-4ec9-b3b2-eb492afb17d0",
+            "section": "elements",
+            "type": "choice",
+            "value": "Continue On The Path||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "newline": false,
+            "hasEvents": true,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": [
+              {
+                "parent": "2c1a4305-3a5f-4ec9-b3b2-eb492afb17d0",
+                "title": "Placeholder User Event",
+                "uuid": "e522e22f-7d64-4af1-9305-6ea37e579a15",
+                "type": "event",
+                "value": "auto_fromAppleTree_=_1",
+                "elements": [],
+                "property": "fromAppleTree",
+                "operator": "=",
+                "amount": "1",
+                "displayevent": true
+              }
+            ]
+          },
+          {
+            "uuid": "ea5f8884-472c-4f01-9a74-f9238a0ff05e",
+            "section": "elements",
+            "type": "choice",
+            "value": "Head Back To Fork||5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "elements": []
+          }
+        ]
+      },
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "Right Path - Further Down",
+        "uuid": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+        "type": "page",
+        "value": "Right Path - Further Down",
+        "elements": [
+          {
+            "uuid": "5d1d2fc0-c0fc-4205-bb42-a4af9a0d7530",
+            "section": "elements",
+            "type": "image",
+            "value": "cyoa_furtherPath.png",
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": []
+          },
+          {
+            "uuid": "4b5112e1-0c98-422c-9912-3bdee4739434",
+            "section": "elements",
+            "type": "text",
+            "value": "This is further down the path. Yay.",
+            "newline": true,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": []
+          },
+          {
+            "uuid": "c3b3355a-3d45-4dc0-8804-4a006df83d28",
+            "section": "elements",
+            "type": "text",
+            "value": "You notice a small path curving sharply to the left.",
+            "newline": false,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": [
+              {
+                "uuid": "e4dbffbc-3025-47c9-9141-3cf44d1398ec",
+                "section": "elements",
+                "type": "condition",
+                "property": "fromAppleTree",
+                "operator": "<",
+                "amount": "1",
+                "value": "fromAppleTree<1",
+                "booloperator": "and",
+                "parent": "c3b3355a-3d45-4dc0-8804-4a006df83d28",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "724b22ad-13e7-4b06-82aa-c966dee40886",
+            "section": "elements",
+            "type": "choice",
+            "value": "Check Out The Left Path||c74c8c0f-28f1-4874-ac9b-539d984326d0",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": [
+              {
+                "uuid": "d113fa05-7f93-45fe-b148-e4c810136953",
+                "section": "elements",
+                "type": "condition",
+                "property": "fromAppleTree",
+                "operator": "<",
+                "amount": "1",
+                "value": "fromAppleTree<1",
+                "booloperator": "and",
+                "parent": "724b22ad-13e7-4b06-82aa-c966dee40886",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "266b9739-5b35-4af7-a957-f198482a252c",
+            "section": "elements",
+            "type": "text",
+            "value": "You notice a path curving sharply to the right.",
+            "newline": false,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": [
+              {
+                "uuid": "84b5fcf7-066f-46e5-b99e-c26349a1fcdf",
+                "section": "elements",
+                "type": "condition",
+                "property": "fromAppleTree",
+                "operator": ">",
+                "amount": "0",
+                "value": "fromAppleTree>0",
+                "booloperator": "and",
+                "parent": "266b9739-5b35-4af7-a957-f198482a252c",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "88912a29-6b1d-44a9-9dac-9557ab10a9ba",
+            "section": "elements",
+            "type": "choice",
+            "value": "Check Out The Sharp Path To The Right||5c994d03-9d1e-4a55-b1c6-6999a7b5d47e",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": [
+              {
+                "uuid": "ecada12e-8b87-4d38-a189-46f6200c1a72",
+                "section": "elements",
+                "type": "condition",
+                "property": "fromAppleTree",
+                "operator": ">",
+                "amount": "0",
+                "value": "fromAppleTree>0",
+                "booloperator": "and",
+                "parent": "88912a29-6b1d-44a9-9dac-9557ab10a9ba",
+                "elements": []
+              }
+            ]
+          },
+          {
+            "uuid": "c0be4b20-020a-43ef-b712-cf81f575afe7",
+            "section": "elements",
+            "type": "choice",
+            "value": "Go Back to The Apple Tree||e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "e91a8a4e-283a-4147-bcdf-7ac6cd1c994f",
+            "elements": [
+              {
+                "uuid": "734dcaa9-7d0a-478e-95ce-063b2d67ee0c",
+                "section": "elements",
+                "type": "condition",
+                "property": "fromAppleTree",
+                "operator": ">",
+                "amount": "0",
+                "value": "fromAppleTree>0",
+                "booloperator": "and",
+                "parent": "c0be4b20-020a-43ef-b712-cf81f575afe7",
+                "elements": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "uuid": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+        "title": "Test Page",
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "page",
+        "value": "Test Page",
+        "elements": [
+          {
+            "uuid": "fdbae4df-ea5b-4063-87dc-155636f1fb23",
+            "section": "elements",
+            "type": "text",
+            "value": "This is a test page",
+            "newline": true,
+            "parent": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "elements": []
+          },
+          {
+            "uuid": "9dc67e5f-776d-4b5b-9301-3aff7af4c759",
+            "section": "elements",
+            "type": "event",
+            "property": "apples",
+            "operator": "=",
+            "amount": "0",
+            "value": "auto_apples_=_0",
+            "displayevent": true,
+            "parent": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "elements": [],
+            "title": "Event"
+          },
+          {
+            "uuid": "0b8d200e-0245-4429-95eb-d46f9e1c33ba",
+            "section": "elements",
+            "type": "event",
+            "property": "appleVisits",
+            "operator": "+",
+            "amount": "0",
+            "value": "auto_appleVisits_+_0",
+            "displayevent": false,
+            "parent": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "elements": [],
+            "title": "Event"
+          },
+          {
+            "uuid": "5973d342-928e-443c-adde-b39a61b52ae6",
+            "section": "elements",
+            "type": "choice",
+            "value": "Do Stuff||4eae7c30-f299-4a07-9851-53ea1adc58db",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "elements": []
+          },
+          {
+            "uuid": "eeeac3a9-3955-4e21-9810-cbb4c2efbd0f",
+            "section": "elements",
+            "type": "event",
+            "property": "key",
+            "operator": "=",
+            "amount": "69",
+            "value": "auto_key_=_69",
+            "displayevent": false,
+            "parent": "4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "elements": [],
+            "title": "Event"
+          }
+        ]
+      },
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "Do Stuff",
+        "uuid": "4eae7c30-f299-4a07-9851-53ea1adc58db",
+        "type": "page",
+        "value": "Do Stuff",
+        "elements": []
+      },
+      {
+        "uuid": "312db3f3-fdd1-4d4a-a1c5-edc5cd2ef37f",
+        "title": "BBBBBBBB",
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "page",
+        "value": "BBBBBBBB",
+        "elements": []
+      },
+      {
+        "uuid": "d301d324-f1bb-4063-9e52-0c6c1eb8c969",
+        "title": "CCCCCCCCC",
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "page",
+        "value": "CCCCCCCCC",
+        "elements": []
+      },
+      {
+        "uuid": "c5ba3ceb-d033-4bce-971a-4c862ec4e066",
+        "title": "DDDDDDDDD",
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "page",
+        "value": "DDDDDDDDD",
+        "elements": []
+      },
+      {
+        "uuid": "5f8ba7b3-0c6f-477b-8a78-c1faad0fa826",
+        "title": "EEEEEEEEEEE",
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "type": "page",
+        "value": "EEEEEEEEEEE",
+        "elements": []
+      },
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "Do Stuff",
+        "uuid": "5803abb6-c3a2-4f81-96f7-e2facaa6ac97",
+        "type": "page",
+        "value": "Do Stuff",
+        "elements": []
+      },
+      {
+        "parent": "b69d00be-744f-465c-bb90-c2a3a938ce20",
+        "title": "Test Page 2",
+        "uuid": "5b45cf13-111d-413d-b374-2b071389282d",
+        "type": "page",
+        "value": "Test Page 2",
+        "elements": [
+          {
+            "uuid": "aecd2609-64dc-4fa2-97ae-58e1ef403a90",
+            "section": "elements",
+            "type": "choice",
+            "value": "Go Back To Test Page 1||4d7b15ac-cba5-4eef-b02e-7cbc09d91061",
+            "newline": false,
+            "hasEvents": false,
+            "parent": "5b45cf13-111d-413d-b374-2b071389282d",
+            "elements": []
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -83,7 +83,7 @@ kbd {
   padding: 2px 5px;
   border: 1px solid #aaa;
   border-radius: 4px;
-  background: #fff;
+  background: rgba(160, 14, 14, 1);
   font-family: Menlo, Consolas, monospace;
   font-size: 0.9em;
 }

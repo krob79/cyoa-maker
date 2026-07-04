@@ -249,7 +249,7 @@ function renderCompletedZones() {
   completedZones.innerHTML = "";
 
   zones.forEach(zone => {
-    console.log(zone.points);
+    //console.log(zone.points);
     const polygon = document.createElementNS(SVG_NS, "polygon");
     polygon.setAttribute(
       "class",
@@ -389,12 +389,12 @@ function scaleZoneCoords(zones) {
   let originalW = parseInt(svgImage.getAttribute('width'));
   let scaledW = previewImage.width;
   let percentage = (scaledW / originalW);
-  console.log(`----PERCENTAGE IS ${percentage}`);
-  console.log(`---SVG Image: ${svgImage.getAttribute('width')} x ${svgImage.getAttribute('height')}`);
-  console.log(`---Preview Image: ${previewImage.width}x${previewImage.height}`)
+  //console.log(`----PERCENTAGE IS ${percentage}`);
+  //console.log(`---SVG Image: ${svgImage.getAttribute('width')} x ${svgImage.getAttribute('height')}`);
+  //console.log(`---Preview Image: ${previewImage.width}x${previewImage.height}`)
   let scaledZones = zones.map((zone, index) => {
-    console.log("---");
-    console.log(zone);
+    //console.log("---");
+    //console.log(zone);
     let newPoints = zone.points.map((p) => {
       //console.log(`---wtf is this? `);
       //console.log(p);
@@ -410,8 +410,8 @@ function scaleZoneCoords(zones) {
     return newZone;
   });
 
-  console.log("---SCALED ZONES:");
-  console.log(scaledZones);
+  //console.log("---SCALED ZONES:");
+  //console.log(scaledZones);
   return scaledZones;
 
 }

@@ -347,6 +347,7 @@ const USE_NEW_MODAL_OPEN = {
     dynamic: true,
     event: true,
     imageUpload: true,
+    imageMap: true,
     page: true,
     condition: true,
 };
@@ -370,6 +371,7 @@ const modalOpenConfigs = {
             console.log(`---PREFILL FOR TEXT - ${data.request}`);
             const isEdit = data.request === 'PUT';
             const imgPreview = document.getElementById("previewModal");
+            const imgMapBtn = document.getElementById("imageMapButton");
             console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
             setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
             console.log("---something went wrong with image upload");
@@ -379,6 +381,65 @@ const modalOpenConfigs = {
             if (isEdit) {
                 imgPreview.src = `/uploads/${data.value}`;
                 imgPreview.style.display = "block";
+                imgMapBtn.setAttribute('data-bs-imagepath', `/uploads/${data.value}`);
+                setValue(modal, '[name="modalimageInput"]', data.value);
+                setValue(modal, '[name="imagerequest"]', 'PUT');
+            } else {
+                imgPreview.src = ``;
+                imgPreview.style.display = "none";
+                try {
+                    setValue(modal, '[name="modalimageInput"]', '');
+                } catch (e) {
+                    console.log("---something went wrong with image upload");
+                }
+
+                setValue(modal, '[name="imagerequest"]', 'POST');
+            }
+        },
+
+        buildPayload(fd) {
+            const method = getMethod(fd, 'imagerequest');
+            const uuid = fd.get('hiddenimageuuid');
+            const section = fd.get('section');
+            const value = (fd.get('modalimageInput') || '').toString();
+
+            return {
+                method,
+                payload:
+                    method === 'POST'
+                        ? { uuid, section, type: 'text', value, newline }
+                        : { uuid, newDataObj: { value, newline } },
+            };
+        },
+    },
+    imageMap: {
+        modalId: 'imageMapUpdateModal',
+
+        reset({ modal, data }) {
+            //console.log("---RESET FOR TEXT");
+            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
+            setValue(modal, '[name="section"]', '');
+            setValue(modal, '[name="modalimageInput"]', '');
+            setValue(modal, '[name="imagerequest"]', 'POST');
+        },
+
+        prefill({ modal, data }) {
+            console.log(`---PREFILL FOR TEXT - ${data.request}`);
+            const isEdit = data.request === 'PUT';
+            const imgPreview = document.getElementById("previewModal");
+            const imgMapBtn = document.getElementById("imageMapButton");
+            console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
+            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
+            console.log("---something went wrong with image upload");
+            setValue(modal, '[name="section"]', data.section);
+
+            loadImageMapDisplay(`/uploads/${data.value}`);
+
+            if (isEdit) {
+
+                imgPreview.src = `/uploads/${data.value}`;
+                imgPreview.style.display = "block";
+                imgMapBtn.setAttribute('data-bs-imagepath', data.value);
                 setValue(modal, '[name="modalimageInput"]', data.value);
                 setValue(modal, '[name="imagerequest"]', 'PUT');
             } else {
@@ -1119,6 +1180,12 @@ bindConfiguredForm(modalConfigs.imageUpload);
 if (USE_NEW_MODAL_OPEN.imageUpload) {
     bindConfiguredModalOpen(modalOpenConfigs.imageUpload);
 }
+
+
+if (USE_NEW_MODAL_OPEN.imageMap) {
+    bindConfiguredModalOpen(modalOpenConfigs.imageMap);
+}
+
 //bindConfiguredForm(modalConfigs.imageAI); // API has run out of credits
 
 //eventually everything at once
@@ -1128,118 +1195,492 @@ if (USE_NEW_MODAL_OPEN.imageUpload) {
  * Wire up all modal open/close events and form submissions.
  */
 
+let svg = document.getElementById("zoneSvg");
+let svgImage = document.getElementById("svgImage");
+let completedZones = document.getElementById("completedZones");
+let activeFill = document.getElementById("activeFill");
+let activeLine = document.getElementById("activeLine");
+let previewLine = document.getElementById("previewLine");
+let pointMarkers = document.getElementById("pointMarkers");
+
+let imageUrlInput = document.getElementById("imageUrlInput");
+let loadImageBtn = document.getElementById("loadImageBtn");
+let finishZoneBtn = document.getElementById("finishZoneBtn");
+let undoBtn = document.getElementById("undoBtn");
+let cancelZoneBtn = document.getElementById("cancelZoneBtn");
+let deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
+let clearAllBtn = document.getElementById("clearAllBtn");
+
+let zoneList = document.getElementById("zoneList");
+let htmlOutput = document.getElementById("htmlOutput");
+let jsonOutput = document.getElementById("jsonOutput");
+let previewImage = document.getElementById("previewImage");
+let customMap = document.getElementById("customMap");
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+let imageNaturalWidth = 0;
+let imageNaturalHeight = 0;
+let currentZone = createEmptyZone();
+let zones = [];
+let selectedZoneId = null;
+let pointerMoved = false;
+let lastPointerPosition = null;
+let firstPoint = null;
+const clickTolerance = 15; // Pixel radius for detection of firstPoint
+
+
+
+loadImageBtn.addEventListener("click", () => {
+    loadImageMapDisplay(imageUrlInput.value.trim());
+});
+
+finishZoneBtn.addEventListener("click", finishCurrentZone);
+undoBtn.addEventListener("click", undoLastPoint);
+cancelZoneBtn.addEventListener("click", cancelCurrentZone);
+deleteSelectedBtn.addEventListener("click", deleteSelectedZone);
+clearAllBtn.addEventListener("click", clearAllZones);
+
+window.addEventListener("resize", renderAll);
+
+svg.addEventListener("pointerdown", event => {
+    if (!imageNaturalWidth || !imageNaturalHeight) return;
+
+    pointerMoved = false;
+    svg.setPointerCapture(event.pointerId);
+});
+
+svg.addEventListener("pointermove", event => {
+    if (!imageNaturalWidth || !imageNaturalHeight) return;
+
+    pointerMoved = true;
+    lastPointerPosition = getSvgPoint(event);
+    renderPreviewLine();
+});
+
+svg.addEventListener("pointerup", event => {
+    if (!imageNaturalWidth || !imageNaturalHeight) return;
+
+
+    let svgEvent = getSvgPoint(event);
+    let currentPoint = { x: Math.round(svgEvent.x), y: Math.round(svgEvent.y) }
+    console.log(`----current rounded point: ${currentPoint.x}, ${currentPoint.y}`);
+
+    const target = event.target;
+
+    if (target.classList.contains("completed-zone")) {
+        selectedZoneId = target.dataset.zoneId;
+        renderAll();
+        return;
+    }
+
+    if (checkIfCloseToFirstPoint(currentPoint.x, currentPoint.y) && currentZone.points.length >= 3) {
+
+        finishCurrentZone();
+        return;
+    }
+
+    // Ignore accidental drags on touch/pen/mouse.
+    if (pointerMoved && event.pointerType !== "mouse") return;
+
+    addPoint(getSvgPoint(event));
+});
+
+svg.addEventListener("dblclick", event => {
+    event.preventDefault();
+    finishCurrentZone();
+});
+
+document.addEventListener("keydown", event => {
+    const activeElement = document.activeElement;
+    const isTyping = activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName);
+
+    if (isTyping) return;
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        finishCurrentZone();
+    }
+
+    if (event.key === "Escape") {
+        event.preventDefault();
+        cancelCurrentZone();
+    }
+
+    if (event.key === "Backspace" || event.key === "Delete") {
+        event.preventDefault();
+        if (currentZone.points.length > 0) {
+            undoLastPoint();
+        } else {
+            deleteSelectedZone();
+        }
+    }
+});
+
+function loadImageMapDisplay(url) {
+    if (!url) return;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+        imageNaturalWidth = img.naturalWidth;
+        imageNaturalHeight = img.naturalHeight;
+
+        svg.setAttribute("viewBox", `0 0 ${imageNaturalWidth} ${imageNaturalHeight}`);
+        svgImage.setAttribute("href", url);
+        svgImage.setAttribute("width", imageNaturalWidth);
+        svgImage.setAttribute("height", imageNaturalHeight);
+
+        previewImage.src = url;
+
+        currentZone = createEmptyZone();
+        zones = [];
+        selectedZoneId = null;
+        lastPointerPosition = null;
+        renderAll();
+    };
+
+    img.onerror = () => {
+        alert("The image could not be loaded. Try another image URL or local path.");
+    };
+
+    img.src = url;
+}
+
+function createEmptyZone() {
+    return {
+        id: crypto.randomUUID ? crypto.randomUUID() : `zone-${Date.now()}-${Math.random()}`,
+        label: "",
+        href: "#",
+        alt: "",
+        title: "",
+        points: []
+    };
+}
+
+//checks an x,y coordinate and determines if it's close to the first point of whatever currentZone is being drawn.
+function checkIfCloseToFirstPoint(clickX, clickY) {
+    try {
+        const dx = clickX - firstPoint.x;
+        const dy = clickY - firstPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance <= clickTolerance) {
+            console.log("Clicked the first point! Closing polygon.");
+            return true;
+        }
+        return false;
+    } catch (e) {
+        console.log("error getting coordinates")
+        return false;
+    }
+}
+
+function addPoint(rawPoint) {
+    const point = clampPoint({
+        x: Math.round(rawPoint.x),
+        y: Math.round(rawPoint.y)
+    });
+
+    if (currentZone.points.length < 1) {
+        firstPoint = point;
+        console.log("--FIRST POINT: " + firstPoint.x + " " + firstPoint.y);
+    }
+    currentZone.points.push(point);
+    selectedZoneId = null;
+    renderAll();
+}
+
+function finishCurrentZone() {
+    if (currentZone.points.length < 3) {
+        alert("A polygon zone requires at least three points.");
+        return;
+    }
+
+    const zoneNumber = zones.length + 1;
+
+    zones.push({
+        ...currentZone,
+        label: currentZone.label || `Zone ${zoneNumber}`,
+        alt: currentZone.alt || `Zone ${zoneNumber}`,
+        title: currentZone.title || `Zone ${zoneNumber}`,
+        points: currentZone.points.map(point => ({ ...point }))
+    });
+
+    currentZone = createEmptyZone();
+    firstPoint = null;
+    lastPointerPosition = null;
+    renderAll();
+}
+
+function undoLastPoint() {
+    if (currentZone.points.length === 0) return;
+
+    currentZone.points.pop();
+    renderAll();
+}
+
+function cancelCurrentZone() {
+    currentZone = createEmptyZone();
+    firstPoint = null;
+    lastPointerPosition = null;
+    renderAll();
+}
+
+//removes a specific zone object from the zones array
+function deleteSelectedZone() {
+    if (!selectedZoneId) return;
+
+    zones = zones.filter(zone => zone.id !== selectedZoneId);
+    selectedZoneId = null;
+    renderAll();
+}
+
+//removes all stored zone objects from the zones array
+function clearAllZones() {
+    firstPoint = null;
+    currentZone = createEmptyZone();
+    zones = [];
+    selectedZoneId = null;
+    lastPointerPosition = null;
+    renderAll();
+}
+
+//returns SVGPoint object with X and Y coordinates relative to inside the SVG viewBox
+function getSvgPoint(event) {
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+
+    const result = point.matrixTransform(svg.getScreenCTM().inverse());
+    return result;
+}
+
+//establishes bounds so that the point never drops below zero or exceeds the image's natural width or height
+function clampPoint(point) {
+    return {
+        x: Math.min(Math.max(point.x, 0), imageNaturalWidth),
+        y: Math.min(Math.max(point.y, 0), imageNaturalHeight)
+    };
+}
+
+function renderAll() {
+    renderCompletedZones();
+    renderActiveZone();
+    renderPreviewLine();
+    renderZoneList();
+    updateButtons();
+    updateOutput();
+    updateImageMapPreview();
+}
+
+function renderCompletedZones() {
+    completedZones.innerHTML = "";
+
+    zones.forEach(zone => {
+        //console.log(zone.points);
+        const polygon = document.createElementNS(SVG_NS, "polygon");
+        polygon.setAttribute(
+            "class",
+            zone.id === selectedZoneId ? "completed-zone is-selected" : "completed-zone"
+        );
+        polygon.setAttribute("points", pointsToSvgString(zone.points));
+        polygon.dataset.zoneId = zone.id;
+
+        completedZones.appendChild(polygon);
+    });
+}
+
+function renderActiveZone() {
+    const points = currentZone.points;
+    activeLine.setAttribute("points", pointsToSvgString(points));
+    activeFill.setAttribute("points", points.length >= 3 ? pointsToSvgString(points) : "");
+
+    pointMarkers.innerHTML = "";
+
+    points.forEach((point, index) => {
+        const circle = document.createElementNS(SVG_NS, "circle");
+        circle.setAttribute(
+            "class",
+            index === 0 ? "point-marker first-point-marker" : "point-marker"
+        );
+        circle.setAttribute("cx", point.x);
+        circle.setAttribute("cy", point.y);
+        circle.setAttribute("r", 7);
+
+        pointMarkers.appendChild(circle);
+    });
+}
+
+function renderPreviewLine() {
+    const points = currentZone.points;
+
+    if (points.length === 0 || !lastPointerPosition) {
+        previewLine.style.display = "none";
+        return;
+    }
+
+    const lastPoint = points[points.length - 1];
+    const pointerPoint = clampPoint({
+        x: Math.round(lastPointerPosition.x),
+        y: Math.round(lastPointerPosition.y)
+    });
+
+    previewLine.style.display = "block";
+    previewLine.setAttribute("x1", lastPoint.x);
+    previewLine.setAttribute("y1", lastPoint.y);
+    previewLine.setAttribute("x2", pointerPoint.x);
+    previewLine.setAttribute("y2", pointerPoint.y);
+}
+
+function renderZoneList() {
+    zoneList.innerHTML = "";
+
+    if (zones.length === 0) {
+        const item = document.createElement("li");
+        item.textContent = "No completed zones yet.";
+        zoneList.appendChild(item);
+        return;
+    }
+
+    zones.forEach((zone, index) => {
+        const item = document.createElement("li");
+        const isSelected = zone.id === selectedZoneId;
+        item.innerHTML = `<strong>${zone.label || `Zone ${index + 1}`}</strong> — ${zone.points.length} points${isSelected ? " — selected" : ""}`;
+
+        const selectBtn = document.createElement("button");
+        selectBtn.type = "button";
+        selectBtn.textContent = "Select";
+        selectBtn.addEventListener("click", () => {
+            selectedZoneId = zone.id;
+            renderAll();
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", () => {
+            zones = zones.filter(existingZone => existingZone.id !== zone.id);
+            if (selectedZoneId === zone.id) selectedZoneId = null;
+            renderAll();
+        });
+
+        item.append(selectBtn, deleteBtn);
+        zoneList.appendChild(item);
+    });
+}
+
+function updateButtons() {
+    finishZoneBtn.disabled = currentZone.points.length < 3;
+    undoBtn.disabled = currentZone.points.length === 0;
+    cancelZoneBtn.disabled = currentZone.points.length === 0;
+    deleteSelectedBtn.disabled = !selectedZoneId;
+    clearAllBtn.disabled = zones.length === 0 && currentZone.points.length === 0;
+}
+
+function updateOutput() {
+    if (zones.length === 0) {
+        htmlOutput.value = "";
+        jsonOutput.value = "";
+        return;
+    }
+
+    const areaTags = zones.map((zone, index) => {
+        const label = zone.label || `Zone ${index + 1}`;
+        const href = zone.href || `#zone-${index + 1}`;
+        const alt = zone.alt || label;
+        const title = zone.title || label;
+
+        return `  <area shape="poly" coords="${pointsToCoordsString(zone.points)}" href="${escapeHtmlAttribute(href)}" alt="${escapeHtmlAttribute(alt)}" title="${escapeHtmlAttribute(title)}">`;
+    });
+
+    htmlOutput.value = `<map name="customMap">\n${areaTags.join("\n")}\n</map>`;
+
+    jsonOutput.value = JSON.stringify({
+        imageMap: {
+            type: imagemap,
+            src: imageUrlInput.value.trim(),
+            width: imageNaturalWidth,
+            height: imageNaturalHeight,
+            zones: zones.map((zone, index) => ({
+                id: zone.id,
+                label: zone.label || `Zone ${index + 1}`,
+                href: zone.href || `#zone-${index + 1}`,
+                alt: zone.alt || `Zone ${index + 1}`,
+                title: zone.title || `Zone ${index + 1}`,
+                coords: pointsToCoordsString(zone.points),
+                points: zone.points
+            }))
+        },
+    }, null, 2);
+}
+
+function scaleZoneCoords(zones) {
+    let originalW = parseInt(svgImage.getAttribute('width'));
+    let scaledW = previewImage.width;
+    let percentage = (scaledW / originalW);
+    let scaledZones = zones.map((zone, index) => {
+        let newPoints = zone.points.map((p) => {
+            return (
+                { x: Math.round(p.x * percentage), y: Math.round(p.y * percentage) }
+            );
+        });
+        let newZone = {
+            ...zone,
+            points: newPoints
+        }
+        return newZone;
+    });
+
+    return scaledZones;
+
+}
+
+function updateImageMapPreview() {
+    let scaledZones = scaleZoneCoords(zones);
+
+    customMap.innerHTML = "";
+
+    scaledZones.forEach((zone, index) => {
+        const label = zone.label || `Zone ${index + 1}`;
+        const area = document.createElement("area");
+        area.shape = "poly";
+        area.coords = pointsToCoordsString(zone.points);
+        area.href = zone.href || `#zone-${index + 1}`;
+        area.alt = zone.alt || label;
+        area.title = zone.title || label;
+
+        area.addEventListener("click", event => {
+            event.preventDefault();
+            selectedZoneId = zone.id;
+            renderAll();
+            alert(`Clicked ${label}`);
+        });
+
+        customMap.appendChild(area);
+    });
+}
+
+function pointsToSvgString(points) {
+    return points.map(point => `${point.x},${point.y}`).join(" ");
+}
+
+function pointsToCoordsString(points) {
+    return points.map(point => `${point.x},${point.y}`).join(",");
+}
+
+function escapeHtmlAttribute(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+
 export function initModals() {
     // --- AI image modal prefill ---
-    /*
-    document.querySelectorAll('.elementAiModal').forEach((modal) => {
-        modal.addEventListener('show.bs.modal', (event) => {
-            const button = event.relatedTarget;
-            if (!button) return;
-            const uuidinput = document.getElementById('hiddenAiImageuuid');
-            if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
-        });
-    });
-    */
-
-
-
-    // --- Element modals (text/image/choice/page/condition/event) ---
-    // code that fires when a modal is opened
-    /*
-    document.querySelectorAll('.elementModal').forEach((modal) => {
-        modal.addEventListener('show.bs.modal', async (event) => {
-            const button = event.relatedTarget;
-
-            let elData;
-
-            //pull existing data from element to use for various inputs in modal display
-            //want to eventually get all necessary data this way instead of using button.dataset for everything - not sustainable!
-            try {
-                // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
-                elData = await getCurrentDataOnElement(button.dataset.bsElementuuid);
-                console.log("---Here's some data about the element!!! ", elData);
-            } catch (e) {
-                console.log("----error: ", e);
-            }
-
-            const el_title = button.dataset.bsElementtitle;
-            //const el_value = button.dataset.bsElementvalue;
-            //const newline = button.dataset.bsNewline;
-            //const el_type = button.dataset.bsElementtype;
-            //const el_title = elData.title;
-            const el_type = elData.type;
-            const el_value = elData.value;
-            const newline = elData.newline;
-            const el_subtype = button.dataset.bsElementsubtype;
-
-            if (!button) return;
-
-
-            if (el_type == "text" && USE_NEW_MODAL_OPEN.text) {
-                console.log("----------OLD FEATURE DISABLED FOR TEXT");
-                return;
-            }
-
-            if (el_type == "dynamic" && USE_NEW_MODAL_OPEN.dynamic) {
-                console.log("----------OLD FEATURE DISABLED FOR DYNAMIC");
-                return;
-            }
-
-            if (el_type == "image" && USE_NEW_MODAL_OPEN.imageUpload) {
-                console.log("----------OLD FEATURE DISABLED FOR IMAGE");
-                return;
-            }
-
-            if (el_type == "choice" && USE_NEW_MODAL_OPEN.choice) {
-                console.log("----------OLD FEATURE DISABLED FOR CHOICE");
-                return;
-            }
-
-            if (el_type == "page" && USE_NEW_MODAL_OPEN.page) {
-                console.log("----------OLD FEATURE DISABLED FOR PAGE");
-                return;
-            }
-
-            if (el_type == "condition" && USE_NEW_MODAL_OPEN.condition) {
-                console.log("----------OLD FEATURE DISABLED FOR CONDITION");
-                return;
-            }
-
-            if (el_type == "event" && USE_NEW_MODAL_OPEN.event) {
-                console.log("----------OLD FEATURE DISABLED FOR EVENT");
-                return;
-            }
-
-            //-----------------RETURNS SHOULD STOP ANYTHING BEYOND THIS POINT
-
-            const modalInput = document.getElementById(`modal${el_type}Input`);
-            const modalTitle = document.getElementById(`modal${el_type}Label`);
-            const modalnewlinecheckbox = document.getElementById(`${el_type}newline`);
-            const uuidinput = document.getElementById(`hidden${el_type}uuid`);
-
-            try {
-                //console.log("---newline? ", newline);
-                modalnewlinecheckbox.checked = newline;
-            } catch (e) {
-                console.log("---No newline checkbox found");
-            }
-
-            const requestField = document.getElementById(`${el_type}request`);
-            if (requestField) requestField.value = button.dataset.bsRequest || 'PUT';
-            const btn_request = button.dataset.bsRequest || 'PUT';
-
-            if (uuidinput) uuidinput.value = button.dataset.bsElementuuid || '';
-
-
-            if (modalTitle) {
-                modalTitle.textContent = btn_request === 'POST' ? `Create new ${el_type}` : `Edit ${el_type}`;
-            }
-        });
-
-        // Placeholder for any per-modal teardown if needed later
-        modal.addEventListener('hidden.bs.modal', () => { });
-    });
-    */
 
     // Clear bootstrap remote cache when hidden (jQuery style used in your code)
     $('.elementModal').on?.('hidden.bs.modal', function () {
