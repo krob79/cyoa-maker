@@ -1,0 +1,80 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h1 class="modal-title fs-4" id="exampleModalFullscreenLabel">Image Map</h1><button type="button"
+            class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+    </div>
+    <div class="modal-body">
+        <p>This is probably where the content for the image map editor would go, once everything is full screen...</p>
+        <main class="page">
+            <h1>Responsive SVG Image Map Zone Editor</h1>
+
+            <p>
+                Click the image to add polygon points. The SVG uses a viewBox matching the image's
+                natural pixel dimensions, so the generated image-map coordinates remain accurate
+                as the image scales responsively.
+            </p>
+
+            <section class="toolbar" aria-label="Zone tools">
+                <label class="image-url-label">
+                    Image URL
+                    <input id="imageUrlInput" type="text" value="https://picsum.photos/id/1015/1000/650" />
+                </label>
+
+                <button id="loadImageBtn" type="button">Load Image</button>
+                <button id="finishZoneBtn" type="button">Finish Zone</button>
+                <button id="undoBtn" type="button">Undo</button>
+                <button id="cancelZoneBtn" type="button">Cancel Current Zone</button>
+                <button id="deleteSelectedBtn" type="button">Delete Selected Zone</button>
+                <button id="clearAllBtn" type="button">Clear All Zones</button>
+            </section>
+
+            <p class="help-text">
+                Shortcuts: <kbd>Enter</kbd> finishes a zone, <kbd>Esc</kbd> cancels the current zone,
+                <kbd>Backspace</kbd> or <kbd>Delete</kbd> undoes the last point while drawing.
+                You can also double-click to finish, or click the first point once there are at least three points.
+            </p>
+
+            <section class="stage" aria-label="Image zone drawing area">
+                <svg id="zoneSvg" class="zone-svg" xmlns="http://www.w3.org/2000/svg" role="img"
+                    aria-label="Custom image with drawable zones">
+                    <image id="svgImage" href="" x="0" y="0" width="100%" height="100%"
+                        preserveAspectRatio="xMidYMid meet" />
+                    <g id="completedZones"></g>
+                    <polygon id="activeFill" class="active-fill" points=""></polygon>
+                    <polyline id="activeLine" class="active-line" points=""></polyline>
+                    <line id="previewLine" class="preview-line" x1="0" y1="0" x2="0" y2="0"></line>
+                    <g id="pointMarkers"></g>
+                </svg>
+            </section>
+
+            <section class="zone-list-section">
+                <h2>Zones</h2>
+                <ol id="zoneList" class="zone-list"></ol>
+            </section>
+
+            <section class="output-section">
+                <h2>Generated HTML Image Map</h2>
+                <textarea id="htmlOutput" rows="10" spellcheck="false"
+                    placeholder="Generated <map> markup appears here..."></textarea>
+            </section>
+
+            <section class="output-section">
+                <h2>Zone Data JSON</h2>
+                <textarea id="jsonOutput" rows="12" spellcheck="false"
+                    placeholder="Zone data appears here..."></textarea>
+            </section>
+
+            <section class="preview-section">
+                <h2>Optional Image Map Preview</h2>
+                <p>
+                    This regular responsive image uses the generated map below. After creating zones,
+                    click a mapped area here to test it.
+                </p>
+                <img id="previewImage" class="preview-image" src="" usemap="#customMap" alt="Image map preview" />
+                <map name="customMap" id="customMap"></map>
+            </section>
+        </main>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

@@ -134,7 +134,7 @@ function getMethod(fd, requestField) {
 }
 
 function setValue(modal, selector, value) {
-    console.log(`---ATTEMPTING TO SET VALUE - ${selector} - ${value}`);
+    //console.log(`---ATTEMPTING TO SET VALUE - ${selector} - ${value}`);
     //try {
     const el = modal.querySelector(selector);
     //console.log(`---SET VALUE - ${el.type} - ${el.name}`);
@@ -190,7 +190,7 @@ function getTriggerData(event) {
 
 // helper for the "Set Conditions" link
 function createConditionEditLink(data) {
-    console.log(`---createConditionEditLink! ${data.type}`);
+    //console.log(`---createConditionEditLink! ${data.type}`);
     const conditionsLink = document.getElementById(`modal${data.type}Conditions`);
     const uuidinput = document.getElementById(`hidden${data.type}uuid`);
 
@@ -290,12 +290,12 @@ function bindConfiguredForm(config) {
 }
 
 async function bindConfiguredModalOpen(config) {
-    console.log(`---GETTING CONFIG: ${config.modalId}`);
+    console.log(`---bindConfiguredModalOpen() GETTING CONFIG: ${config.modalId}`);
     const modal = document.getElementById(config.modalId);
     if (!modal) return;
 
     modal.addEventListener('show.bs.modal', async function (event) {
-        console.log("----MODAL OPEN");
+        //console.log("----MODAL OPEN");
         const buttondata = getTriggerData(event);
         let data;
         console.log(`----Getting UUID from button:`);
@@ -359,7 +359,7 @@ const modalOpenConfigs = {
         toastId: '#myImageToast',
 
         reset({ modal, data }) {
-            console.log("---RESET FOR TEXT");
+            //console.log("---RESET FOR TEXT");
             setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modalimageInput"]', '');
@@ -378,10 +378,12 @@ const modalOpenConfigs = {
 
             if (isEdit) {
                 imgPreview.src = `/uploads/${data.value}`;
+                imgPreview.style.display = "block";
                 setValue(modal, '[name="modalimageInput"]', data.value);
                 setValue(modal, '[name="imagerequest"]', 'PUT');
             } else {
                 imgPreview.src = ``;
+                imgPreview.style.display = "none";
                 try {
                     setValue(modal, '[name="modalimageInput"]', '');
                 } catch (e) {
@@ -413,7 +415,7 @@ const modalOpenConfigs = {
         toastId: '#myTextToast',
 
         reset({ modal, data }) {
-            console.log("---RESET FOR TEXT");
+            //console.log("---RESET FOR TEXT");
             setValue(modal, '[name="uuid"]', '');
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modaltextInput"]', '');
@@ -460,7 +462,7 @@ const modalOpenConfigs = {
         toastId: '#myPageToast',
 
         reset({ modal, data }) {
-            console.log("---RESET FOR PAGE");
+            //console.log("---RESET FOR PAGE");
             setValue(modal, '[name="uuid"]', '');
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modalpageInput"]', '');
@@ -655,7 +657,7 @@ const modalOpenConfigs = {
         toastId: '#myEventToast',
 
         reset({ modal, data }) {
-            console.log("---reset for event");
+            //console.log("---reset for event");
             setValue(modal, '[name="hiddeneventuuid"]', '');
             setValue(modal, '[name="modalEventType"]', data.subType);
             setValue(modal, '[name="section"]', '');
@@ -668,7 +670,7 @@ const modalOpenConfigs = {
         },
 
         prefill({ modal, data }) {
-            console.log("---prefill");
+            //console.log("---prefill");
             const isEdit = data.request === 'PUT';
 
             setValue(modal, '[name="hiddeneventuuid"]', data.uuid);
@@ -734,7 +736,7 @@ const modalOpenConfigs = {
         toastId: '#myconditionToast',
 
         reset({ modal, data }) {
-            console.log("---reset for condition");
+            //console.log("---reset for condition");
             setValue(modal, '[name="hiddenconditionuuid"]', '');
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="comparisonModal"]', '');

@@ -58,30 +58,19 @@ class StoryService {
     const { uuid, type, value, newline, hasEvents } = requestBody || {};
     const section = "elements";
 
-
-    // 2) Build newData
-    // const newData = {
-    //   uuid: crypto.randomUUID(),
-    //   title: requestBody.value,
-    //   parent: requestBody.uuid,
-    //   type: requestBody.type,                     // normalized lower-case
-    //   value: requestBody.value,
-    //   newline: requestBody.newline ?? false,
-    //   hasEvents: requestBody.hasEvents ?? false,
-    //   elements: requestBody.elements ?? [],
-    // }
-
     const newData = {};
+
 
     Object.assign(newData, requestBody);
     newData['parent'] = requestBody.uuid;
-    newData['uuid'] = crypto.randomUUID(); //have to reassign the UUID property here, otherwise it keeps whatever the requestBody had.
+    newData['uuid'] = crypto.randomUUID(); //have to reassign the UUID property here.
     newData['elements'] = requestBody.elements ?? [];
 
     console.log('------addDataByUUID - newData:', newData);
 
     // 3) Special case for "choice" -> placeholder event
-    //if (type === 'choice' && typeof value === 'string' && value.includes('Event')) {
+    //this is a new Choice object being built, so if "hasEvents" is true, it means we need to create an event 
+    //in this Choice so that the user can see something working
     if (type === 'choice' && hasEvents) {
       const randuuid = crypto.randomUUID();
       // Extract the first 5 characters

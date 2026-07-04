@@ -52,20 +52,6 @@ function initializeUserEventLinks() {
   })
 }
 
-// function initializeNewElementButtons() {
-//   let btns = Array.from(document.querySelectorAll('.universalForm'));
-//   let form = document.getElementById("universalFormModal");
-//   btns.forEach((el) => {
-
-//     el.addEventListener("click", async (e) => {
-//       renderForm(elementSchemas.condition, form);
-//     });
-//   })
-
-// }
-
-//initializeNewElementButtons();
-
 function initializeChoiceLinks() {
   let choiceLinks = Array.from(document.querySelectorAll('.choiceLink'));
   choiceLinks.forEach((el) => {

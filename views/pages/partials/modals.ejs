@@ -10,6 +10,11 @@
         <%- include('./modals/formElementDynamicModal', {uuid:pageData.uuid}); %>
     </div>
 </div>
+<div class="modal fade" id="imageMapModal" tabindex="-1" aria-labelledby="elementUpdateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fs modal-dialog-scrollable">
+        <%- include('./modals/formElementImageMapModal', {uuid:pageData.uuid}); %>
+    </div>
+</div>
 <div class="modal fade elementModal" id="imageUpdateModal" tabindex="-1" aria-labelledby="elementUpdateLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -44,12 +49,6 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <%- include('./modals/formPageModal', {uuid:pageData.uuid}); %>
-    </div>
-</div>
-<div class="modal fade elementModal" id="universalUpdateModal" tabindex="-1" aria-labelledby="universalUpdateLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <%- include('./modals/universalModal', {uuid:pageData.uuid}); %>
     </div>
 </div>
 <div class="modal fade" id="pageDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
