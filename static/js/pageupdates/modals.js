@@ -290,16 +290,19 @@ function bindConfiguredForm(config) {
 }
 
 async function bindConfiguredModalOpen(config) {
-    console.log(`---bindConfiguredModalOpen() GETTING CONFIG: ${config.modalId}`);
+    //console.log(`---bindConfiguredModalOpen() GETTING CONFIG: ${config.modalId}`);
     const modal = document.getElementById(config.modalId);
     if (!modal) return;
 
     modal.addEventListener('show.bs.modal', async function (event) {
         //console.log("----MODAL OPEN");
+        //grab all of the data that might be placed directly on the button
         const buttondata = getTriggerData(event);
-        let data;
+        let data = {};
         console.log(`----Getting UUID from button:`);
         console.log(buttondata);
+
+
         try {
             // console.log(`------ATTEMPTING TO PULL INFO ABOUT ${button.dataset.bsElementuuid}.....`);
             //if this is existing content (PUT, not POST), then using the data object as-is will be fine
@@ -310,6 +313,12 @@ async function bindConfiguredModalOpen(config) {
             data['storyUuid'] = buttondata.bsStoryuuid;
             data['subType'] = buttondata.bsElementsubtype || '';
             data['section'] = 'elements'; //eventually, should we do away with this? all sections will be 'elements'?
+            try {
+                data['imagePath'] = buttondata.bsImagePath;
+                console.log(buttondata.bsImagepath);
+            } catch (e) {
+                console.log("whoops");
+            }
             console.log("---from bindConfiguredModalOpen - Here's some data about the element!!! ", data);
             createConditionEditLink(data);
         } catch (e) {
@@ -360,7 +369,7 @@ const modalOpenConfigs = {
         toastId: '#myImageToast',
 
         reset({ modal, data }) {
-            //console.log("---RESET FOR TEXT");
+            //console.log("---RESET FOR IMAGE");
             setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modalimageInput"]', '');
@@ -368,13 +377,12 @@ const modalOpenConfigs = {
         },
 
         prefill({ modal, data }) {
-            console.log(`---PREFILL FOR TEXT - ${data.request}`);
+            //console.log(`---PREFILL FOR IMAGE UPLOAD - ${data.request}`);
             const isEdit = data.request === 'PUT';
             const imgPreview = document.getElementById("previewModal");
             const imgMapBtn = document.getElementById("imageMapButton");
             console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
             setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
-            console.log("---something went wrong with image upload");
             setValue(modal, '[name="section"]', data.section);
 
 
@@ -416,43 +424,39 @@ const modalOpenConfigs = {
         modalId: 'imageMapUpdateModal',
 
         reset({ modal, data }) {
-            //console.log("---RESET FOR TEXT");
-            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
-            setValue(modal, '[name="section"]', '');
-            setValue(modal, '[name="modalimageInput"]', '');
-            setValue(modal, '[name="imagerequest"]', 'POST');
+            console.log("---RESET FOR IMG MAP");
+
         },
 
         prefill({ modal, data }) {
-            console.log(`---PREFILL FOR TEXT - ${data.request}`);
-            const isEdit = data.request === 'PUT';
-            const imgPreview = document.getElementById("previewModal");
-            const imgMapBtn = document.getElementById("imageMapButton");
-            console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
-            setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
-            console.log("---something went wrong with image upload");
-            setValue(modal, '[name="section"]', data.section);
+            console.log("---PREFILL FOR IMG MAP");
+            try {
 
-            loadImageMapDisplay(`/uploads/${data.value}`);
-
-            if (isEdit) {
-
-                imgPreview.src = `/uploads/${data.value}`;
-                imgPreview.style.display = "block";
-                imgMapBtn.setAttribute('data-bs-imagepath', data.value);
-                setValue(modal, '[name="modalimageInput"]', data.value);
-                setValue(modal, '[name="imagerequest"]', 'PUT');
-            } else {
-                imgPreview.src = ``;
-                imgPreview.style.display = "none";
-                try {
-                    setValue(modal, '[name="modalimageInput"]', '');
-                } catch (e) {
-                    console.log("---something went wrong with image upload");
-                }
-
-                setValue(modal, '[name="imagerequest"]', 'POST');
+                const imgMapBtn = document.getElementById("imageMapButton");
+                console.log(`----data with img path? ${imgMapBtn.dataset.bsImagepath}`);
+                loadImageMapDisplay(`${imgMapBtn.dataset.bsImagepath}`);
+            } catch (e) {
+                console.log("can't find imagePath");
             }
+
+            //const isEdit = data.request === 'PUT';
+            //const imgPreview = document.getElementById("previewModal");
+            const imgMapBtn = document.getElementById("imageMapButton");
+
+            //loadImageMapDisplay(`/uploads/${data.value}`);
+
+            // if (isEdit) {
+            //     imgPreview.src = `/uploads/${data.value}`;
+            //     imgPreview.style.display = "block";
+            //     imgMapBtn.setAttribute('data-bs-imagepath', data.value);
+            //     setValue(modal, '[name="modalimageInput"]', data.value);
+            //     setValue(modal, '[name="imagerequest"]', 'PUT');
+            // } else {
+            //     imgPreview.src = ``;
+            //     imgPreview.style.display = "none";
+
+            //     setValue(modal, '[name="imagerequest"]', 'POST');
+            // }
         },
 
         buildPayload(fd) {
