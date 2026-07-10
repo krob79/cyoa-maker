@@ -1,30 +1,21 @@
 <div class="modal-content">
     <div class="modal-header">
-        <h1 class="modal-title fs-4" id="exampleModalFullscreenLabel">Image Map</h1><button type="button"
+        <h1 class="modal-title fs-4" id="exampleModalFullscreenLabel">Edit Image</h1><button type="button"
             class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
     </div>
     <div class="modal-body">
-        <p>This is probably where the content for the image map editor would go, once everything is full screen...</p>
         <main class="page">
-            <h1>Image Map Zone Editor</h1>
-
-            <p>
-                Click the image to add polygon points. The SVG uses a viewBox matching the image's
-                natural pixel dimensions, so the generated image-map coordinates remain accurate
-                as the image scales responsively.
-            </p>
-
             <section>
                 <div class="modal-body" class="row g-3 was-validated">
+                    <button type="button" id="imageMapButton" data-bs-request="PUT" class="btn btn-secondary">Image
+                        Map</button>
                     <form id="uploadFormModal" novalidate>
                         <div class="container">
                             <input type="hidden" id="hiddenimageuuid" name="hiddenimageuuid" value="">
                             <input type="hidden" name="section" value="elements">
                             <input type="hidden" id="imagerequest" name="imagerequest" value="">
                             <a id="modalimageConditions" href="">Review Conditions For This Image ></a>
-                            <button type="button" id="imageMapButton" data-bs-request="PUT" class="btn btn-secondary"
-                                data-bs-toggle="modal" data-bs-imagepath="" data-bs-target="#imageMapUpdateModal">Image
-                                Map</button>
+
                             <div class="row">
                                 <img id="previewModal" name="previewModal" src="" alt="Image preview"
                                     style="max-width: 100%; display: none; margin-top: 10px;" />

@@ -1,4 +1,4 @@
-import { initModals } from './modals.js';
+// import { initModals } from './modals.js';
 import { initDragDrop } from './dragdrop.js';
 import { initializeDeleteButtons, initializeDeleteButtonFromModal } from './deleteHandlers.js';
 
