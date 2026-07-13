@@ -261,7 +261,19 @@ function submitUrlEncoded({
 function bindConfiguredForm(config) {
     const form = document.getElementById(config.formId);
     const modal = document.getElementById(config.modalId);
-    if (!form) return;
+    //checks for existence of form and provides error message if it doesn't exist
+    if (!form) {
+        console.error(
+            `Cannot bind form handler: #${config.formId} was not found`
+        );
+        return;
+    }
+
+    if (form.dataset.configSubmitBound === 'true') {
+        return;
+    }
+
+    form.dataset.configSubmitBound = 'true';
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -292,10 +304,21 @@ function bindConfiguredForm(config) {
 async function bindConfiguredModalOpen(config) {
     //console.log(`---bindConfiguredModalOpen() GETTING CONFIG: ${config.modalId}`);
     const modal = document.getElementById(config.modalId);
-    if (!modal) return;
+    //checks for the existence of said modal and provides an error message if it doesn't exist
+    if (!modal) {
+        console.error(
+            `Cannot bind modal-open handler: #${config.modalId} was not found`
+        );
+        return;
+    }
+    //checks to see if a modal has been configured already
+    if (modal.dataset.configOpenBound === 'true') {
+        return;
+    }
+    modal.dataset.configOpenBound = 'true';
 
     modal.addEventListener('show.bs.modal', async function (event) {
-        //console.log("----MODAL OPEN");
+        console.log("----MODAL OPEN");
         //grab all of the data that might be placed directly on the button
         const buttondata = getTriggerData(event);
         let data = {};
@@ -308,7 +331,9 @@ async function bindConfiguredModalOpen(config) {
             //if this is existing content (PUT, not POST), then using the data object as-is will be fine
             //but if the request is POST, nothing exists yet, including the type, meaning thr
             //createConditionEditLink function will pull in the incorrect data
-            data = await getCurrentDataOnElement(buttondata.bsElementuuid);
+            const fetchedData = await getCurrentDataOnElement(buttondata.bsElementuuid);
+            data = fetchedData || {};
+
             data['request'] = buttondata.bsRequest;
             data['storyUuid'] = buttondata.bsStoryuuid;
             data['subType'] = buttondata.bsElementsubtype || '';
@@ -356,7 +381,6 @@ const USE_NEW_MODAL_OPEN = {
     dynamic: true,
     event: true,
     imageUpload: true,
-    imageMap: true,
     page: true,
     condition: true,
 };
@@ -421,67 +445,13 @@ const modalOpenConfigs = {
             };
         },
     },
-    imageMap: {
-        modalId: 'imageMapUpdateModal',
-
-        reset({ modal, data }) {
-            console.log("---RESET FOR IMG MAP");
-
-        },
-
-        prefill({ modal, data }) {
-            console.log("---PREFILL FOR IMG MAP");
-            try {
-
-                const imgMapBtn = document.getElementById("imageMapButton");
-                console.log(`----data with img path? ${imgMapBtn.dataset.bsImagepath}`);
-                loadImageMapDisplay(`${imgMapBtn.dataset.bsImagepath}`);
-            } catch (e) {
-                console.log("can't find imagePath");
-            }
-
-            //const isEdit = data.request === 'PUT';
-            //const imgPreview = document.getElementById("previewModal");
-            const imgMapBtn = document.getElementById("imageMapButton");
-
-            //loadImageMapDisplay(`/uploads/${data.value}`);
-
-            // if (isEdit) {
-            //     imgPreview.src = `/uploads/${data.value}`;
-            //     imgPreview.style.display = "block";
-            //     imgMapBtn.setAttribute('data-bs-imagepath', data.value);
-            //     setValue(modal, '[name="modalimageInput"]', data.value);
-            //     setValue(modal, '[name="imagerequest"]', 'PUT');
-            // } else {
-            //     imgPreview.src = ``;
-            //     imgPreview.style.display = "none";
-
-            //     setValue(modal, '[name="imagerequest"]', 'POST');
-            // }
-        },
-
-        buildPayload(fd) {
-            const method = getMethod(fd, 'imagerequest');
-            const uuid = fd.get('hiddenimageuuid');
-            const section = fd.get('section');
-            const value = (fd.get('modalimageInput') || '').toString();
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? { uuid, section, type: 'text', value, newline }
-                        : { uuid, newDataObj: { value, newline } },
-            };
-        },
-    },
     text: {
         modalId: 'textUpdateModal',
         formId: 'textFormModal',
         toastId: '#myTextToast',
 
         reset({ modal, data }) {
-            //console.log("---RESET FOR TEXT");
+            console.log("---RESET FOR TEXT");
             setValue(modal, '[name="uuid"]', '');
             setValue(modal, '[name="section"]', '');
             setValue(modal, '[name="modaltextInput"]', '');
@@ -1151,52 +1121,48 @@ const modalConfigs = {
 
 
 };
-bindConfiguredForm(modalConfigs.text);
-if (USE_NEW_MODAL_OPEN.text) {
-    bindConfiguredModalOpen(modalOpenConfigs.text);
-}
 
-bindConfiguredForm(modalConfigs.dynamic);
-if (USE_NEW_MODAL_OPEN.dynamic) {
-    bindConfiguredModalOpen(modalOpenConfigs.dynamic);
-}
-
-bindConfiguredForm(modalConfigs.event);
-if (USE_NEW_MODAL_OPEN.event) {
-    bindConfiguredModalOpen(modalOpenConfigs.event);
-}
-
-bindConfiguredForm(modalConfigs.choice);
-if (USE_NEW_MODAL_OPEN.choice) {
-    bindConfiguredModalOpen(modalOpenConfigs.choice);
-}
-
-bindConfiguredForm(modalConfigs.condition);
-if (USE_NEW_MODAL_OPEN.condition) {
-    bindConfiguredModalOpen(modalOpenConfigs.condition);
-}
-
-bindConfiguredForm(modalConfigs.page);
-if (USE_NEW_MODAL_OPEN.page) {
-    bindConfiguredModalOpen(modalOpenConfigs.page);
-}
-
-bindConfiguredForm(modalConfigs.imageUpload);
-if (USE_NEW_MODAL_OPEN.imageUpload) {
-    bindConfiguredModalOpen(modalOpenConfigs.imageUpload);
-}
-
-
-if (USE_NEW_MODAL_OPEN.imageMap) {
-    bindConfiguredModalOpen(modalOpenConfigs.imageMap);
-}
-
-//bindConfiguredForm(modalConfigs.imageAI); // API has run out of credits
-
-//eventually everything at once
-//Object.values(modalConfigs).forEach(bindConfiguredForm);
 
 /**
  * Wire up all modal open/close events and form submissions.
  */
 
+export function initModals() {
+    bindConfiguredForm(modalConfigs.text);
+    bindConfiguredForm(modalConfigs.dynamic);
+    bindConfiguredForm(modalConfigs.event);
+    bindConfiguredForm(modalConfigs.choice);
+    bindConfiguredForm(modalConfigs.condition);
+    bindConfiguredForm(modalConfigs.page);
+    bindConfiguredForm(modalConfigs.imageUpload);
+
+    if (USE_NEW_MODAL_OPEN.text) {
+        bindConfiguredModalOpen(modalOpenConfigs.text);
+    }
+
+    if (USE_NEW_MODAL_OPEN.dynamic) {
+        bindConfiguredModalOpen(modalOpenConfigs.dynamic);
+    }
+
+    if (USE_NEW_MODAL_OPEN.event) {
+        bindConfiguredModalOpen(modalOpenConfigs.event);
+    }
+
+    if (USE_NEW_MODAL_OPEN.choice) {
+        bindConfiguredModalOpen(modalOpenConfigs.choice);
+    }
+
+    if (USE_NEW_MODAL_OPEN.condition) {
+        bindConfiguredModalOpen(modalOpenConfigs.condition);
+    }
+
+    if (USE_NEW_MODAL_OPEN.page) {
+        bindConfiguredModalOpen(modalOpenConfigs.page);
+    }
+
+    if (USE_NEW_MODAL_OPEN.imageUpload) {
+        bindConfiguredModalOpen(modalOpenConfigs.imageUpload);
+    }
+
+    // Existing initModals code continues here...
+}

@@ -32,7 +32,7 @@
       },
       {
         "name": "idiot",
-        "amount": 0,
+        "amount": 69,
         "meta": {
           "createdAt": "2026-05-27T02:09:52.138Z"
         }
@@ -88,9 +88,23 @@
       },
       {
         "name": "appleVisits",
-        "amount": 0,
+        "amount": 2,
         "meta": {
           "createdAt": "2026-06-23T23:42:27.343Z"
+        }
+      },
+      {
+        "name": "placeholderEvent-924ae",
+        "amount": 0,
+        "meta": {
+          "createdAt": "2026-07-13T23:23:26.833Z"
+        }
+      },
+      {
+        "name": "shit",
+        "amount": 207,
+        "meta": {
+          "createdAt": "2026-07-13T23:27:05.690Z"
         }
       }
     ],
