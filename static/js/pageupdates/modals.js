@@ -414,7 +414,6 @@ const modalOpenConfigs = {
                 imgPreview.src = `/uploads/${data.value}`;
                 imgPreview.style.display = "block";
                 imgPreview.setAttribute('src', `/uploads/${data.value}`);
-                imgMapBtn.setAttribute('data-bs-imagepath', `/uploads/${data.value}`);
                 setValue(modal, '[name="modalimageInput"]', data.value);
                 setValue(modal, '[name="imagerequest"]', 'PUT');
             } else {
@@ -1052,22 +1051,42 @@ const modalConfigs = {
 
     imageUpload: {
         formId: 'uploadFormModal',
-        async submit({ fd }) {
+        async submit({ fd, form }) {
             const method = getMethod(fd, 'imagerequest');
-            const imgPath = await createLocalImgUploadPath(fd);
+            const uuid = fd.get('hiddenimageuuid');
+            const section = fd.get('section');
 
-            const html = `<img class="pageImage" src="/uploads/${imgPath}">`;
+            // Existing filename/path populated when the edit modal opens.
+            let imgPath = (
+                fd.get('modalimageInput') || ''
+            ).toString();
+
+            const fileInput = form.querySelector('input[type="file"]');
+
+            const hasNewFile =
+                fileInput?.files &&
+                fileInput.files.length > 0;
+
+            // A new image must have a selected file.
+            if (method === 'POST' && !hasNewFile) {
+                throw new Error('Please select an image file.');
+            }
+
+            // Upload for a new image, or when replacing an existing image.
+            if (hasNewFile) {
+                imgPath = await createLocalImgUploadPath(fd);
+            }
 
             const payload =
                 method === 'POST'
                     ? {
-                        uuid: fd.get('hiddenimageuuid'),
-                        section: fd.get('section'),
+                        uuid,
+                        section,
                         type: 'image',
-                        value: imgPath
+                        value: imgPath,
                     }
                     : {
-                        uuid: fd.get('hiddenimageuuid'),
+                        uuid,
                         newDataObj: {
                             value: imgPath,
                         },
