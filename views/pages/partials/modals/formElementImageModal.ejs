@@ -2,15 +2,115 @@
     <div class="modal-header">
         <h5 class="modal-title element-modal-title" id="modalimageLabel">Form Title</h5>
     </div>
-    <div class="modal-body" class="row g-3 was-validated">
+    <div class="modal-body">
         <form id="uploadFormModal" novalidate>
             <div class="container">
                 <input type="hidden" id="hiddenimageuuid" name="hiddenimageuuid" value="">
                 <input type="hidden" name="section" value="elements">
                 <input type="hidden" id="imagerequest" name="imagerequest" value="">
                 <a id="modalimageConditions" href="">Review Conditions For This Image ></a>
+                <!-- Image modal navigation -->
+                <ul class="nav nav-tabs mb-3" id="imageEditorTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="image-upload-tab" data-bs-toggle="tab"
+                            data-bs-target="#image-upload-panel" type="button" role="tab"
+                            aria-controls="image-upload-panel" aria-selected="true">
+                            Image Upload
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="image-zones-tab" data-bs-toggle="tab"
+                            data-bs-target="#image-zones-panel" type="button" role="tab"
+                            aria-controls="image-zones-panel" aria-selected="false" disabled>
+                            Image Zones
+                        </button>
+                    </li>
+                </ul>
+                <!--Start of new stuff-->
+                <div class="tab-content" id="imageEditorTabContent">
+                    <!-- Image upload panel -->
+                    <div class="tab-pane fade show active" id="image-upload-panel" role="tabpanel"
+                        aria-labelledby="image-upload-tab" tabindex="0">
+                        <div class="mb-3 text-center">
+                            <img id="previewModal" name="previewModal" src="" alt="Image Preview" class="img-fluid"
+                                style="display:none; max-height: 55vh;">
+                        </div>
 
-                <div class="row">
+                        <div class="mb-3">
+                            <label for="modalimageInput" class="form-label">
+                                Select an image
+                            </label>
+
+                            <input type="file" class="form-control" name="file" id="modalimageInput" accept="image/*"
+                                required aria-describedby="inputGroupFileAddon04">
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-secondary newElement" data-bs-toggle="modal"
+                                data-bs-request="POST" data-bs-elementtype="image"
+                                data-bs-elementuuid="<%= pageData.uuid %>" data-bs-elementvalue=""
+                                data-bs-target="#aiimageUpdateModal">
+                                Generate AI Image
+                            </button>
+
+                            <button type="button" class="btn btn-outline-primary" id="openImageZonesButton" disabled>
+                                Add Image Zones
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image zone editor panel -->
+                    <div class="tab-pane fade" id="image-zones-panel" role="tabpanel" aria-labelledby="image-zones-tab"
+                        tabindex="0">
+                        <div class="alert alert-secondary" id="imageZonesInstructions">
+                            Draw clickable zones over the image. Zone drawing
+                            controls will be added in the next step.
+                        </div>
+                        <div id="imageZoneEditor" class="image-zone-editor border rounded bg-light">
+                            <svg id="imageZoneSvg" class="image-zone-svg" xmlns="http://www.w3.org/2000/svg"
+                                preserveAspectRatio="xMidYMid meet" role="img" aria-label="Image zone editor">
+                                <image id="imageZoneSvgImage" href="" x="0" y="0" width="0" height="0"
+                                    preserveAspectRatio="none"></image>
+
+                                <!-- Completed zone polygons will go here later. -->
+                                <g id="imageZonePolygonLayer"></g>
+
+                                <!-- The zone currently being drawn will go here later. -->
+                                <g id="imageZoneDrawingLayer"></g>
+                            </svg>
+
+                            <div id="imageZoneEmptyMessage" class="image-zone-empty-message">
+                                Select an image before creating zones.
+                            </div>
+                        </div>
+                        <div id="imageZoneControls" class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="button" class="btn btn-outline-primary" id="finishImageZoneButton" disabled>
+                                Finish Zone
+                            </button>
+
+                            <button type="button" class="btn btn-outline-secondary" id="undoImageZonePointButton"
+                                disabled>
+                                Undo Point
+                            </button>
+
+                            <button type="button" class="btn btn-outline-danger" id="deleteImageZoneButton" disabled>
+                                Delete Selected Zone
+                            </button>
+                        </div>
+                        <div id="imageZoneList" class="mt-3"></div>
+                    </div>
+                </div>
+                <div class="modal-footer px-0 pb-0 mt-4">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04">
+                        Upload Image
+                    </button>
+                </div>
+                <!--end of new stuff -->
+
+                <!-- <div class="row">
                     <img id="previewModal" name="previewModal" src="" alt="Image preview"
                         style="max-width: 100%; display: none; margin-top: 10px;" />
                 </div>
@@ -43,7 +143,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04">Upload Image</button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </form>
     </div>
@@ -51,6 +151,185 @@
 </div>
 <%- include('formElementValidation', {}); %>
     <script>
+        const modalimageInput =
+            document.getElementById('modalimageInput');
+
+        const preview =
+            document.getElementById('previewModal');
+
+        const imageZonesTab =
+            document.getElementById('image-zones-tab');
+
+        const openImageZonesButton =
+            document.getElementById('openImageZonesButton');
+
+        const imageZoneSvg =
+            document.getElementById('imageZoneSvg');
+
+        const imageZoneSvgImage =
+            document.getElementById('imageZoneSvgImage');
+
+        const imageZoneEmptyMessage =
+            document.getElementById('imageZoneEmptyMessage');
+
+        /**
+         * Clear both the regular preview and SVG editor.
+         */
+        function clearImagePreviews() {
+            preview.removeAttribute('src');
+            preview.style.display = 'none';
+
+            imageZoneSvgImage.setAttribute('href', '');
+            imageZoneSvgImage.setAttribute('width', '0');
+            imageZoneSvgImage.setAttribute('height', '0');
+
+            imageZoneSvg.removeAttribute('viewBox');
+            imageZoneSvg.style.display = 'none';
+
+            imageZoneEmptyMessage.style.display = 'flex';
+
+            imageZonesTab.disabled = true;
+            openImageZonesButton.disabled = true;
+        }
+
+        /**
+         * Load one image source into both preview areas.
+         *
+         * The SVG viewBox uses the image's natural dimensions.
+         * All future zone coordinates will use this coordinate system.
+         */
+        function loadImageIntoEditor(imageSource) {
+            return new Promise((resolve, reject) => {
+                const imageLoader = new Image();
+
+                imageLoader.addEventListener('load', () => {
+                    const naturalWidth =
+                        imageLoader.naturalWidth;
+
+                    const naturalHeight =
+                        imageLoader.naturalHeight;
+
+                    if (!naturalWidth || !naturalHeight) {
+                        reject(
+                            new Error(
+                                'Could not determine image dimensions.'
+                            )
+                        );
+
+                        return;
+                    }
+
+                    // Normal image preview
+                    preview.src = imageSource;
+                    preview.style.display = 'block';
+
+                    // SVG coordinate system
+                    imageZoneSvg.setAttribute(
+                        'viewBox',
+                        `0 0 ${naturalWidth} ${naturalHeight}`
+                    );
+
+                    // Image inside the SVG
+                    imageZoneSvgImage.setAttribute(
+                        'href',
+                        imageSource
+                    );
+
+                    imageZoneSvgImage.setAttribute(
+                        'width',
+                        String(naturalWidth)
+                    );
+
+                    imageZoneSvgImage.setAttribute(
+                        'height',
+                        String(naturalHeight)
+                    );
+
+                    imageZoneSvg.style.display = 'block';
+                    imageZoneEmptyMessage.style.display = 'none';
+
+                    imageZonesTab.disabled = false;
+                    openImageZonesButton.disabled = false;
+
+                    resolve({
+                        width: naturalWidth,
+                        height: naturalHeight
+                    });
+                });
+
+                imageLoader.addEventListener('error', () => {
+                    reject(
+                        new Error(
+                            'The selected image could not be loaded.'
+                        )
+                    );
+                });
+
+                imageLoader.src = imageSource;
+            });
+        }
+
+        modalimageInput.addEventListener(
+            'change',
+            event => {
+                const file = event.target.files?.[0];
+
+                if (
+                    !file ||
+                    !file.type.startsWith('image/')
+                ) {
+                    clearImagePreviews();
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.addEventListener(
+                    'load',
+                    async () => {
+                        try {
+                            await loadImageIntoEditor(
+                                reader.result
+                            );
+                        } catch (error) {
+                            console.error(
+                                'Image preview error:',
+                                error
+                            );
+
+                            clearImagePreviews();
+                        }
+                    }
+                );
+
+                reader.addEventListener(
+                    'error',
+                    () => {
+                        console.error(
+                            'The selected file could not be read.'
+                        );
+
+                        clearImagePreviews();
+                    }
+                );
+
+                reader.readAsDataURL(file);
+            }
+        );
+
+        openImageZonesButton.addEventListener(
+            'click',
+            () => {
+                const tab =
+                    bootstrap.Tab.getOrCreateInstance(
+                        imageZonesTab
+                    );
+
+                tab.show();
+            }
+        );
+    </script>
+    <!-- <script>
         //code for showing preview image in modal display
         const modalimageInput = document.getElementById("modalimageInput");
         const preview = document.getElementById('previewModal');
@@ -74,4 +353,4 @@
         });
 
 
-    </script>
+    </script> -->

@@ -122,6 +122,33 @@ async function submitImage(e) {
     });
 }
 
+function clearImageZoneEditor() {
+    imageZoneSvgImage.setAttribute('href', '');
+    imageZoneSvgImage.setAttribute('width', '0');
+    imageZoneSvgImage.setAttribute('height', '0');
+
+    imageZoneSvg.removeAttribute('viewBox');
+    imageZoneSvg.style.display = 'none';
+
+    imageZoneEmptyMessage.style.display = 'flex';
+
+    const polygonLayer = document.getElementById(
+        'imageZonePolygonLayer'
+    );
+
+    const drawingLayer = document.getElementById(
+        'imageZoneDrawingLayer'
+    );
+
+    if (polygonLayer) {
+        polygonLayer.replaceChildren();
+    }
+
+    if (drawingLayer) {
+        drawingLayer.replaceChildren();
+    }
+}
+
 function getCheckboxValue(fieldId) {
     const el = document.getElementById(fieldId);
     //console.log("-----CHECKBOX VALUE: " + (v === 'on' || v === 'true' || v === '1'));
@@ -410,21 +437,92 @@ const modalOpenConfigs = {
             setValue(modal, '[name="section"]', data.section);
 
 
+            // if (isEdit) {
+            //     imgPreview.src = `/uploads/${data.value}`;
+            //     imgPreview.style.display = "block";
+            //     imgPreview.setAttribute('src', `/uploads/${data.value}`);
+            //     setValue(modal, '[name="modalimageInput"]', data.value);
+            //     setValue(modal, '[name="imagerequest"]', 'PUT');
+            // } else {
+            //     imgPreview.src = ``;
+            //     imgPreview.style.display = "none";
+            //     try {
+            //         setValue(modal, '[name="modalimageInput"]', '');
+            //     } catch (e) {
+            //         console.log("---something went wrong with image upload");
+            //     }
+
+            //     setValue(modal, '[name="imagerequest"]', 'POST');
+            // }
             if (isEdit) {
-                imgPreview.src = `/uploads/${data.value}`;
-                imgPreview.style.display = "block";
-                imgPreview.setAttribute('src', `/uploads/${data.value}`);
-                setValue(modal, '[name="modalimageInput"]', data.value);
-                setValue(modal, '[name="imagerequest"]', 'PUT');
-            } else {
-                imgPreview.src = ``;
-                imgPreview.style.display = "none";
-                try {
-                    setValue(modal, '[name="modalimageInput"]', '');
-                } catch (e) {
-                    console.log("---something went wrong with image upload");
+                console.log("----THIS IS AN EDIT");
+                const imageSource = `/uploads/${data.value}`;
+
+                imgPreview.src = imageSource;
+                imgPreview.style.display = 'block';
+
+                const imageZonesTab = document.getElementById('image-zones-tab');
+                if (imageZonesTab) {
+                    imageZonesTab.disabled = false;
                 }
 
+                const fileInput = modal.querySelector(
+                    '#modalimageInput'
+                );
+
+                if (fileInput) {
+                    fileInput.value = '';
+                    fileInput.required = false;
+                }
+
+                if (typeof window.loadImageIntoZoneEditor === 'function') {
+                    window
+                        .loadImageIntoZoneEditor(imageSource)
+                        .catch(error => {
+                            console.error(
+                                'Could not initialize image zone editor:',
+                                error
+                            );
+                        });
+                }
+
+                setValue(modal, '[name="modalimageInput"]', data.value);
+                setValue(modal, '[name="imagerequest"]', 'PUT');
+
+            } else {
+                console.log("----THIS IS NEW");
+                imgPreview.src = '';
+                imgPreview.style.display = 'none';
+
+                const imageZoneSvg = document.getElementById('imageZoneSvg');
+                const imageZoneSvgImage = document.getElementById('imageZoneSvgImage');
+                const imageZoneEmptyMessage = document.getElementById('imageZoneEmptyMessage');
+                const imageZonesTab = document.getElementById('image-zones-tab');
+                const openImageZonesButton = document.getElementById('openImageZonesButton');
+
+                imageZoneSvgImage?.setAttribute('href', '');
+                imageZoneSvgImage?.setAttribute('width', '0');
+                imageZoneSvgImage?.setAttribute('height', '0');
+
+                imageZoneSvg?.removeAttribute('viewBox');
+
+                if (imageZoneSvg) {
+                    imageZoneSvg.style.display = 'none';
+                }
+
+                if (imageZoneEmptyMessage) {
+                    imageZoneEmptyMessage.style.display = 'flex';
+                }
+
+                if (imageZonesTab) {
+                    imageZonesTab.disabled = true;
+                }
+
+                if (openImageZonesButton) {
+                    openImageZonesButton.disabled = true;
+                }
+
+                setValue(modal, '[name="modalimageInput"]', '');
                 setValue(modal, '[name="imagerequest"]', 'POST');
             }
         },
