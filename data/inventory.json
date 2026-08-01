@@ -74,21 +74,21 @@
       },
       {
         "name": "apples",
-        "amount": 0,
+        "amount": 1,
         "meta": {
           "createdAt": "2026-06-23T15:46:15.012Z"
         }
       },
       {
         "name": "fromAppleTree",
-        "amount": 0,
+        "amount": 1,
         "meta": {
           "createdAt": "2026-06-23T23:14:12.734Z"
         }
       },
       {
         "name": "appleVisits",
-        "amount": 2,
+        "amount": 7,
         "meta": {
           "createdAt": "2026-06-23T23:42:27.343Z"
         }

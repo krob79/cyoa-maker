@@ -4,6 +4,20 @@
 // Exports: initModals()
 
 import { updateDisplay } from './render.js'; // your renderer rebinds buttons & refreshes DOM
+import { ImageZoneEditor } from './imageZoneEditor.js';
+
+let modalimageInput =
+    document.getElementById('modalimageInput');
+
+let imgPreview =
+    document.getElementById('previewModal');
+
+let imageZonesTab =
+    document.getElementById('image-zones-tab');
+
+let openImageZonesButton =
+    document.getElementById('openImageZonesButton');
+
 
 // --- local utils kept here to remain standalone ---
 /**
@@ -62,9 +76,7 @@ async function createLocalImgUploadPath(formData) {
     return imgPath;
 }
 
-/**
- * Shared submit handler for image modals (regular + AI)
- */
+//this may be obsolete now, as it should be handled by modalConfigs.<object>.submit
 async function submitImage(e) {
     e.preventDefault();
     const formEl = /** @type {HTMLFormElement} */ (document.getElementById(e.target.id));
@@ -122,32 +134,47 @@ async function submitImage(e) {
     });
 }
 
-function clearImageZoneEditor() {
-    imageZoneSvgImage.setAttribute('href', '');
-    imageZoneSvgImage.setAttribute('width', '0');
-    imageZoneSvgImage.setAttribute('height', '0');
 
-    imageZoneSvg.removeAttribute('viewBox');
-    imageZoneSvg.style.display = 'none';
 
-    imageZoneEmptyMessage.style.display = 'flex';
+const imageZoneEditor =
+    new ImageZoneEditor({
+        svg: document.getElementById(
+            'imageZoneSvg'
+        ),
 
-    const polygonLayer = document.getElementById(
-        'imageZonePolygonLayer'
-    );
+        svgImage: document.getElementById(
+            'imageZoneSvgImage'
+        ),
 
-    const drawingLayer = document.getElementById(
-        'imageZoneDrawingLayer'
-    );
+        polygonLayer: document.getElementById(
+            'imageZonePolygonLayer'
+        ),
 
-    if (polygonLayer) {
-        polygonLayer.replaceChildren();
-    }
+        drawingLayer: document.getElementById(
+            'imageZoneDrawingLayer'
+        ),
 
-    if (drawingLayer) {
-        drawingLayer.replaceChildren();
-    }
-}
+        emptyMessage: document.getElementById(
+            'imageZoneEmptyMessage'
+        ),
+
+        finishButton: document.getElementById(
+            'finishImageZoneButton'
+        ),
+
+        undoButton: document.getElementById(
+            'undoImageZonePointButton'
+        ),
+
+        deleteButton: document.getElementById(
+            'deleteImageZoneButton'
+        ),
+
+        zoneList: document.getElementById(
+            'imageZoneList'
+        )
+    });
+
 
 function getCheckboxValue(fieldId) {
     const el = document.getElementById(fieldId);
@@ -386,7 +413,7 @@ async function bindConfiguredModalOpen(config) {
         }
 
         if (typeof config.prefill === 'function') {
-            config.prefill({ modal, event, data, config });
+            await config.prefill({ modal, event, data, config });
         }
 
         if (typeof config.onAfterOpen === 'function') {
@@ -427,33 +454,19 @@ const modalOpenConfigs = {
             setValue(modal, '[name="imagerequest"]', 'POST');
         },
 
-        prefill({ modal, data }) {
+        async prefill({ modal, data }) {
             console.log(`---PREFILL FOR IMAGE UPLOAD - ${data.request}`);
             const isEdit = data.request === 'PUT';
-            const imgPreview = document.getElementById("previewModal");
-            const imgMapBtn = document.getElementById("imageMapButton");
+            imgPreview = document.getElementById('previewModal');
+            imageZonesTab = document.getElementById('image-zones-tab');
+            openImageZonesButton = document.getElementById('openImageZonesButton');
             console.log(`----FROM IMAGE PREFILL - WHAT IS DATA UUID? ${data.uuid}`);
+            setValue(modal, '[name="existingImagePath"]', data.value);
             setValue(modal, '[name="hiddenimageuuid"]', data.uuid);
             setValue(modal, '[name="section"]', data.section);
 
+            imageZoneEditor.clear();
 
-            // if (isEdit) {
-            //     imgPreview.src = `/uploads/${data.value}`;
-            //     imgPreview.style.display = "block";
-            //     imgPreview.setAttribute('src', `/uploads/${data.value}`);
-            //     setValue(modal, '[name="modalimageInput"]', data.value);
-            //     setValue(modal, '[name="imagerequest"]', 'PUT');
-            // } else {
-            //     imgPreview.src = ``;
-            //     imgPreview.style.display = "none";
-            //     try {
-            //         setValue(modal, '[name="modalimageInput"]', '');
-            //     } catch (e) {
-            //         console.log("---something went wrong with image upload");
-            //     }
-
-            //     setValue(modal, '[name="imagerequest"]', 'POST');
-            // }
             if (isEdit) {
                 console.log("----THIS IS AN EDIT");
                 const imageSource = `/uploads/${data.value}`;
@@ -461,86 +474,45 @@ const modalOpenConfigs = {
                 imgPreview.src = imageSource;
                 imgPreview.style.display = 'block';
 
-                const imageZonesTab = document.getElementById('image-zones-tab');
-                if (imageZonesTab) {
+                try {
+                    await imageZoneEditor.loadImage(imageSource);
+
                     imageZonesTab.disabled = false;
-                }
+                    openImageZonesButton.disabled = false;
+                } catch (error) {
+                    console.error(
+                        'Could not load existing image:',
+                        error
+                    );
 
-                const fileInput = modal.querySelector(
-                    '#modalimageInput'
-                );
-
-                if (fileInput) {
-                    fileInput.value = '';
-                    fileInput.required = false;
-                }
-
-                if (typeof window.loadImageIntoZoneEditor === 'function') {
-                    window
-                        .loadImageIntoZoneEditor(imageSource)
-                        .catch(error => {
-                            console.error(
-                                'Could not initialize image zone editor:',
-                                error
-                            );
-                        });
-                }
-
-                setValue(modal, '[name="modalimageInput"]', data.value);
-                setValue(modal, '[name="imagerequest"]', 'PUT');
-
-            } else {
-                console.log("----THIS IS NEW");
-                imgPreview.src = '';
-                imgPreview.style.display = 'none';
-
-                const imageZoneSvg = document.getElementById('imageZoneSvg');
-                const imageZoneSvgImage = document.getElementById('imageZoneSvgImage');
-                const imageZoneEmptyMessage = document.getElementById('imageZoneEmptyMessage');
-                const imageZonesTab = document.getElementById('image-zones-tab');
-                const openImageZonesButton = document.getElementById('openImageZonesButton');
-
-                imageZoneSvgImage?.setAttribute('href', '');
-                imageZoneSvgImage?.setAttribute('width', '0');
-                imageZoneSvgImage?.setAttribute('height', '0');
-
-                imageZoneSvg?.removeAttribute('viewBox');
-
-                if (imageZoneSvg) {
-                    imageZoneSvg.style.display = 'none';
-                }
-
-                if (imageZoneEmptyMessage) {
-                    imageZoneEmptyMessage.style.display = 'flex';
-                }
-
-                if (imageZonesTab) {
                     imageZonesTab.disabled = true;
-                }
-
-                if (openImageZonesButton) {
                     openImageZonesButton.disabled = true;
                 }
+                setValue(modal, '[name="existingImagePath"]', data.value);
 
-                setValue(modal, '[name="modalimageInput"]', '');
-                setValue(modal, '[name="imagerequest"]', 'POST');
+                setValue(modal, '[name="imagerequest"]', 'PUT');
+
+                return;
+
             }
+
+            console.log("----THIS IS NEW");
+            imgPreview.removeAttribute('src');
+            imgPreview.style.display = 'none';
+
+            if (imageZonesTab) {
+                imageZonesTab.disabled = true;
+            }
+
+            if (openImageZonesButton) {
+                openImageZonesButton.disabled = true;
+            }
+            setValue(modal, '[name="existingImagePath"]', '');
+            setValue(modal, '[name="modalimageInput"]', '');
+            setValue(modal, '[name="imagerequest"]', 'POST');
+
         },
 
-        buildPayload(fd) {
-            const method = getMethod(fd, 'imagerequest');
-            const uuid = fd.get('hiddenimageuuid');
-            const section = fd.get('section');
-            const value = (fd.get('modalimageInput') || '').toString();
-
-            return {
-                method,
-                payload:
-                    method === 'POST'
-                        ? { uuid, section, type: 'text', value, newline }
-                        : { uuid, newDataObj: { value, newline } },
-            };
-        },
     },
     text: {
         modalId: 'textUpdateModal',
@@ -1155,15 +1127,11 @@ const modalConfigs = {
             const section = fd.get('section');
 
             // Existing filename/path populated when the edit modal opens.
-            let imgPath = (
-                fd.get('modalimageInput') || ''
-            ).toString();
+            let imgPath = (fd.get('existingImagePath') || '').toString();
 
             const fileInput = form.querySelector('input[type="file"]');
 
-            const hasNewFile =
-                fileInput?.files &&
-                fileInput.files.length > 0;
+            const hasNewFile = fileInput?.files && fileInput.files.length > 0;
 
             // A new image must have a selected file.
             if (method === 'POST' && !hasNewFile) {
@@ -1283,3 +1251,98 @@ export function initModals() {
 
     // Existing initModals code continues here...
 }
+
+modalimageInput.addEventListener(
+    'change',
+    event => {
+        const file = event.target.files?.[0];
+
+        if (!file || !file.type.startsWith('image/')) {
+            imgPreview.removeAttribute('src');
+            imgPreview.style.display = 'none';
+
+            imageZoneEditor.clear();
+
+            imageZonesTab.disabled = true;
+            openImageZonesButton.disabled = true;
+
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.addEventListener(
+            'load',
+            async () => {
+                try {
+                    imageZoneEditor.clear();
+
+                    await imageZoneEditor.loadImage(
+                        String(reader.result)
+                    );
+
+                    imgPreview.src =
+                        String(reader.result);
+
+                    imgPreview.style.display =
+                        'block';
+
+                    imageZonesTab.disabled = false;
+
+                    openImageZonesButton.disabled =
+                        false;
+                } catch (error) {
+                    console.error(
+                        'Image preview error:',
+                        error
+                    );
+
+                    imgPreview.removeAttribute(
+                        'src'
+                    );
+
+                    imgPreview.style.display =
+                        'none';
+
+                    imageZoneEditor.clear();
+
+                    imageZonesTab.disabled = true;
+
+                    openImageZonesButton.disabled =
+                        true;
+                }
+            }
+        );
+
+        reader.addEventListener(
+            'error',
+            () => {
+                console.error(
+                    'The selected file could not be read.'
+                );
+
+                imgPreview.removeAttribute('src');
+                imgPreview.style.display = 'none';
+
+                imageZoneEditor.clear();
+
+                imageZonesTab.disabled = true;
+                openImageZonesButton.disabled = true;
+            }
+        );
+
+        reader.readAsDataURL(file);
+    }
+);
+
+openImageZonesButton.addEventListener(
+    'click',
+    () => {
+        const tab =
+            bootstrap.Tab.getOrCreateInstance(
+                imageZonesTab
+            );
+
+        tab.show();
+    }
+);

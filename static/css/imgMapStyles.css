@@ -28,3 +28,7 @@
 #imageZoneSvgImage {
   pointer-events: none;
 }
+
+#imageZoneSvg.image-zone-polygon {
+  background-color: rgba(255, 0, 0, 0.7);
+}
