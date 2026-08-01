@@ -150,7 +150,13 @@ export class ImageZoneEditor {
         return structuredClone(this.zones);
     }
 
+    getPointDistance(x1, y1, x2, y2) {
+        return Math.hypot(x2 - x1, y2 - y1);
+    }
+
     handleSvgClick(event) {
+        let dist;
+
         if (!this.svg.hasAttribute('viewBox')) {
             return;
         }
@@ -163,12 +169,21 @@ export class ImageZoneEditor {
             return;
         }
 
-        const point =
-            this.getSvgPoint(event);
+        const point = this.getSvgPoint(event);
 
         if (!point) {
             return;
         }
+
+        if (this.currentPoints.length > 0) {
+            dist = this.getPointDistance(this.currentPoints[0].x, this.currentPoints[0].y, point.x, point.y);
+            console.log(`-----DISTANCE BETWEEN (${point.x},${point.y}) and (${this.currentPoints[0].x},${this.currentPoints[0].y}): ${dist}`);
+            if (dist < 3) {
+                this.finishZone();
+                return;
+            }
+        }
+
 
         this.currentPoints.push(point);
         this.renderCurrentZone();
